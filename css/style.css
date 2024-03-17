@@ -1,0 +1,8 @@
+/* Additional styling for your navigation images */
+.slider-nav .slick-slide {
+  margin: 0 10px;
+  opacity: 0.5;
+}
+.slider-nav .slick-current {
+  opacity: 1;
+}
