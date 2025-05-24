@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Idle Game Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Comfortaa', cursive;
+    }
+    body, html {
+      height: 100%;
+      overflow: hidden;
+      background: #1b1b1b;
+      color: #f0f0f0;
+    }
+    .slideshow {
+      display: flex;
+      flex-direction: row;
+      width: 200vw;
+      height: 100vh;
+      transition: transform 0.5s ease;
+    }
+    .slide {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-size: cover;
+      background-position: center;
+    }
+    .info-container {
+      width: 80%;
+      max-width: 800px;
+      backdrop-filter: blur(60%);
+      padding: 2rem;
+      text-align: center;
+      animation: dropIn 0.8s ease forwards;
+    }
+    @keyframes dropIn {
+      from {
+        transform: translateY(-200px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    .project-image {
+      max-width: 100%;
+      height: auto;
+      border: 2px solid #fff;
+      margin-bottom: 2rem;
+      border-radius: 10px;
+      animation: dropIn 1s ease forwards;
+    }
+    h1 {
+      position: absolute;
+      top: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2.5rem;
+      z-index: 5;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+      animation: dropIn 0.5s ease forwards;
+    }
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 3rem;
+    }
+    p {
+      margin: 0.5rem 0;
+    }
+    pre {
+      background: #222;
+      color: #0f0;
+      padding: 1rem;
+      margin-top: 1rem;
+      overflow-x: auto;
+      text-align: left;
+      border-radius: 10px;
+    }
+    .nav-zone {
+      position: fixed;
+      top: 0;
+      width: 10vw;
+      height: 100vh;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .nav-left {
+      left: 0;
+    }
+    .nav-right {
+      right: 0;
+    }
+    .nav-zone::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+      background: transparent;
+      transition: background 0.1s ease;
+      pointer-events: none;
+    }
+    .nav-zone button {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>My Projects</h1>
+  <div class="slideshow" id="slideshow">
+    <div class="slide" style="background-image: url('project1.jpg');">
+      <div class="info-container">
+        <img src="project1.jpg" alt="Project 1" class="project-image">
+        <h2>Idle Clicker Adventure</h2>
+        <p>A casual idle game where players collect coins by clicking and upgrading townsfolk productivity.</p>
+        <p><strong>Languages:</strong> HTML, CSS, JavaScript</p>
+        <pre>// Sample code
+function clickGold() {
+  gold += goldPerClick;
+  updateDisplay();
+}</pre>
+      </div>
+    </div>
+
+    <div class="slide" style="background-image: url('project2.jpg');">
+      <div class="info-container">
+        <img src="project2.jpg" alt="Project 2" class="project-image">
+        <h2>Factory Tycoon</h2>
+        <p>Automate factories and become a resource magnate! An idle simulation game with strategic depth.</p>
+        <p><strong>Languages:</strong> JavaScript, Phaser</p>
+        <pre>// Factory logic
+setInterval(() => {
+  resources += factoryRate;
+  updateResources();
+}, 1000);</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-zone nav-left" id="navLeft">
+    <button onclick="prevSlide()"></button>
+  </div>
+  <div class="nav-zone nav-right" id="navRight">
+    <button onclick="nextSlide()"></button>
+  </div>
+
+  <script>
+    let currentSlide = 0;
+    const slideshow = document.getElementById('slideshow');
+    const slides = document.querySelectorAll('.slide');
+    const navLeft = document.getElementById('navLeft');
+    const navRight = document.getElementById('navRight');
+
+    function updateSlide() {
+      slideshow.style.transform = `translateX(-${currentSlide * 100}vw)`;
+    }
+
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % slides.length;
+      updateSlide();
+    }
+
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+      updateSlide();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      const vw = window.innerWidth;
+      const glowZoneWidth = vw * 0.1;
+      const leftDistance = e.clientX;
+      const rightDistance = vw - e.clientX;
+
+      const leftIntensity = Math.max(0, 1 - leftDistance / glowZoneWidth);
+      const rightIntensity = Math.max(0, 1 - rightDistance / glowZoneWidth);
+
+      const whiteGlowLeft = `rgba(255, 255, 255, ${leftIntensity * 0.3})`;
+      const whiteGlowRight = `rgba(255, 255, 255, ${rightIntensity * 0.3})`;
+
+      navLeft.style.setProperty('background', `linear-gradient(to right, ${whiteGlowLeft}, transparent)`);
+      navRight.style.setProperty('background', `linear-gradient(to left, ${whiteGlowRight}, transparent)`);
+    });
+  </script>
+</body>
+</html>
