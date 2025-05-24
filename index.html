@@ -19,21 +19,22 @@
       color: #f0f0f0;
     }
     .slideshow {
-      display: flex;
-      flex-direction: row;
-      width: 200vw;
-      height: 100vh;
-      transition: transform 0.5s ease;
-    }
-    .slide {
-      position: relative;
       width: 100vw;
       height: 100vh;
-      display: flex;
+      position: relative;
+    }
+    .slide {
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      display: none;
       align-items: center;
       justify-content: center;
       background-size: cover;
       background-position: center;
+    }
+    .slide.active {
+      display: flex;
     }
     .info-container {
       width: 80%;
@@ -41,17 +42,6 @@
       backdrop-filter: blur(60%);
       padding: 2rem;
       text-align: center;
-      animation: dropIn 0.8s ease forwards;
-    }
-    @keyframes dropIn {
-      from {
-        transform: translateY(-200px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
     }
     .project-image {
       max-width: 100%;
@@ -59,7 +49,6 @@
       border: 2px solid #fff;
       margin-bottom: 2rem;
       border-radius: 10px;
-      animation: dropIn 1s ease forwards;
     }
     h1 {
       position: absolute;
@@ -69,7 +58,6 @@
       font-size: 2.5rem;
       z-index: 5;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-      animation: dropIn 0.5s ease forwards;
     }
     h2 {
       font-size: 2rem;
@@ -124,7 +112,9 @@
 <body>
   <h1>My Projects</h1>
   <div class="slideshow" id="slideshow">
-    <div class="slide" style="background-image: url('project1.jpg');">
+    <!-- Six Project Templates -->
+    <!-- Project 1 -->
+    <div class="slide active" style="background-image: url('project1.jpg');">
       <div class="info-container">
         <img src="project1.jpg" alt="Project 1" class="project-image">
         <h2>Idle Clicker Adventure</h2>
@@ -137,7 +127,7 @@ function clickGold() {
 }</pre>
       </div>
     </div>
-
+    <!-- Project 2 -->
     <div class="slide" style="background-image: url('project2.jpg');">
       <div class="info-container">
         <img src="project2.jpg" alt="Project 2" class="project-image">
@@ -151,6 +141,62 @@ setInterval(() => {
 }, 1000);</pre>
       </div>
     </div>
+    <!-- Project 3 -->
+    <div class="slide" style="background-image: url('project3.jpg');">
+      <div class="info-container">
+        <img src="project3.jpg" alt="Project 3" class="project-image">
+        <h2>Space Miner Idle</h2>
+        <p>Explore planets, mine rare resources, and upgrade your fleet in this cosmic idle game adventure.</p>
+        <p><strong>Languages:</strong> C#, Unity</p>
+        <pre>// Resource collection
+void CollectResources() {
+  totalOre += miningRate * Time.deltaTime;
+  UpdateUI();
+}</pre>
+      </div>
+    </div>
+    <!-- Project 4 -->
+    <div class="slide" style="background-image: url('project4.jpg');">
+      <div class="info-container">
+        <img src="project4.jpg" alt="Project 4" class="project-image">
+        <h2>Idle Empire Builder</h2>
+        <p>Construct and expand your kingdom with idle mechanics that evolve over time.</p>
+        <p><strong>Languages:</strong> HTML, CSS, JavaScript</p>
+        <pre>// Building expansion
+function expandEmpire() {
+  land += 10;
+  displayEmpireStats();
+}</pre>
+      </div>
+    </div>
+    <!-- Project 5 -->
+    <div class="slide" style="background-image: url('project5.jpg');">
+      <div class="info-container">
+        <img src="project5.jpg" alt="Project 5" class="project-image">
+        <h2>Dungeon Idle Quest</h2>
+        <p>Manage heroes who delve into dungeons collecting loot in this idle RPG hybrid.</p>
+        <p><strong>Languages:</strong> JavaScript, WebGL</p>
+        <pre>// Dungeon crawler loop
+function sendHero() {
+  hero.status = 'exploring';
+  updateMap();
+}</pre>
+      </div>
+    </div>
+    <!-- Project 6 -->
+    <div class="slide" style="background-image: url('project6.jpg');">
+      <div class="info-container">
+        <img src="project6.jpg" alt="Project 6" class="project-image">
+        <h2>Incremental Research Lab</h2>
+        <p>Conduct research and unlock tech in a sci-fi themed incremental lab simulator.</p>
+        <p><strong>Languages:</strong> TypeScript, React</p>
+        <pre>// Research logic
+function runExperiment() {
+  researchPoints += getExperimentGain();
+  updateTechTree();
+}</pre>
+      </div>
+    </div>
   </div>
 
   <div class="nav-zone nav-left" id="navLeft">
@@ -162,23 +208,20 @@ setInterval(() => {
 
   <script>
     let currentSlide = 0;
-    const slideshow = document.getElementById('slideshow');
     const slides = document.querySelectorAll('.slide');
-    const navLeft = document.getElementById('navLeft');
-    const navRight = document.getElementById('navRight');
 
-    function updateSlide() {
-      slideshow.style.transform = `translateX(-${currentSlide * 100}vw)`;
+    function showSlide(newIndex) {
+      slides[currentSlide].classList.remove('active');
+      currentSlide = (newIndex + slides.length) % slides.length;
+      slides[currentSlide].classList.add('active');
     }
 
     function nextSlide() {
-      currentSlide = (currentSlide + 1) % slides.length;
-      updateSlide();
+      showSlide(currentSlide + 1);
     }
 
     function prevSlide() {
-      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-      updateSlide();
+      showSlide(currentSlide - 1);
     }
 
     document.addEventListener('keydown', (e) => {
@@ -198,8 +241,8 @@ setInterval(() => {
       const whiteGlowLeft = `rgba(255, 255, 255, ${leftIntensity * 0.3})`;
       const whiteGlowRight = `rgba(255, 255, 255, ${rightIntensity * 0.3})`;
 
-      navLeft.style.setProperty('background', `linear-gradient(to right, ${whiteGlowLeft}, transparent)`);
-      navRight.style.setProperty('background', `linear-gradient(to left, ${whiteGlowRight}, transparent)`);
+      document.getElementById('navLeft').style.setProperty('background', `linear-gradient(to right, ${whiteGlowLeft}, transparent)`);
+      document.getElementById('navRight').style.setProperty('background', `linear-gradient(to left, ${whiteGlowRight}, transparent)`);
     });
   </script>
 </body>
