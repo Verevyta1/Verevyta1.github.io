@@ -1,0 +1,12 @@
+{%- if site.ads.enabled and site.ads.provider == "adsense" and site.ads.adsense_publisher_id and include.slot -%}
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="{{ site.ads.adsense_publisher_id }}"
+       data-ad-slot="{{ include.slot }}"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>
+    window.requestAd = function(){ (adsbygoogle = window.adsbygoogle || []).push({}); };
+    if (window.adsEnabled) window.requestAd();
+  </script>
+{%- endif -%}

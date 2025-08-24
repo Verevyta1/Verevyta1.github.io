@@ -1,0 +1,59 @@
+title: Monetised Tech Blog
+description: Tutorials, reviews, and practical guides. Fast, clean, and monetised.
+url: "" # e.g. https://your-username.github.io
+baseurl: "" # e.g. /blog for project sites
+lang: en-GB
+timezone: Europe/London
+
+author:
+  name: Your Name
+  email: you@example.com
+  twitter: yourhandle
+
+theme: null
+
+# GitHub Pages–supported plugins
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-feed
+
+# Monetisation config
+ads:
+  enabled: false          # turn to true when ready
+  provider: adsense
+  adsense_publisher_id: ""   # e.g. ca-pub-1234567890
+  in_article_slot: ""        # AdSense slot id for in-article
+  display_slot_top: ""       # Optional top banner slot id
+  display_slot_sidebar: ""   # Optional sidebar rectangle slot id
+  auto_ads: true
+
+analytics:
+  ga4_measurement_id: ""     # e.g. G-XXXXXXX
+
+affiliate:
+  default_utm_source: blog
+  default_utm_medium: affiliate
+  default_rel: "nofollow sponsored"
+
+permalink: /:title/
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+
+defaults:
+  - scope: { path: "" , type: "posts" }
+    values:
+      layout: post
+
+exclude:
+  - README.md
+  - node_modules
+  - vendor
+  - .gitignore
+  - package.json
+  - package-lock.json
+
+github:
+  is_project_page: false

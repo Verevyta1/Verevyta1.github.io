@@ -1,0 +1,65 @@
+<div id="consent-banner" class="consent hidden" role="dialog" aria-live="polite">
+  <div class="consent-inner">
+    <p>We use cookies and similar tech for analytics and ads. Please accept to help us improve. You can change your choice any time.</p>
+    <div class="consent-actions">
+      <button id="consent-accept" class="btn">Accept</button>
+      <button id="consent-decline" class="btn btn-ghost">Decline</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var k = "consent";
+  var v = localStorage.getItem(k);
+  var banner = document.getElementById("consent-banner");
+  function setConsent(state){
+    localStorage.setItem(k, state);
+    window.adsEnabled = state === "granted";
+    if (window.adsEnabled) loadAdSense();
+    loadAnalytics();
+    banner.classList.add("hidden");
+  }
+  function show(){
+    banner.classList.remove("hidden");
+  }
+  function loadAnalytics(){
+    var gaId = "{{ site.analytics.ga4_measurement_id }}";
+    if (!gaId) return;
+    if (localStorage.getItem(k) !== "granted") return;
+    if (window.gaLoaded) return;
+    window.gaLoaded = true;
+    var s = document.createElement("script");
+    s.async = true;
+    s.src = "https://www.googletagmanager.com/gtag/js?id=" + gaId;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    window.gtag = gtag;
+    gtag('js', new Date());
+    gtag('config', gaId);
+  }
+  function loadAdSense(){
+    if (window.adsenseLoaded) return;
+    if ("{{ site.ads.enabled }}" != "true") return;
+    var client = "{{ site.ads.adsense_publisher_id }}";
+    if (!client) return;
+    window.adsenseLoaded = true;
+    var s = document.createElement("script");
+    s.async = true;
+    s.setAttribute("data-ad-client", client);
+    s.crossOrigin = "anonymous";
+    s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=" + client;
+    document.head.appendChild(s);
+    window.adsEnabled = true;
+  }
+  // Initial state
+  if (v === "granted") { window.adsEnabled = true; loadAdSense(); loadAnalytics(); }
+  else if (v === "denied") { window.adsEnabled = false; }
+  else { show(); }
+  // Buttons
+  var accept = document.getElementById("consent-accept");
+  var decline = document.getElementById("consent-decline");
+  if (accept) accept.addEventListener("click", function(){ setConsent("granted"); });
+  if (decline) decline.addEventListener("click", function(){ setConsent("denied"); });
+})();
+</script>

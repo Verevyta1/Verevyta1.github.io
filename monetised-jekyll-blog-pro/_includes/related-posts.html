@@ -1,0 +1,10 @@
+{%- assign related = site.posts | where_exp: "p", "p.url != page.url" -%}
+{%- if page.tags and page.tags.size > 0 -%}
+  {%- assign tag = page.tags[0] -%}
+  {%- assign related = site.tags[tag] | where_exp: "p", "p.url != page.url" -%}
+{%- endif -%}
+<ul class="related-list">
+{%- for post in related limit: 4 -%}
+  <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a></li>
+{%- endfor -%}
+</ul>

@@ -1,0 +1,16 @@
+{%- if site.ads.enabled and site.ads.provider == "adsense" and site.ads.adsense_publisher_id -%}
+  {%- if include.position == "in-article" and site.ads.in_article_slot -%}
+    <ins class="adsbygoogle"
+         style="display:block; text-align:center;"
+         data-ad-layout="in-article"
+         data-ad-format="fluid"
+         data-ad-client="{{ site.ads.adsense_publisher_id }}"
+         data-ad-slot="{{ site.ads.in_article_slot }}"></ins>
+    <script>
+      window.requestAd = function(){ (adsbygoogle = window.adsbygoogle || []).push({}); };
+      if (window.adsEnabled) window.requestAd();
+    </script>
+  {%- else -%}
+    <!-- Auto ads are controlled by the AdSense loader after consent -->
+  {%- endif -%}
+{%- endif -%}

@@ -1,0 +1,18 @@
+{%- assign rel_value = site.affiliate.default_rel | default: "nofollow sponsored" -%}
+{%- assign utm_source = site.affiliate.default_utm_source | default: "blog" -%}
+{%- assign utm_medium = site.affiliate.default_utm_medium | default: "affiliate" -%}
+{%- if include.url -%}
+  {%- if include.url contains "?" -%}
+    {%- assign sep = "&" -%}
+  {%- else -%}
+    {%- assign sep = "?" -%}
+  {%- endif -%}
+  {%- assign final_url = include.url | append: sep | append: "utm_source=" | append: utm_source | append: "&utm_medium=" | append: utm_medium -%}
+  <a class="affiliate-card" href="{{ final_url }}" target="_blank" rel="{{ rel_value }}">
+    <div class="affiliate-card__body">
+      <strong>{{ include.title | default: "Recommended" }}</strong>
+      {%- if include.subtitle -%}<div class="muted">{{ include.subtitle }}</div>{%- endif -%}
+    </div>
+    <div class="affiliate-card__badge">Ad</div>
+  </a>
+{%- endif -%}
