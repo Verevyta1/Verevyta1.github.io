@@ -1,14 +1,14 @@
 title: Monetised Tech Blog
 description: Tutorials, reviews, and practical guides. Fast, clean, and monetised.
-url: "" # e.g. https://your-username.github.io
-baseurl: "" # e.g. /blog for project sites
+url: "https://Verevyta1.github.io"
+baseurl: ""
 lang: en-GB
 timezone: Europe/London
 
 author:
-  name: Your Name
-  email: you@example.com
-  twitter: yourhandle
+  name: Verevyta
+  email: verevyta@gmail.com
+  twitter: Verevyta
 
 theme: null
 
