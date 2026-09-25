@@ -3,3 +3,8 @@ coverage
 playwright-report
 test-results
 package-lock.json
+docs/
+README.md
+CONTRIBUTING.md
+.github/ISSUE_TEMPLATE/
+.github/PULL_REQUEST_TEMPLATE.md
