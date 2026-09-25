@@ -1,332 +1,853 @@
 # Project Scale — Game Design & Development Plan
 
 > **Status:** Pre-production / living document  
-> **Target:** Web browser; CrazyGames is the first intended commercial portal  
-> **Implementation status:** Do not build the game yet. Resolve the open decisions in this document before production code begins.
+> **Target:** Web browser, with CrazyGames as the first intended commercial portal  
+> **Design direction:** Approved core concept; economy values remain subject to simulation and playtesting  
+> **Implementation note:** This document is the primary design source of truth. Where an older note or prototype conflicts with this document, this document wins unless a later ADR explicitly supersedes it.
 
 ---
 
 ## 1. Product vision
 
-Create an original idle/incremental growth game built around one instantly readable fantasy:
+Create an original 2D idle/incremental growth game built around one central fantasy:
 
-> Start microscopic, consume things small enough to absorb, grow through increasingly dramatic size bands, automate more of the process, then reset through rebirth to become permanently stronger and push farther on the next run.
+> The player controls a strange Matter Core that continuously absorbs increasingly large forms of matter. As it grows, the surrounding world appears to shrink and new scales of reality are revealed. When progress slows, the player can trigger a Matter Collapse, compressing the Core into a singularity and causing a new Big-Bang-like restart that permanently strengthens future runs.
 
-The active play should capture the satisfying *type* of progression found in consume-and-grow games: objects that initially block the player later become food. The long-term structure should use proven incremental-game ideas: exponential costs, multipliers, offline gains, automation, milestones, prestige currency, permanent upgrades and extremely large numbers.
+The game takes inspiration from the emotional appeal of consume-and-grow games and the long-term structure of incremental games, but it is not a movement-heavy clone of either. The primary experience is watching one impossible object become powerful enough to consume larger and larger layers of existence.
 
-The finished game must have original art, naming, object lists, progression structure, sounds, level layouts, interface, copy, balancing and presentation. Reference games are used only to understand mechanics and readability; no assets or distinctive trade dress should be copied.
+The finished game must use original art, naming, progression, effects, sounds, object sets, balancing, interface, upgrade structure and presentation.
 
-### Player promise
+### 1.1 Player promise
 
-- Immediate satisfaction from consuming visible objects.
-- Frequent “I can eat that now” unlock moments.
-- Clear physical and numerical growth.
-- Useful choices every few minutes early on.
-- Active play that remains meaningful even after automation appears.
-- Offline progress that respects the player's time.
-- Rebirths that immediately make later runs faster.
-- Long-term progression from microscopic matter to cities, planets, stars, galaxies, universes and later abstract cosmic scales.
+The player should repeatedly experience:
 
----
+- “That object is huge compared with me.”
+- “I can absorb it now.”
+- “Everything that used to look large now looks tiny.”
+- “The next scale is becoming visible.”
+- “My previous run hit a wall here; this run breaks through it easily.”
+- “My Matter Core is changing, not just the number beside it.”
+- “The game keeps revealing a bigger idea of what ‘large’ means.”
 
-## 2. Design pillars
+### 1.2 Genre positioning
 
-### 2.1 Visible growth is the primary reward
-The player entity must visibly grow as Mass rises. Camera behaviour, object scale and environment content should reinforce that growth rather than presenting only larger numbers.
+The game is primarily:
 
-### 2.2 “Too big” becomes “edible”
-Large objects serve as natural short-term goals. The player should repeatedly see something impossible, improve, then return and consume it.
+- idle/incremental;
+- 2D browser-first;
+- visually driven;
+- low-input but not zero-input;
+- designed around short active visits and long-term return progression;
+- easy to understand early, with complexity unlocked gradually.
 
-### 2.3 Active and idle systems support each other
-Active routing, targeting and timed abilities provide the best immediate progress. Automation/offline systems preserve momentum while away. Neither mode should invalidate the other.
+It is **not** intended to be:
 
-### 2.4 Scale changes are events
-Major scale bands should alter scenery, object families, camera zoom, audio ambience and reward pacing so progression feels like travelling through different worlds rather than changing a number label.
-
-### 2.5 Complexity unlocks gradually
-The opening minutes should expose only Mass, movement and a few upgrades. Rebirth, automation, offline upgrades, permanent trees and advanced currencies appear over time.
-
-### 2.6 Rebirth means acceleration
-The player gives up temporary run progress for permanent power. The next run should demonstrate the benefit almost immediately.
-
-### 2.7 Monetisation is optional acceleration
-The game must work fully when ads fail, are blocked, or the player declines them. Rewarded ads provide optional boosts and convenience rather than mandatory access.
+- a physics sandbox;
+- a large explorable map;
+- a WASD movement game;
+- a realistic scientific simulation;
+- a click-speed endurance game;
+- a game where progress depends on watching ads.
 
 ---
 
-## 3. Audience and session shape
+## 2. Core design pillars
 
-Target players:
+### 2.1 The Matter Core is always the star
 
-- casual browser players;
-- fans of idle/incremental/clicker/evolution games;
-- players who enjoy “eat to get bigger” loops;
-- players who alternate between short active sessions and returning to accumulated progress.
+The Matter Core is the principal visual object and should remain near the centre of the playfield. The rest of the world exists to communicate its changing power and scale.
 
-Target session behaviour:
+The player should not lose the Core in clutter, and the UI should never visually dominate it.
 
-| Session | Design goal |
-|---|---|
-| First session | 10–20 minutes, fast discovery, several upgrades, at least one dramatic unlock |
-| Normal active session | 5–15 minutes |
-| Idle return | claim progress, buy upgrades, push toward the next size band |
-| Long term | repeat rebirths and unlock new scale bands over days/weeks |
+### 2.2 Growth must be visible, not only numerical
 
-Exact timings require balance simulation and playtesting.
+Mass numbers can become enormous, but numerical growth alone is not enough. Progress should also change:
 
----
+- object sizes relative to the Core;
+- which object families appear;
+- parallax depth;
+- background scale;
+- Core animation/material/effects;
+- absorption speed and range;
+- density of matter streams;
+- sound and impact weight.
 
-## 4. Core loop
+### 2.3 “Impossible” becomes ordinary
 
-1. Move through a bounded or streamed play area.
-2. Identify objects below the current consumption threshold.
-3. Contact or pull eligible objects into the player.
-4. Gain Mass and potentially run currency.
-5. Increase visible size.
-6. Unlock larger object families.
-7. Purchase temporary run upgrades.
-8. Cross milestones and transition to a larger scale band.
-9. Reach diminishing progress / a soft wall.
-10. Rebirth for permanent meta-currency.
-11. Spend permanent currency.
-12. Restart with meaningful advantages and reach farther.
+Large objects should serve as visible future goals. The player sees objects that cannot yet be absorbed, then later watches them become common and trivial.
 
-### Active skill expression
+This contrast is one of the game’s strongest reward loops.
 
-The game should not be pure waiting. Active players can improve progress by:
+### 2.4 The world scales around the player
 
-- routing through dense clusters;
-- avoiding or navigating around objects still too large;
-- timing a Pulse/Vacuum Burst ability;
-- choosing upgrade order;
-- deciding when to change zones;
-- deciding when to rebirth.
+The Core should remain readable in screen space. As effective Mass increases, the scene visually zooms out and current objects become smaller, revealing larger objects and backgrounds.
 
----
+The player should feel as though the camera is retreating through larger and larger scales, even though the implementation uses discrete scale bands internally.
 
-## 5. Controls
+### 2.5 Active input accelerates idle progress
 
-### Desktop
+The player can actively pulse the Core and make meaningful upgrade choices, but optimal play must never require frantic clicking.
 
-- WASD / arrows: movement.
-- Space or left click: active Pulse/Vacuum Burst.
-- Escape: pause/settings.
-- Mouse position may influence facing/targeting if later useful.
+Automation should arrive early and grow in sophistication.
 
-### Mobile
+### 2.6 Matter Collapse should feel desirable
 
-- virtual joystick or drag-to-move;
-- large single action button for Pulse;
-- touch targets sized for casual play;
-- landscape is the likely primary layout, but the interface should remain safe on narrow screens.
+Progression walls should make a Matter Collapse strategically attractive rather than forcibly mandatory through arbitrary locking.
 
-Input handling should be abstracted so keyboard, pointer, touch and later gamepad support share the same gameplay commands.
+The player may technically continue waiting, but the economic curve should make resetting for permanent power the clearly more interesting choice.
+
+### 2.7 Complexity unlocks gradually
+
+The first minutes expose only the minimum concepts needed to enjoy growth. Later systems appear when the player has a reason to care about them.
+
+### 2.8 Ads are optional acceleration
+
+Advertising can speed progress or grant convenience rewards, but declining or failing an ad must never block progression.
 
 ---
 
-## 6. Mass, size and consumption
+## 3. Main screen and camera language
 
-### Mass
+### 3.1 Primary screen composition
 
-`Mass` is the main run progression quantity. Objects provide a Mass reward. Player capability is based on Mass rather than visual radius.
+The main screen is a large central playfield surrounded by lightweight UI.
 
-### Visual radius
-
-Use a softened power relationship so visible growth is satisfying without becoming impossible to render:
+Target composition:
 
 ```text
-visualRadius = baseRadius * (mass / baseMass) ^ growthExponent
+┌──────────────────────────────────────────────────────────────┐
+│ MASS                     MATTER                     SCALE     │
+│                                                              │
+│ [UPGRADES]                                           [GOAL]   │
+│                                                              │
+│             distant / aspirational objects                   │
+│                                                              │
+│                        ◉                                     │
+│                    MATTER CORE                               │
+│                                                              │
+│              nearby absorbable objects                       │
+│                                                              │
+│ [COLLAPSE]                                       [SETTINGS]  │
+│                                                              │
+├──────────── PULSE ───────── AUTO ───────── BOOST ─────────────┤
+└──────────────────────────────────────────────────────────────┘
 ```
 
-Initial test range for `growthExponent`: `0.25–0.34`.
+This is a structural guide, not final art.
 
-This is a balance parameter, not a final constant.
+The playfield should occupy most of the viewport. Permanent UI should be thin; larger panels open only when needed.
 
-### Object data
+### 3.2 Perspective
 
-Every consumable object should be data-driven and contain at least:
+Use a **2D layered shallow-perspective presentation**.
+
+The scene can imply depth through:
+
+- foreground layer;
+- primary gameplay layer;
+- distant/background layer;
+- slight vertical scale variation;
+- parallax motion;
+- depth-based blur/contrast where appropriate;
+- layered shadows and atmospheric particles.
+
+Do not use a true 3D world unless a later validated feature specifically requires it.
+
+### 3.3 Core screen-space behaviour
+
+The Matter Core usually remains in a controlled screen-size range. It may grow somewhat between milestones, but the camera/world scaling prevents it from filling the screen.
+
+A typical scale-up event should:
+
+1. slightly enlarge/pulse the Core;
+2. ease the surrounding objects outward and smaller;
+3. adjust background/parallax scale;
+4. reveal larger object families;
+5. stabilize over roughly 0.5–2 seconds depending on event importance.
+
+Continuous camera jitter must be avoided. Prefer smooth thresholded interpolation instead of reacting to every tiny Mass change.
+
+### 3.4 Why visual and economic scale are separate
+
+Economic values can reach extreme orders of magnitude, while rendering should continue using ordinary browser-friendly coordinates.
+
+Example:
+
+```text
+Economic state:
+requiredMass = 3.8e142
+
+Renderer state:
+x = 620
+y = 215
+visualScale = 1.4
+```
+
+Never represent astronomical distances directly in world coordinates.
+
+---
+
+## 4. The Matter Core
+
+### 4.1 Identity
+
+The player entity is provisionally named **Matter Core**.
+
+It is deliberately fictional and can evolve visually beyond realistic matter. This lets the same entity make sense from microscopic scale to reality-scale progression.
+
+### 4.2 Evolution language
+
+The Core should retain a recognizable central silhouette but gradually change character.
+
+Possible visual evolution:
+
+1. unstable mote;
+2. soft particle cluster;
+3. biological-looking nucleus;
+4. dense crystalline/plasma core;
+5. gravitational anomaly;
+6. star-like energy body;
+7. singularity-like cosmic object;
+8. abstract reality distortion.
+
+These stages do not need to map one-to-one with every scale band.
+
+### 4.3 Core animation
+
+Even while idle, the Core should feel alive:
+
+- slow breathing/pulsation;
+- subtle internal swirl;
+- orbiting dust/particles;
+- distortion or glow that changes with stage;
+- reaction pulse when Matter is gained;
+- stronger reaction on milestone unlocks.
+
+Avoid permanent high-intensity neon effects. Effects should communicate power while keeping the UI and scene readable.
+
+---
+
+## 5. Core gameplay loop
+
+The intended loop is:
+
+1. Matter objects appear or drift into the visible playfield.
+2. Eligible objects are pulled toward the Matter Core automatically or through active Pulse input.
+3. Absorption grants **Mass** and **Matter**.
+4. Mass increases physical progression and unlocks larger object families.
+5. Matter is spent on temporary run upgrades.
+6. Upgrades improve production and visibly alter absorption behaviour.
+7. Milestones reveal new visual scale and stronger systems.
+8. Exponential costs eventually create a soft progression wall.
+9. The player triggers **Matter Collapse**.
+10. The run resets and grants permanent **Genesis Energy**.
+11. Genesis Energy buys permanent Fundamental Laws.
+12. The next run reaches previous milestones faster and pushes farther.
+
+---
+
+## 6. Input and active play
+
+### 6.1 No normal character movement
+
+The Core is not controlled with WASD and does not navigate a large map.
+
+The scene moves around the Core instead.
+
+This supports:
+
+- simple idle play;
+- touch devices;
+- low cognitive load;
+- visual focus;
+- easier responsive UI;
+- better automation;
+- easier performance management.
+
+### 6.2 Gravity Pulse
+
+The primary active input is **Gravity Pulse**.
+
+Clicking/tapping the Core or activating the Pulse control sends out a short radial effect.
+
+Possible effects by progression stage:
+
+- pulls nearby edible objects inward;
+- briefly increases attraction strength;
+- accelerates objects already being pulled;
+- instantly absorbs trivial low-value matter;
+- later triggers chain absorption;
+- later temporarily enlarges effective influence radius.
+
+Pulse should use a cooldown, charge system or diminishing repeated input so excessive click speed does not dominate progress.
+
+### 6.3 Active versus idle balance
+
+Initial target philosophy:
+
+- idle play provides steady baseline progress;
+- attentive active play provides a noticeable but bounded acceleration;
+- good upgrade choices matter more than click speed;
+- active advantage can decrease as automation deepens, then reappear through strategic abilities rather than repetitive input.
+
+Exact active multipliers require simulation/playtesting.
+
+---
+
+## 7. Economy and currencies
+
+Keep currencies intentionally limited.
+
+### 7.1 Mass — physical progression
+
+**Mass** is the main non-spendable run progression quantity.
+
+Mass:
+
+- increases when objects are absorbed;
+- determines effective scale;
+- determines which objects can be consumed;
+- determines milestone/scale progression;
+- resets on Matter Collapse;
+- is never directly spent.
+
+This avoids the confusing behaviour where purchasing an upgrade makes the player physically smaller.
+
+### 7.2 Matter — spendable run currency
+
+**Matter** is the main temporary currency.
+
+Matter:
+
+- is gained from absorbed objects;
+- may receive production multipliers;
+- is spent on run upgrades;
+- resets on Matter Collapse;
+- should remain the main spendable currency for a long portion of the game.
+
+Object categories may use flavour language such as “cellular matter” or “stellar matter”, but these should not automatically become separate currencies.
+
+### 7.3 Genesis Energy — permanent Collapse currency
+
+**Genesis Energy** is gained when the player performs a Matter Collapse.
+
+Genesis Energy:
+
+- survives resets;
+- purchases permanent upgrades;
+- rewards reaching farther Mass thresholds;
+- may receive milestone bonuses;
+- should be scarce enough to create meaningful choices.
+
+If later testing finds the name too generic, it may change while preserving the same mechanic.
+
+### 7.4 Optional boost resource
+
+A fourth resource should only be introduced if it creates a distinct decision.
+
+If a boost token exists, it can be earned through gameplay as well as optional rewarded ads.
+
+Do not introduce multiple premium-looking resources simply to increase monetisation surfaces.
+
+---
+
+## 8. Absorption model
+
+### 8.1 Object eligibility
+
+Every object has an economic threshold.
+
+```text
+playerMass >= object.requiredMass
+→ object is absorbable
+
+playerMass < object.requiredMass
+→ object is aspirational/non-absorbable
+```
+
+A small tolerance or smooth transition may be used if strict thresholds feel visually frustrating.
+
+### 8.2 Object rewards
+
+Each object definition should include at least:
 
 ```text
 id
-category
+name
+family
+scaleBand
 requiredMass
 massReward
-visualScale
+matterReward
 spawnWeight
-collisionMode
+visualScale
 assetKey
-scaleBand
+absorptionProfile
+rarity
 ```
 
-### Eligibility
+### 8.3 Absorption animation
+
+Do not depend on general-purpose physics for ordinary absorption.
+
+Preferred animation sequence:
+
+1. object becomes targeted;
+2. attraction begins;
+3. object accelerates toward Core;
+4. optional curved/orbital path;
+5. object stretches or compresses subtly;
+6. scale reduces near the Core;
+7. impact/pulse/particle effect;
+8. reward is confirmed;
+9. object returns to pool or is replaced.
+
+This gives predictable, polished motion with lower runtime cost.
+
+### 8.4 Representative rendering
+
+Economic production and visible object count are separate.
+
+At very high production rates, the simulation may produce thousands or millions of equivalent absorption events per second while the renderer displays only enough representative events to make that production feel convincing.
+
+Do not attempt to render every economic event.
+
+---
+
+## 9. Scale bands
+
+The fantasy appears continuous, but content is internally divided into discrete scale bands.
+
+### 9.1 Initial scale roadmap
+
+| Band | Working name | Example content |
+|---|---|---|
+| 1 | Primordial | motes, dust, fragments, strange particles |
+| 2 | Cellular | microbes, cells, fibres, droplets |
+| 3 | Tiny | grains, crumbs, seeds, insects |
+| 4 | Familiar | stationery, food, tools, toys, furniture |
+| 5 | Human | people, bikes, bins, cars, trees |
+| 6 | Massive | houses, towers, blocks, bridges, mountains |
+| 7 | Planetary | asteroids, moons, planets, rings |
+| 8 | Stellar | gas giants, stars, solar systems, nebulae |
+| 9 | Galactic | clusters, galaxies, superstructures |
+| 10 | Cosmic | galaxy groups, large-scale structures |
+| 11 | Reality | universes, dimensional structures, timelines |
+| 12+ | Beyond | invented reality cores, voids, multiversal abstractions |
+
+These are gameplay scales, not scientific claims.
+
+### 9.2 Scale transition behaviour
+
+Near the top of a band:
+
+- next-band objects can begin appearing faintly in the distance;
+- current large objects become increasingly ordinary;
+- background changes foreshadow the next environment.
+
+At the threshold:
+
+1. pause major spawning for a short beat;
+2. pulse the Core;
+3. smoothly zoom the visual world out;
+4. shrink/fade obsolete objects;
+5. reveal/load next-band content;
+6. update ambience/audio;
+7. resume absorption.
+
+A scale transition is a major reward and should not be skipped casually.
+
+### 9.3 Offline scale discoveries
+
+Offline progress may numerically reach a new scale, but the visual reveal should wait until the player returns.
+
+Return example:
 
 ```text
-playerMass >= object.requiredMass  => edible
-playerMass < object.requiredMass   => obstacle / hazard / non-target
+WHILE YOU WERE AWAY
++4.21T Matter
++6.30B Mass
+
+NEW SCALE REACHED
+[ EXPAND ]
 ```
 
-Later testing may introduce a small tolerance around thresholds if strict comparisons feel frustrating.
-
-### Unlock feedback
-
-When a meaningful category becomes edible:
-
-- short outline/icon pulse;
-- small toast such as “Now edible: Bicycles”;
-- short sound cue;
-- no modal interruption for routine unlocks.
+The player then triggers the transition and sees the reveal.
 
 ---
 
-## 7. Scale-band roadmap
+## 10. Spawning and scene composition
 
-The experience should appear continuous while internally splitting content into manageable worlds/bands.
+### 10.1 Visible object mix
 
-| Band | Fantasy scale | Example object families |
-|---|---|---|
-| 1. Microscopic | sub-mm → mm | particles, microbes, cells, fibres |
-| 2. Tiny | mm → cm | crumbs, droplets, seeds, insects |
-| 3. Household | cm → m | stationery, food, toys, furniture |
-| 4. Street | m → tens of m | people, bins, bikes, cars, trees |
-| 5. City | tens of m → km | buses, houses, towers, blocks, bridges |
-| 6. Regional | km → hundreds km | districts, mountains, islands, storms |
-| 7. Planetary | planetary | asteroids, moons, planets, rings |
-| 8. Stellar | solar-system | gas giants, stars, systems |
-| 9. Galactic | interstellar | nebulae, clusters, galaxies |
-| 10. Universal | cosmic | galaxy groups, large-scale structures, universes |
-| 11+ | post-universal | dimensions, timelines, realities, multiversal abstractions |
+The scene should usually contain:
 
-These are gameplay scales, not a promise of scientific simulation.
+- many objects comfortably below the threshold;
+- several objects near the threshold;
+- a few aspirational objects above the threshold;
+- background hints of the next scale.
 
-### Zone transitions
+The exact proportions can be dynamic.
 
-A transition is a natural place to:
+### 10.2 Spawn illusion
 
-- save;
-- summarize progress;
-- present upgrade choices;
-- unload/load asset bundles;
-- request an optional midgame ad only at a natural break and only when platform policy allows it.
+Objects can enter through:
 
----
+- slow drifting paths;
+- parallax movement;
+- orbital arcs;
+- background-to-foreground scaling;
+- material streams;
+- cluster spawning;
+- special milestone events.
 
-## 8. Active and idle systems
+The scene should feel alive without requiring a navigable world.
 
-### Active movement/collection
-The player directly moves through the world and consumes objects.
+### 10.3 Object pooling
 
-### Passive suction
-An upgradeable radius pulls currently edible objects toward the player.
+Repeated objects should be pooled and reused. Avoid continuous allocation/destruction during high production.
 
-Important variables:
+### 10.4 Obsolete objects
 
-- suction radius;
-- pull force/speed;
-- target capacity;
-- maximum object size ratio;
-- falloff curve.
+When objects become economically irrelevant:
 
-### Pulse / Vacuum Burst
-A cooldown ability that temporarily increases collection power. Candidate effects:
-
-- larger suction radius;
-- stronger pull speed;
-- instant collection of nearby trivial objects;
-- later permanent upgrade allowing borderline-size objects to count as edible briefly.
-
-The ability should create an active-play advantage without making normal movement irrelevant.
-
-### Auto-collector
-Unlock after early progression or the first rebirth. It should select nearby valid targets and produce progress while the player is not actively moving.
-
-### Offline progress
-Do not simulate collisions while offline. Store enough state to approximate production safely.
-
-Proposed first version:
-
-- base offline efficiency: 20–30% of recent stable production;
-- starting cap: about 4 hours;
-- permanent upgrades can raise efficiency and the cap toward 12–24 hours;
-- show a compact return summary;
-- cap pathological time jumps and validate timestamps.
-
-Exact numbers are placeholders until simulations exist.
+- reduce their visual spawn frequency;
+- aggregate them into streams/particles;
+- preserve occasional appearance for scale contrast;
+- remove them from expensive interaction checks.
 
 ---
 
-## 9. Economy and currencies
+## 11. Run upgrades
 
-Keep the first hour intentionally simple.
+Run upgrades reset on Matter Collapse unless a permanent effect says otherwise.
 
-### 9.1 Mass — run progression
+### 11.1 Core upgrade families
 
-- gained primarily by consuming objects;
-- determines size and edible thresholds;
-- resets on rebirth.
+Initial families:
 
-### 9.2 Matter — proposed run upgrade currency
+1. **Density** — increases Matter/Mass reward from absorption.
+2. **Gravity** — increases attraction/absorption speed.
+3. **Influence** — increases effective attraction radius.
+4. **Assimilation** — increases passive targeting/absorption throughput.
+5. **Compression** — strengthens Gravity Pulse.
+6. **Pulse Recovery** — reduces Pulse downtime or increases charges.
+7. **Autonomy** — improves unattended/idle collection.
 
-A separate run currency may be useful so buying upgrades does not visually shrink the player by spending Mass.
+Not every category must be available immediately.
 
-Possible sources:
+### 11.2 Upgrade cost model
 
-- objects;
-- milestones;
-- conversion from a portion of Mass;
-- zone completions.
+Typical first model:
 
-**Open decision:** prototype both “Mass buys upgrades” and “Matter buys upgrades” in the headless simulator before locking the economy.
+```text
+cost(level) = baseCost × growthRate^level
+```
 
-### 9.3 Cores — rebirth currency
+Later upgrades may use stepped or super-exponential costs when needed to create prestige walls.
 
-Permanent currency earned on reset. Intended uses:
+### 11.3 Upgrade visual feedback
 
-- permanent Mass gain multiplier;
-- starting Mass;
-- movement baseline;
-- suction radius/strength baseline;
-- offline efficiency/cap;
-- starting run-upgrade levels;
-- milestone bonuses;
-- auto-collection improvements.
+Important upgrade categories should alter the visible scene.
 
-### 9.4 Boost Tokens — optional convenience currency
+Examples:
 
-Potential sources:
+- Gravity: objects visibly accelerate faster;
+- Influence: attraction field grows;
+- Assimilation: more simultaneous objects are captured;
+- Compression: Pulse becomes visually stronger;
+- Density milestones: Core material/effects evolve.
 
+### 11.4 Milestone levels
+
+Infinite or high-level upgrades should contain milestone breakpoints.
+
+Examples:
+
+```text
+Gravity 10
+→ Orbital Capture
+Nearby matter can enter stable orbit before absorption.
+
+Assimilation 25
+→ Chain Absorption
+Absorbing one target pulls nearby eligible matter inward.
+
+Density 50
+→ Critical State
+Matter gain ×10 and the Core gains a new visual form.
+```
+
+Milestones create anticipation beyond percentage increases.
+
+### 11.5 Bulk purchasing
+
+Unlock progressively:
+
+- Buy 1;
+- Buy 10;
+- Buy 25;
+- Buy Max;
+- later, configurable auto-buy.
+
+Auto-buy should not appear before the player understands the upgrades it automates.
+
+---
+
+## 12. Milestones and unlocks
+
+Milestones should be meaningful and relatively sparse.
+
+Possible milestone categories:
+
+- Mass threshold;
+- first absorption of an object family;
+- first scale transition;
+- first Matter Collapse;
+- upgrade level breakpoint;
+- lifetime Collapse count;
+- highest scale reached;
+- Genesis Energy lifetime total.
+
+Milestone rewards can unlock:
+
+- new upgrade categories;
+- stronger Pulse behaviour;
+- automation;
+- Core forms;
+- offline improvements;
+- Fundamental Law tiers;
+- new scale bands.
+
+Avoid turning the game into a checklist of dozens of trivial notifications.
+
+---
+
+## 13. Matter Collapse — prestige layer
+
+### 13.1 Theme
+
+The first prestige system is officially themed as **Matter Collapse**.
+
+The Matter Core becomes too massive/unstable to continue normal growth, compresses into a singular state, and creates a new universe-like run through an explosive restart.
+
+### 13.2 Player-facing flow
+
+A Collapse sequence should roughly be:
+
+1. player opens Collapse panel;
+2. panel shows current permanent reward and next reward breakpoint;
+3. player confirms;
+4. nearby visible matter accelerates into the Core;
+5. Core shakes/compresses;
+6. playfield darkens;
+7. Core collapses to a tiny singular point;
+8. short dramatic pause;
+9. explosive shockwave / Big-Bang-like event;
+10. new run initializes;
+11. permanent bonuses become immediately noticeable.
+
+This should become one of the game’s signature visual sequences.
+
+### 13.3 What resets
+
+Matter Collapse normally resets:
+
+- current Mass;
+- current Matter;
+- temporary run upgrades;
+- current scale-band progress;
+- temporary run boosts;
+- most per-run automation levels.
+
+### 13.4 What persists
+
+Matter Collapse preserves:
+
+- Genesis Energy;
+- Fundamental Law purchases;
+- discovered-object catalogue;
 - achievements;
-- milestones;
-- return rewards;
-- rewarded ads.
+- lifetime statistics;
+- settings;
+- permanent unlocks;
+- platform/ad state that should legally/technically persist.
 
-If Boost Tokens buy meaningful progression, they must also be earnable without advertising.
+### 13.5 Collapse reward shape
 
-Candidate uses:
+Initial conceptual formula:
 
-- timed x2 Mass gain;
-- limited instant offline-progress claim;
-- temporary Pulse cooldown reduction;
-- temporary auto-collector speed boost.
+```text
+GenesisEnergy = floor(
+  (peakMass / collapseThreshold)^prestigeExponent
+  × milestoneModifier
+)
+```
 
-Do not add a currency unless it creates a distinct decision.
+The exact formula is **not locked** until balance simulation exists.
+
+### 13.6 Soft walls
+
+Do not block the next stage with a literal message saying Collapse is mandatory unless a narrative unlock truly requires it.
+
+Instead, use economic walls:
+
+- the next meaningful upgrade becomes extremely expensive;
+- production growth slows visibly;
+- Collapse reward becomes attractive;
+- permanent multipliers make the next attempt much faster.
+
+The player should conclude “I should Collapse now” rather than “the game refuses to let me continue.”
+
+### 13.7 Immediate proof of value
+
+A new run must demonstrate permanent power quickly.
+
+Targets to validate later:
+
+- first post-Collapse minute reaches several previous milestones rapidly;
+- early upgrades can often be bought in batches;
+- attraction/absorption visibly feels stronger;
+- the player reaches the previous wall in a fraction of the time.
 
 ---
 
-## 10. Large-number system
+## 14. Fundamental Laws — permanent upgrade system
 
-The design must support numbers far beyond JavaScript's normal comfortable range.
+Genesis Energy is spent on permanent effects themed as changes to the laws of the new universe.
 
-Requirements:
+Working category name: **Fundamental Laws**.
 
-- use a battle-tested arbitrary-large incremental number library behind a project-owned wrapper;
-- gameplay systems depend on the wrapper, not directly on the library;
-- comparisons, addition, multiplication, powers, logs and serialization must be deterministic;
-- formatting is separate from numeric state;
-- tests cover boundary and serialization behaviour.
+Candidate permanent upgrades:
 
-### Formatting progression
+- **Conservation Distortion** — universal Matter multiplier;
+- **Primordial Density** — higher starting Mass;
+- **Strong Gravity** — stronger attraction baseline;
+- **Expanded Influence** — larger starting field;
+- **Rapid Formation** — early upgrade cost reduction / free levels;
+- **Persistent Motion** — stronger idle production;
+- **Temporal Reservoir** — longer offline cap;
+- **Residual Memory** — retain selected run upgrades or milestones;
+- **Genesis Echo** — reward multiplier for later Collapses;
+- **Scale Familiarity** — reduce friction in completed scale bands.
 
-Early values should be familiar:
+Exact names can change as the art/lore identity matures.
+
+### 14.1 Permanent choice quality
+
+The tree should avoid a single obvious mandatory path.
+
+A player might prioritize:
+
+- raw production;
+- faster starting progression;
+- idle strength;
+- active Pulse strength;
+- Collapse reward scaling;
+- convenience/automation.
+
+The optimal path can shift by progression stage.
+
+---
+
+## 15. First-Collapse pacing
+
+The exact timing remains a balance target rather than a fixed promise.
+
+Initial design intent:
+
+- first meaningful choices appear within the first few minutes;
+- automation begins before the first Collapse;
+- first major scale transition occurs early enough to prove the central visual fantasy;
+- first Collapse should happen within a normal first-session window rather than requiring hours of passive waiting.
+
+Proposed simulation target range for first Collapse: **15–35 minutes** for a new active player.
+
+This range must be validated with a headless simulator and browser playtests before being locked.
+
+Subsequent early Collapses should become faster until deeper scale walls become the new focus.
+
+---
+
+## 16. Idle and offline progression
+
+### 16.1 Live idle production
+
+The game continues to absorb matter automatically while open.
+
+The amount of visible activity is decoupled from economic throughput.
+
+### 16.2 Offline progress
+
+Do not simulate per-object movement while offline.
+
+Store stable production state and calculate an aggregate reward.
+
+Initial placeholder targets:
+
+- starting offline efficiency: 20–30%;
+- starting cap: ~4 hours;
+- permanent upgrades can increase efficiency/cap;
+- later cap may reach 12–24 hours.
+
+These values require tuning.
+
+### 16.3 Offline safety
+
+Offline calculations must:
+
+- clamp negative time;
+- cap implausible elapsed durations;
+- avoid iterating one second at a time;
+- survive browser clock changes;
+- remain testable deterministically;
+- never corrupt saves when timestamps are invalid.
+
+### 16.4 Return summary
+
+Show a compact return panel with:
+
+- time away;
+- Mass gained;
+- Matter gained;
+- milestones reached;
+- pending scale transition if any;
+- optional rewarded-ad enhanced claim where platform policy permits.
+
+The normal claim must always remain available.
+
+---
+
+## 17. Large-number system
+
+The game is designed to reach absurd values beyond ordinary floating-point readability.
+
+### 17.1 Library direction
+
+Use **break_eternity.js** or another validated large-number library behind a project-owned numeric abstraction.
+
+The rest of the game must not depend directly on third-party numeric APIs.
+
+Working wrapper concept:
+
+```text
+GameNumber
+```
+
+Required operations include:
+
+- construction/parsing;
+- compare;
+- add/subtract;
+- multiply/divide;
+- powers/logarithms;
+- min/max/clamp where supported;
+- deterministic serialization;
+- display formatting helpers outside the core numeric state.
+
+### 17.2 Number formatting
+
+Early game:
 
 ```text
 999
@@ -335,332 +856,401 @@ Early values should be familiar:
 3.40B
 ```
 
-At extreme values, switch to scientific notation or another documented format:
+Later:
 
 ```text
 1.23e45
-7.8e1,250
+7.81e620
 ```
 
-Do not make the display notation itself part of the saved economic state.
+Extreme notation may evolve later, but display formatting must remain separate from economic state.
 
----
+### 17.3 Test requirements
 
-## 11. Run upgrades
+Tests must cover:
 
-Run upgrades reset on rebirth unless a permanent upgrade says otherwise.
-
-Initial categories:
-
-1. **Absorption** — Mass gained per consumed object.
-2. **Movement** — travel speed / acceleration.
-3. **Suction Radius** — pull area.
-4. **Suction Strength** — pull speed.
-5. **Pulse Power** — burst effectiveness.
-6. **Pulse Recharge** — cooldown reduction.
-7. **Matter Yield** — if Matter is retained.
-8. **Auto Collector** — passive collection frequency/capacity.
-
-Typical exponential cost model:
-
-```text
-cost(level) = baseCost * growthRate ^ level
-```
-
-Production upgrades must be checked against target time-to-milestone curves rather than tuned independently.
-
-### Upgrade UX
-
-Each card shows:
-
-- name;
-- current level;
-- concise effect;
-- next-level effect;
-- cost;
-- buy button;
-- optional buy x1 / x10 / max mode later.
-
-Unavailable upgrades should clearly explain their unlock condition.
-
----
-
-## 12. Milestones
-
-Milestones break long exponential stretches into visible goals.
-
-Examples:
-
-- reach a Mass threshold;
-- consume first object in a category;
-- complete a scale band;
-- first rebirth;
-- rebirth with a target Core reward;
-- reach a new permanent-upgrade tier.
-
-Milestone rewards can include:
-
-- temporary multiplier;
-- Cores/Boost Tokens;
-- unlocking automation;
-- unlocking an upgrade category;
-- increasing offline cap;
-- opening a new scale band.
-
-Milestones should create anticipation but not become a dense checklist that distracts from play.
-
----
-
-## 13. Rebirth / prestige system
-
-Working terminology is **Rebirth** until a more thematic term is approved.
-
-### Reset behaviour
-
-A rebirth should reset:
-
-- Mass;
-- run currency;
-- temporary run upgrades;
-- current zone progress;
-- temporary boosts where appropriate.
-
-It should preserve:
-
-- Cores;
-- permanent upgrade purchases;
-- achievements and discovered-object catalogue;
-- settings;
-- monetisation reward state that should survive reset;
-- lifetime statistics.
-
-### Reward model
-
-Use a soft power/log-style formula so reward rises rapidly at first and then requires meaningful deeper runs.
-
-Example shape only:
-
-```text
-cores = floor((runPeakMass / rebirthThreshold) ^ prestigeExponent * milestoneMultiplier)
-```
-
-The exact formula must be tuned by simulation.
-
-### Rebirth UX
-
-Before confirming, show:
-
-- what resets;
-- what remains;
-- Cores earned now;
-- next meaningful reward breakpoint;
-- a clear cancel option.
-
-After rebirth, the opening minute should be observably faster.
-
----
-
-## 14. Permanent upgrades
-
-Candidate permanent nodes/categories:
-
-- universal Mass multiplier;
-- starting Mass;
-- starting Matter;
-- movement baseline;
-- suction baseline;
-- Pulse baseline;
-- offline efficiency;
-- offline duration cap;
-- auto-collector unlock/strength;
-- first N run-upgrade levels free;
-- milestone reward multiplier;
-- reduced early-zone friction;
-- additional object-value multiplier per completed scale band.
-
-Permanent upgrades should create multiple viable priorities instead of one compulsory linear path. Costs can rise sharply because they persist forever.
-
----
-
-## 15. Later prestige layers
-
-Do **not** put multiple prestige systems into the MVP.
-
-The numeric/serialization architecture should permit a future second layer, possibly tied to cosmic progression, that resets Rebirth progress for a more powerful permanent resource. This should only be added after the first prestige layer has meaningful depth.
-
----
-
-## 16. World/content model
-
-World content must be data-driven.
-
-Each scale band defines:
-
-- object catalogue;
-- required Mass ranges;
-- spawn tables/densities;
-- obstacle rules;
-- background/tiles/environment;
-- music/ambience;
-- camera limits;
-- milestone thresholds;
-- transition conditions.
-
-### Spawn philosophy
-
-The map should contain a mixture of:
-
-- plentiful safe objects below current size;
-- some objects close to current threshold;
-- a visible set of aspirational objects that are currently too large.
-
-As the player grows, stale tiny objects should be cleaned up or aggregated to avoid performance waste.
-
-### Pooling
-
-Repeated world objects should use pooling/reuse rather than excessive allocation/destruction.
-
----
-
-## 17. Camera and perspective
-
-Recommended prototype direction: top-down or shallow 2.5D/isometric presentation. The core loop must be proven before committing to a heavy 3D city simulation.
-
-Camera goals:
-
-- keep the player readable;
-- zoom gradually with size;
-- avoid motion sickness or constant zoom jitter;
-- maintain useful target density;
-- make transitions between scale bands dramatic.
+- boundary comparisons;
+- serialization round-trips;
+- multiplier chains;
+- exponent operations;
+- affordability checks;
+- invalid/NaN-like input handling;
+- save migration of numeric values.
 
 ---
 
 ## 18. UI/UX direction
 
-The interface should be light, simple and highly readable.
+### 18.1 Visual style
 
-### Visual rules
+Use:
 
-- opaque solid-colour surfaces;
+- solid opaque surfaces;
 - simple rounded corners;
-- restrained borders/shadows;
-- clear typography and iconography;
-- limited accent colours with semantic use;
-- no yellow/orange global colour filter;
-- no excessive neon;
-- avoid glassmorphism/translucent HUD as the main style;
-- avoid visual resemblance to the supplied reference games.
+- restrained shadows;
+- clear readable type;
+- semantic accent colours;
+- uncluttered spacing;
+- original iconography.
 
-### Main HUD
+Avoid:
 
-Candidate elements:
+- yellow/orange global filtering;
+- excessive neon;
+- glassmorphism as the primary UI style;
+- heavy transparency;
+- cluttered permanent sidebars;
+- direct visual imitation of reference games.
 
-- current Mass/size;
-- Mass progress toward the next meaningful unlock;
-- run currency;
-- Pulse button/cooldown;
-- shortcut to upgrades;
-- current scale band;
-- optional small objective text.
+### 18.2 Main HUD
 
-Avoid covering the playfield with panels.
+Keep permanently visible information minimal:
 
-### Upgrade screen
+- Mass;
+- Matter;
+- current scale;
+- Pulse readiness;
+- upgrade shortcut;
+- Collapse shortcut when unlocked;
+- small current objective/next milestone.
 
-Use clean cards in a responsive grid/list. It should work at common desktop browser sizes and touch widths.
+### 18.3 Panels
 
-### Feedback hierarchy
+Large systems should open as responsive overlays/drawers/panels rather than permanently shrinking the playfield.
 
-Use stronger feedback only for meaningful events:
+Primary panels:
 
-- consume: small animation/sound;
-- category unlock: medium toast + sound;
-- size band transition: significant presentation;
-- rebirth: major transition.
+- Upgrades;
+- Matter Collapse;
+- Fundamental Laws;
+- Object Catalogue;
+- Achievements;
+- Settings;
+- Statistics.
+
+### 18.4 UI technology
+
+Use normal HTML/CSS for most interface elements, positioned around/over a Phaser canvas.
+
+Benefits:
+
+- responsive layout;
+- accessibility;
+- text rendering;
+- easier forms/settings;
+- easier automated UI testing;
+- separation between gameplay rendering and interface.
+
+### 18.5 Responsive target
+
+Design desktop-first but support touch and smaller landscape browser sizes.
+
+A key test size is around **907 × 510**, along with common laptop and mobile-landscape sizes.
+
+Portrait support is not a launch requirement unless later testing justifies it; menus should still fail gracefully rather than break.
 
 ---
 
-## 19. Accessibility
+## 19. Animation and feel
 
-Minimum goals:
+Because the mechanical input is intentionally simple, polish is a major part of the product value.
 
-- UI remains understandable without relying on colour alone;
-- keyboard navigation for menus where practical;
-- remappable/multiple movement keys where possible;
-- reduced-motion option for large camera/particle effects;
-- master/music/SFX volume controls;
-- readable contrast and scalable text;
-- no critical information conveyed only by rapid animation.
+### 19.1 Absorb
+
+Small event:
+
+- curved pull;
+- short squash/stretch;
+- inward acceleration;
+- tiny impact flash;
+- subtle Core response.
+
+### 19.2 New edible category
+
+Medium event:
+
+- short highlight on newly eligible objects;
+- small text toast;
+- sound cue;
+- no blocking modal.
+
+### 19.3 Mass milestone
+
+Medium event:
+
+- Core expansion pulse;
+- field ripple;
+- slight camera/world easing;
+- optional new particle layer.
+
+### 19.4 Scale transition
+
+Large event:
+
+- eased zoom-out illusion;
+- world replacement;
+- stronger sound transition;
+- new ambience/background;
+- meaningful reveal of new aspirational targets.
+
+### 19.5 Matter Collapse
+
+Major event:
+
+- staged compression;
+- gravitational intake;
+- darkening;
+- singularity pause;
+- explosive restart;
+- new-run visual payoff.
+
+### 19.6 Reduced motion
+
+A reduced-motion option should shorten/replace:
+
+- large zooms;
+- strong screen shakes;
+- heavy parallax;
+- long Collapse animation;
+- flashing particles.
+
+Gameplay timing must remain correct regardless of motion setting.
 
 ---
 
 ## 20. Audio direction
 
-Audio should reinforce scale:
+Audio should scale with the fantasy.
 
-- tiny soft consumption ticks at microscopic level;
-- progressively heavier impact/absorption sounds;
-- stronger transition cues for object-category and world unlocks;
-- distinct Pulse ability cue;
-- low-frequency cosmic ambience in late bands.
+Early:
 
-Avoid audio spam when hundreds of trivial objects are collected; batch/throttle repeated sounds.
+- soft ticks;
+- granular particles;
+- light pulses.
+
+Mid:
+
+- stronger whooshes;
+- heavier absorption impacts;
+- low-end layer on milestones.
+
+Late:
+
+- deep gravitational tones;
+- cosmic ambience;
+- large-scale transition cues.
+
+Do not play a sound for every simulated economic event. Aggregate/throttle repeated absorption audio.
 
 ---
 
-## 21. Monetisation plan
+## 21. Technical framework
 
-### Principle
+Approved high-level stack:
 
-Ads should increase optional speed, never determine whether the core game can continue.
+- **TypeScript** — application/game language;
+- **Vite** — development/build tooling;
+- **Phaser 4** — 2D visual renderer/game-loop layer;
+- **HTML/CSS DOM UI** — interface panels and HUD where practical;
+- **Vitest** — deterministic unit/integration tests;
+- **Playwright** — browser/E2E tests;
+- **break_eternity.js** behind a project-owned wrapper — extreme number support.
 
-### Rewarded ads
+Dependency versions should be pinned through the lockfile and updated intentionally rather than automatically drifting.
 
-Candidate rewards:
+### 21.1 Phaser responsibilities
 
-- temporary x2 Mass/Matter gain;
-- temporary auto-collector boost;
-- bonus Boost Tokens;
-- limited enhanced offline claim;
-- optional post-run reward multiplier.
+Phaser owns:
 
-Rules:
+- Matter Core rendering;
+- object rendering;
+- tweens;
+- particles;
+- parallax;
+- scale transitions;
+- visual effects;
+- pointer/touch game input;
+- scene lifecycle.
 
-- reward only after a confirmed completed rewarded-ad event;
-- unavailable/cancelled ads return the player to the game without penalty;
-- every meaningful ad-derived currency has a non-ad earning route;
-- do not pressure the player after every interaction.
+Phaser does **not** own authoritative economic formulas.
 
-### Midgame/interstitial ads
+### 21.2 DOM UI responsibilities
 
-If used, request only at natural breaks and according to the portal's current policy/SDK rules. Never interrupt active movement unexpectedly. Gameplay/audio must pause appropriately while the ad is active.
+HTML/CSS owns most:
 
-### Platform adapter
+- currency labels;
+- upgrade menus;
+- Collapse panel;
+- Fundamental Law tree;
+- settings;
+- tooltips;
+- accessibility-friendly controls;
+- modal/confirmation UI.
 
-CrazyGames-specific calls must sit behind a project-owned platform interface so local development and another web portal can use mock/alternate implementations.
+### 21.3 Deterministic simulation responsibilities
 
-Potential interface responsibilities:
+The core TypeScript simulation owns:
+
+- Mass;
+- Matter;
+- production rates;
+- affordability;
+- upgrade effects;
+- milestone rules;
+- Matter Collapse reward;
+- permanent bonuses;
+- offline progress;
+- save transforms.
+
+The simulation must be runnable with **no renderer**.
+
+---
+
+## 22. Proposed code architecture
 
 ```text
-init platform
-request rewarded ad
-request midgame ad
-signal gameplay start/stop
-load/save cloud data
-read user/account information when allowed
-submit optional analytics events
+src/
+  app/
+    bootstrap/
+    lifecycle/
+
+  core/
+    numbers/
+    economy/
+    upgrades/
+    progression/
+    collapse/
+    milestones/
+    offline/
+    save/
+    simulation/
+
+  game/
+    scenes/
+    core-visual/
+    objects/
+    spawning/
+    absorption/
+    camera/
+    effects/
+    audio/
+    input/
+
+  ui/
+    hud/
+    panels/
+    components/
+    formatters/
+
+  platform/
+    platform-api.ts
+    local-platform.ts
+    crazygames-platform.ts
+
+  data/
+    objects/
+    scale-bands/
+    upgrades/
+    milestones/
+    fundamental-laws/
+
+  assets/
+    sprites/
+    audio/
+    fonts/
+
+  tests/
+    unit/
+    integration/
+    e2e/
+
+scripts/
+  balance/
+  validate-data/
 ```
 
-The game must remain playable with the mock/no-ad adapter.
+Exact folder names can evolve, but dependency direction should remain controlled.
+
+### 22.1 Dependency rule
+
+Preferred direction:
+
+```text
+core simulation
+    ↑
+application services
+    ↑
+renderer / UI / platform adapters
+```
+
+The core layer must not import Phaser, DOM globals, CrazyGames APIs or visual assets.
 
 ---
 
-## 22. Save architecture
+## 23. State flow
 
-Save data must be explicit and versioned from the first implementation.
+Conceptual runtime flow:
 
-Example top-level shape:
+```text
+Input / timer
+    ↓
+Application command
+    ↓
+Core simulation updates authoritative state
+    ↓
+State snapshot/events
+   ↙            ↘
+Phaser view      DOM UI
+```
+
+Visual effects respond to state/events. They do not decide rewards.
+
+Example:
+
+```text
+Core says:
+Absorption completed → +250 Matter, +10 Mass
+
+Renderer says:
+Play spiral animation and particle burst
+```
+
+If the animation is skipped, slowed or reduced for accessibility, the economy remains correct.
+
+---
+
+## 24. Data-driven content
+
+Do not hard-code hundreds of objects into scene classes.
+
+Scale bands, objects, upgrades and milestones should be data-driven and validated at build/test time.
+
+Example object data:
+
+```ts
+{
+  id: 'tiny_seed_01',
+  name: 'Seed',
+  family: 'organic-small',
+  scaleBand: 'tiny',
+  requiredMass: '1.5e4',
+  massReward: '100',
+  matterReward: '220',
+  spawnWeight: 1.2,
+  assetKey: 'seed-01',
+  absorptionProfile: 'light'
+}
+```
+
+Economic numbers may be stored as strings to preserve exact parsing into `GameNumber`.
+
+---
+
+## 25. Save architecture
+
+Save data is explicit and versioned from the first playable build.
+
+Example shape:
 
 ```text
 saveVersion
@@ -668,435 +1258,443 @@ createdAt
 lastSavedAt
 currentRun
 permanentProgress
-settings
+unlocks
+catalogue
 achievements
+settings
 statistics
 platformState
 ```
 
-### Requirements
+### 25.1 Save rules
 
-- migration functions between save versions;
-- automatic backup of the previous local save before destructive migration where possible;
-- validate loaded data instead of trusting it;
-- never save renderer/runtime objects directly;
-- throttle saves rather than writing every frame;
-- save at milestones, purchases, rebirths, settings changes and page lifecycle events.
+- never serialize renderer objects;
+- validate loaded data;
+- provide migrations between versions;
+- preserve a local fallback where platform APIs permit;
+- throttle writes;
+- save after important transactions;
+- save before/after Matter Collapse carefully;
+- test migration paths.
 
-The platform cloud/data module should be wrapped behind the same save repository abstraction used by local storage.
+### 25.2 Save repository abstraction
 
----
+Use one interface for persistence with implementations such as:
 
-## 23. Offline progress safety
+- browser local storage;
+- CrazyGames data/cloud layer;
+- test in-memory repository.
 
-Offline calculations are a common source of exploits and bugs.
-
-Requirements:
-
-- cap maximum claim duration;
-- clamp negative/invalid elapsed time;
-- avoid iterating per second while offline;
-- derive production from stable state/snapshots;
-- record enough information to explain an offline reward in tests;
-- tolerate browser clock changes rather than corrupting progression.
-
-For a client-only browser game, perfect anti-cheat is not the goal. Protect progression from accidental corruption and obvious trivial exploits while keeping the architecture simple.
+Game logic should not know which storage provider is active.
 
 ---
 
-## 24. Proposed technical architecture
+## 26. CrazyGames / platform integration
 
-**Proposed only until recorded as accepted in `DECISIONS.md`.**
+All portal-specific behaviour must sit behind a project-owned platform adapter.
 
-Candidate stack:
-
-- TypeScript;
-- Vite;
-- Phaser;
-- Vitest;
-- Playwright;
-- a large-number library such as break_infinity.js, wrapped by project code.
-
-### Architectural boundaries
-
-Keep deterministic game rules separate from rendering.
-
-Suggested future structure:
+Possible interface responsibilities:
 
 ```text
-src/
-  app/
-  core/
-    economy/
-    progression/
-    prestige/
-    upgrades/
-    numbers/
-    save/
-  game/
-    scenes/
-    entities/
-    systems/
-    world/
-    input/
-  ui/
-    components/
-    screens/
-    hud/
-  platform/
-    platform-api.ts
-    local-platform.ts
-    crazygames-platform.ts
-  data/
-    objects/
-    upgrades/
-    worlds/
-  assets/
-  tests/
+initialize
+signalGameplayStart
+signalGameplayStop
+requestRewardedAd
+requestMidgameAd
+loadSave
+saveData
+readUserWhenAvailable
+submitOptionalEvent
 ```
 
-The exact layout may evolve, but these boundaries should remain clear.
+### 26.1 Rewarded ads
 
-### Core rule
+Candidate rewards:
 
-`core/` must not import Phaser. Economy tests should run headlessly without a canvas.
+- temporary x2 Matter production;
+- short automation boost;
+- enhanced offline claim;
+- limited bonus Genesis-related reward only if carefully balanced;
+- gameplay-earned boost tokens.
+
+Rules:
+
+- grant only after confirmed completion;
+- cancel/unavailable returns normally;
+- no core progression lock;
+- meaningful reward types need non-ad alternatives.
+
+### 26.2 Midgame ads
+
+If enabled, request only at natural breaks such as:
+
+- after a scale transition;
+- after a Collapse sequence;
+- after returning to a menu state.
+
+Never interrupt an active absorption moment unexpectedly.
+
+### 26.3 Asset loading
+
+Load the first playable scale quickly. Later scale-band assets should be lazy-loaded or bundled separately where practical.
+
+Do not load galaxy/reality content on the first screen.
 
 ---
 
-## 25. Performance strategy
+## 27. Performance strategy
 
-Browser performance is a design constraint, not a final optimisation pass.
+### 27.1 General target
 
-### Requirements
+The game should run smoothly on modest browser hardware, not only gaming desktops.
 
-- object pooling for repeated entities;
-- spatial indexing / broad-phase queries for nearby consumables;
-- only evaluate suction/consumption candidates near the player;
-- remove or aggregate irrelevant tiny objects after large growth;
-- batch visual particles and sound triggers;
-- lazy-load later scale-band assets;
-- minimise large textures/audio in the initial payload;
-- test representative low/mid-range hardware early;
-- keep gameplay responsive when many objects are visible.
+### 27.2 Rendering budget philosophy
 
-### Internal bundle goals
-
-Set stricter internal limits than platform maxima. An initial target is to keep the first playable payload around or below ~15 MB where practical, with later scale assets loaded on demand. Re-check current CrazyGames technical limits before submission.
-
----
-
-## 26. Testing strategy
-
-### Unit tests
-
-Deterministic systems require strong coverage:
-
-- number wrapper and formatting boundaries;
-- Mass/visual-size conversion;
-- edible threshold logic;
-- upgrade costs/effects;
-- max-buy calculations;
-- rebirth rewards;
-- permanent upgrade stacking;
-- offline reward calculation;
-- save serialization/migration/validation;
-- spawn selection rules where deterministic;
-- ad reward state machine.
-
-### Integration tests
+Prefer convincing illusion over brute-force simulation.
 
 Examples:
 
-- consuming an object updates run state and unlock checks;
-- buying an upgrade affects the intended production path;
-- rebirth resets/preserves the correct fields;
-- save/load preserves an entire progression state;
-- platform mocks return valid fallback behaviour.
+- render dozens of representative objects, not every economic event;
+- pool objects;
+- batch trivial particles;
+- limit expensive filters;
+- avoid full-screen shader effects as a permanent baseline;
+- throttle offscreen/inactive visual updates;
+- use deterministic aggregate production for idle systems.
 
-### Browser/E2E tests
+### 27.3 No unnecessary physics engine dependence
 
-Critical user journeys:
+Ordinary attraction/absorption uses custom curves/tweens rather than rigid-body physics.
 
-- game boots;
-- player can start a run;
-- upgrade screen opens and a purchase works;
-- save persists through reload;
-- rebirth flow works;
-- mocked rewarded-ad success grants exactly one reward;
-- mocked ad cancellation grants nothing and does not block play.
+Collision/physics should only be introduced for a mechanic that clearly benefits from it.
 
-### Balance tests/simulator
+### 27.4 Performance tests
 
-A headless simulator should run deterministic player profiles:
+Track at minimum:
 
-- active optimiser;
-- average active player;
-- mostly idle player;
-- even-spend/no-strategy player.
+- FPS/frame time during busy scenes;
+- object count;
+- pooled entity count;
+- memory growth over long idle sessions;
+- scale-transition spikes;
+- load time / initial payload;
+- mobile-landscape behaviour.
+
+---
+
+## 28. Testing strategy
+
+### 28.1 Unit tests
+
+Test deterministic core rules:
+
+- number wrapper;
+- upgrade cost formulas;
+- reward calculations;
+- affordability;
+- milestones;
+- scale-band unlocks;
+- Collapse rewards;
+- permanent effects;
+- offline calculation;
+- save serialization/migration.
+
+### 28.2 Integration tests
+
+Test:
+
+- simulation plus data tables;
+- purchase flows;
+- Collapse transaction safety;
+- save/load continuity;
+- platform adapter fallbacks;
+- offline return flows.
+
+### 28.3 E2E tests
+
+Playwright should cover critical browser flows:
+
+- launch and load;
+- first purchase;
+- Pulse interaction;
+- opening panels;
+- simulated scale transition;
+- save/reload;
+- Matter Collapse confirmation;
+- no-ad fallback;
+- responsive layout at key sizes.
+
+### 28.4 Regression rule
+
+When practical, a reproducible gameplay bug receives a failing automated test before the fix.
+
+---
+
+## 29. Headless balance simulator
+
+A dedicated balance tool is required before economy values are treated as final.
+
+The simulator should reuse production formulas from the actual core modules.
+
+It should support scenarios such as:
+
+```text
+new player
+→ buy recommended cheapest-value upgrades
+→ run for 20 minutes
+→ trigger first Collapse
+→ spend Genesis Energy
+→ run again
+→ compare time to previous wall
+```
+
+### 29.1 Metrics
 
 Track:
 
-- time to each scale band;
-- time to first rebirth;
-- upgrade purchase sequence;
-- Cores/hour;
-- effect of permanent upgrades;
-- long stalls;
-- runaway compounding.
-
-Balance changes should be checked by simulation before relying solely on manual feel.
-
----
-
-## 27. TDD and code quality
-
-For deterministic mechanics:
-
-1. define behaviour/acceptance criteria;
-2. add a failing test;
-3. implement the smallest behaviour;
-4. refactor with tests green;
-5. run the relevant suite;
-6. update docs if the rule changed.
-
-General coding principles:
-
-- small cohesive modules;
-- explicit types;
-- meaningful naming;
-- avoid duplicated formula logic;
-- prefer pure functions for economy calculations;
-- dependency inversion for platform/storage/rendering boundaries;
-- comments explain *why*, not obvious syntax;
-- no unexplained magic constants — use named balance/config data;
-- avoid premature abstraction, but isolate systems known to vary by platform.
-
----
-
-## 28. Codex workflow
-
-Do not ask Codex to generate the complete game in one task.
-
-Each Codex implementation prompt should include:
-
-1. goal;
-2. relevant design-document section;
-3. allowed files/directories;
-4. acceptance criteria;
-5. tests required;
-6. explicit non-goals;
-7. performance constraints;
-8. save compatibility requirements.
-
-Good task examples:
-
-- implement the project numeric wrapper + tests;
-- implement pure upgrade-cost functions + tests;
-- implement rebirth reward model + simulator test;
-- implement save schema v1 and migrations;
-- implement one microscopic world vertical slice;
-- implement CrazyGames adapter against an already-defined interface.
-
-A Codex change is complete only when tests pass, acceptance criteria pass, unrelated files are unchanged and required docs are updated.
-
----
-
-## 29. MVP scope
-
-The MVP proves the progression loop; it does not need the entire cosmic roadmap.
-
-### MVP target
-
-- 3–4 scale bands: Microscopic → Tiny → Household → Street;
-- ~25–40 distinct object types;
-- movement and consumption;
-- passive suction;
-- Pulse ability;
-- run upgrades;
-- first rebirth loop;
-- ~8–12 permanent upgrade nodes/levels;
-- offline progress;
-- save/load;
-- desktop + touch controls;
-- platform adapter with local mock;
-- rewarded ads only after the non-ad loop is already fun.
-
-### Not required for MVP
-
-- fully implemented galaxies/universes;
-- second prestige layer;
-- multiplayer;
-- trading;
-- complex cosmetics economy;
-- backend server;
-- in-app purchases.
-
-Cosmic tiers should still be represented in design/data forecasts so numeric architecture will support them later.
-
----
-
-## 30. Milestones
-
-### Milestone 0 — pre-production
-
-- approve working title;
-- approve visual theme;
-- approve camera style;
-- approve framework;
-- decide Mass-vs-Matter upgrade economy;
-- approve rebirth terminology;
-- define first-rebirth timing target;
-- define MVP art pipeline.
-
-### Milestone 1 — headless economy prototype
-
-- large-number wrapper;
-- Mass/size conversion;
-- edible eligibility;
-- upgrade economy;
-- rebirth formula;
-- offline math;
-- balance simulator;
-- unit tests.
-
-### Milestone 2 — microscopic prototype
-
-- movement;
-- consumption;
-- spawning;
-- camera;
-- HUD;
-- first upgrades;
-- basic touch support.
-
-### Milestone 3 — vertical slice
-
-- several scale bands;
-- representative UI style;
-- audio feedback;
-- save system;
-- first rebirth;
-- offline gains;
-- initial accessibility settings.
-
-### Milestone 4 — platform integration
-
-- CrazyGames SDK adapter;
-- lifecycle integration;
-- cloud/data integration;
-- rewarded ads;
-- allowed natural-break midgame ads;
-- no-ad/failure handling.
-
-### Milestone 5 — balance/optimisation
-
-- automated simulations;
-- performance profiling;
-- mobile pass;
-- bundle optimisation;
-- accessibility pass;
-- exploit/corrupt-save tests.
-
-### Milestone 6 — submission candidate
-
-- full QA checklist;
-- CrazyGames preview testing;
-- production store assets;
-- analytics/telemetry review;
-- exact tested release artifact.
-
----
-
-## 31. Post-launch metrics
-
-Do not optimise purely for ad views. Retention and enjoyable progression come first.
-
-Useful signals:
-
-- gameplay conversion/start rate;
-- average session time;
-- D1 retention where measurable;
 - time to first upgrade;
-- time to first major category unlock;
-- time to first band transition;
-- time to first rebirth;
-- completion percentage per band;
-- rewarded-ad opt-in rate;
-- quit rate following ads;
-- returning-save rate;
-- common progression walls.
+- time between meaningful upgrades;
+- time to each scale band;
+- time to first Collapse;
+- Collapse reward;
+- time to recover previous peak;
+- percentage of run spent waiting without decisions;
+- active versus idle production difference;
+- offline progress value;
+- upgrade dominance.
 
-Analytics should answer design questions rather than simply maximise interruptions.
+### 29.2 Balance goals
 
----
+Avoid:
 
-## 32. Open decisions before coding
-
-These are intentionally unresolved. Record final decisions in `docs/DECISIONS.md`.
-
-1. Final game title (working title: Project Scale).
-2. Original player fantasy: organism, anomaly, singularity, machine, magical entity, etc.
-3. Top-down 2D vs shallow 2.5D/isometric.
-4. Phaser vs another browser renderer/framework.
-5. Mass directly buys upgrades vs separate Matter currency.
-6. Final prestige terminology.
-7. Target time to first rebirth.
-8. Late-game active-play intensity.
-9. Landscape-only vs full portrait mobile support.
-10. Art production method and style.
-11. Whether “too large” objects physically block/damage the player or simply cannot be consumed.
-12. Exact rewarded-ad reward set.
-13. Whether daily rewards/achievements ship in MVP or later.
+- long early dead zones;
+- one mandatory upgrade order forever;
+- Collapse rewards that barely matter;
+- Collapse rewards so strong that runs become meaningless;
+- idle play making active play irrelevant immediately;
+- active clicking being orders of magnitude stronger than automation.
 
 ---
 
-## 33. Non-negotiable constraints
+## 30. Content pacing philosophy
 
-- Browser-first.
-- Core game runs if advertising is unavailable.
-- No rewarded-ad progression gates.
-- Original assets and presentation.
-- No yellow/orange global filter.
-- No excessive neon or glass/translucent primary UI.
-- Solid panels and simple rounded controls.
-- Deterministic economy separated from rendering.
-- Save data versioned and migratable.
-- `main` and `staging` are long-lived release/integration branches.
-- Feature/fix changes reach `staging` before normal production release.
-- Production releases originate from `main` only.
-- Tests are required for deterministic progression rules.
-- Performance and initial download size are design requirements.
+### Early game
+
+Priorities:
+
+- immediate visible absorption;
+- explain Mass versus Matter naturally;
+- first upgrade within a short time;
+- first “new object now edible” moment quickly;
+- first automatic attraction quickly;
+- first major zoom/scale reveal in the first session.
+
+### Mid game
+
+Priorities:
+
+- increasingly meaningful upgrade milestones;
+- visible automation;
+- more dramatic Core evolution;
+- Matter Collapse planning;
+- increasingly large scale jumps.
+
+### Late game
+
+Priorities:
+
+- extreme numbers;
+- cosmic/abstract visuals;
+- strategic permanent-upgrade specialization;
+- automation and bulk management;
+- deeper Collapse optimization;
+- new mechanics rather than only larger multipliers.
 
 ---
 
-## 34. External references to re-check before implementation/submission
+## 31. Anti-frustration rules
 
-Platform/library requirements change. Re-verify these rather than relying on stale assumptions:
-
-- CrazyGames developer docs: https://docs.crazygames.com/
-- SDK introduction: https://docs.crazygames.com/sdk/intro/
-- ads requirements: https://docs.crazygames.com/requirements/ads/
-- video ads: https://docs.crazygames.com/sdk/video-ads/
-- technical requirements: https://docs.crazygames.com/requirements/technical/
-- account integration: https://docs.crazygames.com/requirements/account-integration/
-- data module: https://docs.crazygames.com/sdk/data/
-- Phaser releases: https://phaser.io/download
-- Vitest: https://vitest.dev/
-- Playwright: https://playwright.dev/
-- break_infinity.js: https://github.com/Patashu/break_infinity.js
+- Never require rapid clicking.
+- Never hide why progress has slowed.
+- Always show the next meaningful goal.
+- Avoid upgrade buttons that look affordable but fail due to rounding.
+- Do not make the player rewatch long animations every few minutes; allow shortening/skipping after first viewing where sensible.
+- Do not let offline progress silently skip major spectacle.
+- Do not create a prestige reset that takes too long to recover from.
+- Do not clutter the screen with dozens of floating numbers; aggregate them.
+- Do not introduce currencies without a distinct purpose.
 
 ---
 
-## 35. Document maintenance rule
+## 32. Accessibility
 
-This document is the intended living source of truth.
+Minimum launch goals:
 
-When a major design/architecture rule changes:
+- UI understandable without colour alone;
+- keyboard-accessible menus where practical;
+- touch-friendly controls;
+- reduced motion;
+- scalable/readable text;
+- master/music/SFX controls;
+- sufficient contrast;
+- no critical information conveyed only through particles/animation;
+- pause or safe state when browser loses focus where appropriate.
 
-1. edit the relevant section here;
-2. record the decision and rationale in `docs/DECISIONS.md`;
-3. update affected issue acceptance criteria;
-4. update automated tests/simulations if the rule is measurable;
-5. note save compatibility/migration impact if relevant.
+---
 
-The design document should describe the game actually being built, not an abandoned earlier concept.
+## 33. Analytics / balancing telemetry philosophy
+
+If platform and privacy requirements permit lightweight analytics, useful anonymous events may include:
+
+- scale reached;
+- Collapse performed;
+- time to first Collapse;
+- upgrade purchases;
+- return-session duration;
+- rewarded-ad opt-in/completion;
+- point of session exit.
+
+Analytics should be used to identify balance/friction, not to create manipulative dark patterns.
+
+The game must remain functional without analytics.
+
+---
+
+## 34. MVP scope
+
+The MVP should prove the complete loop before huge content production.
+
+Minimum vertical slice:
+
+- central Matter Core;
+- 2D layered playfield;
+- automatic attraction/absorption;
+- Gravity Pulse;
+- Mass and Matter;
+- several run upgrades;
+- upgrade milestones;
+- at least 2–3 distinct scale bands;
+- smooth scale transition;
+- Matter Collapse;
+- Genesis Energy;
+- small Fundamental Law set;
+- save/load;
+- offline progress;
+- basic responsive UI;
+- local platform adapter;
+- CrazyGames adapter stub/integration boundary;
+- deterministic tests;
+- balance simulator.
+
+Do **not** build all cosmic bands before this loop is fun.
+
+---
+
+## 35. Production phases
+
+### Phase 0 — foundation
+
+- initialize approved toolchain;
+- create core numeric abstraction;
+- create deterministic state model;
+- create test harness;
+- create data validation;
+- create platform interfaces;
+- establish CI.
+
+### Phase 1 — greybox growth loop
+
+- render placeholder Core;
+- spawn placeholder objects;
+- implement attraction/absorption;
+- implement Mass/Matter;
+- implement Pulse;
+- show simple HUD;
+- prove performance.
+
+### Phase 2 — upgrades and scaling
+
+- run upgrades;
+- milestone upgrades;
+- 2–3 scale bands;
+- zoom/world replacement transition;
+- headless balance simulator.
+
+### Phase 3 — Matter Collapse
+
+- Collapse reward;
+- Genesis Energy;
+- Fundamental Laws;
+- Collapse animation;
+- recovery pacing tests.
+
+### Phase 4 — idle persistence
+
+- save migrations;
+- offline progress;
+- return summary;
+- account/platform persistence adapter.
+
+### Phase 5 — polish/content
+
+- original art direction;
+- audio;
+- polished animation;
+- accessibility;
+- broader object catalogue;
+- performance tuning.
+
+### Phase 6 — CrazyGames preparation
+
+- SDK integration;
+- rewarded ads;
+- optional midgame ads at natural breaks;
+- payload auditing;
+- browser/device QA;
+- portal-specific requirements validation;
+- launch build.
+
+---
+
+## 36. Open design questions
+
+These are intentionally unresolved and should be answered through prototypes/playtests rather than guesses:
+
+1. Exact first-Collapse timing within the 15–35 minute target range.
+2. Exact active Pulse advantage versus idle production.
+3. How much the Core changes visual size before camera scaling compensates.
+4. Exact number of scale bands in launch content.
+5. Whether permanent upgrades use a branching tree, categories, or hybrid structure.
+6. Whether an optional gameplay-earned boost token is actually needed.
+7. How soon auto-buy should unlock.
+8. Whether some late-game scale bands introduce entirely new interaction modes.
+9. Final game title and final Matter Core visual identity.
+10. Final numeric notation at values beyond ordinary scientific notation.
+
+---
+
+## 37. Decisions now considered locked unless deliberately revisited
+
+The following have been approved for the next implementation stage:
+
+- 2D browser game;
+- central stationary Matter Core as the main interactive avatar;
+- world/camera visually scales around the Core;
+- discrete scale bands create the illusion of continuous growth;
+- no standard WASD/world-navigation gameplay;
+- Mass is non-spendable physical progression;
+- Matter is temporary spendable run currency;
+- Matter Collapse is the first prestige layer;
+- Genesis Energy is the working permanent currency;
+- permanent upgrades are themed as Fundamental Laws;
+- soft economic walls encourage Collapse;
+- Phaser 4 handles the animated 2D playfield;
+- HTML/CSS handles most UI;
+- deterministic economy remains independent from rendering;
+- break_eternity.js is wrapped behind project-owned `GameNumber` logic;
+- Vitest and Playwright form the primary automated test stack;
+- visual rendering represents economic activity rather than simulating every event;
+- normal absorption should use controlled motion/tweens rather than heavyweight rigid-body physics;
+- major scale reveals should not be silently skipped by offline progress.
+
+Any change to these decisions should be recorded in `docs/DECISIONS.md` before implementation diverges.
