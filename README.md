@@ -1,18 +1,23 @@
 # Project Scale
 
-Browser-first idle/incremental growth game currently in **pre-production**.
+Browser-first 2D idle/incremental growth game currently in **pre-production**.
 
-The project combines an active consume-and-grow loop with long-term idle progression. The player starts microscopic, consumes objects that are small enough, grows into larger scale bands, unlocks automation and upgrades, then uses a rebirth/prestige system to begin stronger and reach farther on later runs.
+The player controls a central **Matter Core** that automatically absorbs increasingly large forms of matter. As Mass rises, the surrounding world appears to shrink and new scale bands are revealed: microscopic matter can eventually give way to objects, cities, planets, stars, galaxies, universes and invented post-universal structures.
+
+When a run slows against an economic wall, the player can trigger **Matter Collapse**. The Core compresses into a singular state and restarts through a Big-Bang-like explosion, awarding permanent **Genesis Energy** that is spent on **Fundamental Laws** for future runs.
 
 ## Current status
 
-No game implementation should be added yet. The current phase is for defining the design, technical architecture, production workflow, balance model, monetisation rules, and test strategy before coding begins.
+The core design and high-level technical architecture are now approved. The project is still in pre-production: no full game implementation has been started yet.
+
+The next implementation stage should begin with a small tested technical foundation and greybox vertical slice rather than attempting to generate the entire game in one step.
 
 ## Source of truth
 
-- [`docs/GAME_DESIGN.md`](docs/GAME_DESIGN.md) — living game design and technical plan.
-- [`docs/DEVELOPMENT_WORKFLOW.md`](docs/DEVELOPMENT_WORKFLOW.md) — branches, pull requests, testing, releases, bug fixes, and Codex workflow.
-- [`docs/DECISIONS.md`](docs/DECISIONS.md) — architecture/design decisions and unresolved decisions.
+- [`docs/GAME_DESIGN.md`](docs/GAME_DESIGN.md) — authoritative living game design and progression plan.
+- [`docs/TECHNICAL_ARCHITECTURE.md`](docs/TECHNICAL_ARCHITECTURE.md) — approved framework, module boundaries and implementation constraints.
+- [`docs/DEVELOPMENT_WORKFLOW.md`](docs/DEVELOPMENT_WORKFLOW.md) — branches, pull requests, testing, releases, bug fixes and Codex workflow.
+- [`docs/DECISIONS.md`](docs/DECISIONS.md) — accepted architecture/design decisions and unresolved decisions.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) — contribution standards.
 
 ## Branch model
@@ -38,31 +43,33 @@ feature/* or fix/*
 
 Direct feature work on `main` should be avoided.
 
-## Planned technical baseline
-
-The current proposal is:
+## Approved technical baseline
 
 - TypeScript
 - Vite
-- Phaser for rendering/gameplay
+- Phaser 4 for the animated 2D playfield
+- HTML/CSS DOM UI for most HUD/panels
 - Vitest for unit/integration tests
 - Playwright for browser/E2E tests
-- a large-number library behind a project-owned numeric wrapper
-- CrazyGames HTML5 SDK behind an adapter layer
+- `break_eternity.js` behind a project-owned `GameNumber` abstraction
+- CrazyGames SDK behind a project-owned platform adapter
 
-These are **proposals, not implementation approval**. Framework and architecture decisions are recorded in `docs/DECISIONS.md` before production code is created.
+The deterministic economy remains independent from Phaser, the DOM and portal APIs.
 
-## Design principles
+## Core design rules
 
-- Visible size growth is the main reward.
-- Active play and idle progress reinforce one another.
-- The player should regularly unlock previously impossible objects.
-- Rebirth should make the next run visibly faster.
-- Rewarded ads are optional accelerators, never mandatory progression gates.
-- Core economy logic must be deterministic and testable independently of rendering.
-- Save data must be versioned and migratable.
-- Browser performance and download size are first-class requirements.
-- The final game must have original art, naming, progression, level layouts, sounds, UI and copy.
+- The Matter Core remains near the centre of the main playfield.
+- The player does not normally navigate a large map with WASD.
+- The world visually scales and zooms around the Core.
+- Internal scale bands create the illusion of continuous growth.
+- Mass is non-spendable physical progression.
+- Matter is the temporary spendable run currency.
+- Genesis Energy is the working Matter Collapse currency.
+- Permanent upgrades are themed as Fundamental Laws.
+- Active Gravity Pulse accelerates progress without rewarding frantic clicking.
+- Economic throughput and visible object count are intentionally separate.
+- Major scale reveals should remain visual events even when earned offline.
+- Matter Collapse should be encouraged by soft economic walls rather than arbitrary forced-reset messages.
 
 ## UI direction
 
@@ -73,6 +80,8 @@ Use a clean, light/simple interface influenced only by the usability of the supp
 - restrained shadows and borders;
 - readable typography;
 - clear hierarchy;
+- large central playfield;
+- minimal permanent side UI;
 - no yellow/orange overall filter;
 - no excessive neon;
 - no glass/translucent HUD as the primary style.
@@ -81,7 +90,7 @@ Use a clean, light/simple interface influenced only by the usability of the supp
 
 The first intended distribution target is CrazyGames. Platform integrations must be isolated behind adapters so the game also runs locally and can later support another web portal without rewriting gameplay systems.
 
-Rewarded ads should provide optional boosts such as temporary multipliers or convenience rewards. The non-ad progression loop must remain complete and enjoyable when ads are unavailable.
+Rewarded ads should provide optional acceleration or convenience. The non-ad progression loop must remain complete and enjoyable when ads are unavailable.
 
 ## Development rule
 
@@ -92,6 +101,6 @@ For deterministic systems, use test-driven development where practical:
 3. implement the smallest correct behaviour;
 4. refactor while tests remain green;
 5. run type-checking, linting, unit/integration tests and relevant browser tests;
-6. update the design/decision docs if behaviour changed.
+6. update design/decision docs if behaviour changed.
 
-The project will be developed incrementally rather than generated as one monolithic Codex task.
+The game should be developed as small reviewable vertical slices. Codex tasks should receive narrow acceptance criteria and explicit files/modules to change rather than a broad instruction to “build the game.”
