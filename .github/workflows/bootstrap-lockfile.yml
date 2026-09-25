@@ -25,8 +25,11 @@ jobs:
           node-version: 22
           package-manager-cache: false
 
-      - name: Generate lockfile
-        run: npm install --package-lock-only
+      - name: Generate lockfile from package manifest
+        shell: bash
+        run: |
+          rm -f package-lock.json
+          npm install --package-lock-only
 
       - name: Commit lockfile if needed
         shell: bash
