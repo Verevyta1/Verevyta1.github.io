@@ -17,11 +17,11 @@ describe('save schema v2', () => {
 
     expect(parsed).toMatchObject({
       saveVersion: 2,
-      game: { upgrades: { density: 0, gravity: 3, influence: 0, assimilation: 1, compression: 0 } },
       createdAt: 100,
       lastSavedAt: 200,
       game: {
         run: { mass: canonicalMass, matter: canonicalMatter },
+        upgrades: { density: 0, gravity: 3, influence: 0, assimilation: 1, compression: 0 },
       },
     });
     expect(restored.run.mass.serialize()).toBe(canonicalMass);
