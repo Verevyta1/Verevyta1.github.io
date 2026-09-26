@@ -63,11 +63,19 @@ describe('Teemo launch simulation', () => {
 
   it('raises the speed cap for stronger throws', () => {
     const strongestThrow = { throwStrength: MAX_UPGRADE_LEVEL };
-    const capped = throwTeemo(createInitialLaunchGameState({ upgrades: strongestThrow }));
-    const faster = throwTeemo(
-      createInitialLaunchGameState({
-        upgrades: { ...strongestThrow, speed: MAX_UPGRADE_LEVEL },
-      }),
+    const capped = releaseTeemo(
+      beginLaunchAim(createInitialLaunchGameState({ upgrades: strongestThrow })),
+      140,
+      25,
+    );
+    const faster = releaseTeemo(
+      beginLaunchAim(
+        createInitialLaunchGameState({
+          upgrades: { ...strongestThrow, speed: MAX_UPGRADE_LEVEL },
+        }),
+      ),
+      140,
+      25,
     );
 
     expect(faster.run.horizontalSpeed).toBeGreaterThan(capped.run.horizontalSpeed);
@@ -120,10 +128,15 @@ describe('Teemo launch simulation', () => {
     };
     const slammed = activateRocketSlam(airborne);
 
+    const secondSlam = activateRocketSlam(slammed);
+    const finalSlam = activateRocketSlam(secondSlam);
+
     expect(slammed.run.slamCharges).toBe(2);
     expect(slammed.run.verticalSpeed).toBeLessThan(0);
     expect(slammed.run.horizontalSpeed).toBeGreaterThan(airborne.run.horizontalSpeed);
-    expect(activateRocketSlam(slammed)).toBe(slammed);
+    expect(secondSlam.run.slamCharges).toBe(1);
+    expect(finalSlam.run.slamCharges).toBe(0);
+    expect(activateRocketSlam(finalSlam)).toBe(finalSlam);
   });
 
   it('allows another drag launch after a run finishes and blocks upgrades mid-run', () => {
