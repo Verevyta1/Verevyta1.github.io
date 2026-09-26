@@ -1,14 +1,18 @@
 import { createLauncherMarkup } from './app/launcher';
 import { formatResourceAmount } from './app/resource-format';
 import {
-  activateMushroomBoost,
+  activateRocketSlam,
   advanceLaunchGame,
+  beginLaunchAim,
   buyLaunchUpgrade,
   calculateLaunchUpgradeCost,
   createInitialLaunchGameState,
+  isNexusUnlocked,
+  masteredUpgradeCount,
+  MAX_UPGRADE_LEVEL,
   parseLaunchSave,
+  releaseTeemo,
   serializeLaunchSave,
-  startLaunchRun,
   type LaunchGameState,
 } from './core/launch/launch-game';
 import { GameNumber } from './core/numbers/game-number';
@@ -40,9 +44,9 @@ const minionOutput = need<HTMLOutputElement>('#minion-total');
 const distanceOutput = need<HTMLOutputElement>('#run-distance');
 const progressFill = need<HTMLSpanElement>('#goal-progress-fill');
 const statusOutput = need<HTMLParagraphElement>('#run-status');
-const launchButton = need<HTMLButtonElement>('#launch-button');
-const boostButton = need<HTMLButtonElement>('#boost-button');
-const boostState = need<HTMLSpanElement>('#boost-state');
+const masteryOutput = need<HTMLOutputElement>('#mastery-count');
+const slamButton = need<HTMLButtonElement>('#slam-button');
+const slamState = need<HTMLSpanElement>('#slam-state');
 const controls = LAUNCH_UPGRADES.map((definition) => ({
   definition,
   level: need<HTMLOutputElement>('#upgrade-level-' + definition.id),
@@ -51,7 +55,7 @@ const controls = LAUNCH_UPGRADES.map((definition) => ({
 }));
 
 let state: LaunchGameState = createInitialLaunchGameState();
-let statusMessage = 'Launch Teemo to start the run.';
+let statusMessage = 'Drag Teemo backward and release to start your first run.';
 let saveTimer: number | undefined;
 let lastHudUpdate = -100;
 
@@ -70,42 +74,54 @@ function renderHud(): void {
   bestOutput.textContent = Math.floor(state.bestDistance).toLocaleString() + ' m';
   minionOutput.textContent = String(state.run.smashedMinions);
   distanceOutput.textContent = Math.floor(state.run.distance).toLocaleString();
-  progressFill.style.width = Math.min(100, state.run.distance / 50) + '%';
+  progressFill.style.width = Math.min(100, (state.run.distance / 5_000) * 100) + '%';
 
   const flying = state.run.phase === 'flying';
-  launchButton.disabled = flying || state.run.phase === 'won';
-  launchButton.textContent =
-    state.run.phase === 'ready'
-      ? 'Launch Teemo'
-      : state.run.phase === 'flying'
-        ? 'Teemo is flying…'
-        : state.run.phase === 'won'
-          ? 'Nexus destroyed!'
-          : 'Run it back';
-  boostButton.disabled = !flying || state.run.boostCooldownMs > 0;
-  boostState.textContent =
-    state.run.boostCooldownMs > 0 ? Math.ceil(state.run.boostCooldownMs / 1000) + 's' : 'Ready';
+  const mastered = masteredUpgradeCount(state.upgrades);
+  masteryOutput.textContent = mastered + ' / ' + controls.length;
+  slamButton.disabled = !flying || state.run.slamCharges <= 0 || state.run.height <= 0;
+  slamState.textContent = state.run.slamCharges + ' left';
 
   statusOutput.textContent =
     state.run.phase === 'won'
-      ? 'Victory! Teemo reached the Nexus.'
-      : state.run.phase === 'finished'
-        ? 'Run complete: ' +
-          Math.floor(state.run.distance).toLocaleString() +
-          ' m. Gold earned: ' +
-          state.run.goldEarned +
-          '. Upgrade and launch again.'
-        : flying
-          ? 'In flight! Smash minions for gold. Tap the lane or Noxious Boost for a dash.'
-          : statusMessage;
+      ? 'Victory! Teemo broke through and reached the Nexus.'
+      : state.run.phase === 'finished' && state.run.blockedAtNexus
+        ? 'The Nexus shield stopped Teemo. Master every upgrade track (' +
+          mastered +
+          ' / ' +
+          controls.length +
+          ') before trying the final run.'
+        : state.run.phase === 'finished'
+          ? 'Run complete: ' +
+            Math.floor(state.run.distance).toLocaleString() +
+            ' m. Gold earned: ' +
+            state.run.goldEarned +
+            '. Drag Teemo back to the sling for another attempt.'
+          : state.run.phase === 'aiming'
+            ? 'Pull Teemo back from the sling, then release to throw.'
+            : flying
+              ? 'In flight! Smash minions for gold. Click or tap the lane to Rocket Slam.'
+              : statusMessage;
 
   for (const control of controls) {
     const level = state.upgrades[control.definition.id];
+    const masteredTrack = level >= MAX_UPGRADE_LEVEL;
     const cost = calculateLaunchUpgradeCost(control.definition, level);
     control.level.textContent = String(level);
-    control.cost.textContent = formatResourceAmount(cost);
+    control.cost.textContent = masteredTrack ? 'MAXED' : formatResourceAmount(cost);
+    control.button.textContent = masteredTrack ? 'Mastered' : 'Buy upgrade';
     control.button.disabled =
-      flying || state.run.phase === 'won' || GameNumber.from(state.gold).lessThan(cost);
+      flying ||
+      state.run.phase === 'aiming' ||
+      state.run.phase === 'won' ||
+      masteredTrack ||
+      GameNumber.from(state.gold).lessThan(cost);
+  }
+
+  if (isNexusUnlocked(state.upgrades)) {
+    statusOutput.dataset.nexus = 'unlocked';
+  } else {
+    delete statusOutput.dataset.nexus;
   }
 }
 
@@ -123,18 +139,17 @@ function scheduleSave(): void {
   saveTimer = window.setTimeout(saveProgress, 450);
 }
 
-function useBoost(): void {
-  state = activateMushroomBoost(state);
-  statusMessage = 'Noxious Boost! Teemo surges forward.';
+function useRocketSlam(): void {
+  const next = activateRocketSlam(state);
+  if (next === state) {
+    return;
+  }
+  state = next;
+  statusMessage = 'Rocket Slam! Dive into the next minion wave.';
   renderHud();
 }
 
-launchButton.addEventListener('click', () => {
-  state = startLaunchRun(state);
-  statusMessage = 'Teemo is off!';
-  renderHud();
-});
-boostButton.addEventListener('click', useBoost);
+slamButton.addEventListener('click', useRocketSlam);
 
 controls.forEach(({ definition, button }) => {
   button.addEventListener('click', () => {
@@ -159,6 +174,21 @@ async function startGame(): Promise<void> {
   renderHud();
 
   createLaunchGame(canvasHost, {
+    beginAim: () => {
+      const next = beginLaunchAim(state);
+      if (next === state) {
+        return false;
+      }
+      state = next;
+      renderHud();
+      return state.run.phase === 'aiming';
+    },
+    throw: (pullX, pullY) => {
+      state = releaseTeemo(state, pullX, pullY);
+      statusMessage = 'Teemo is off! Smash the lane minions for gold.';
+      renderHud();
+    },
+    slam: useRocketSlam,
     advance: (deltaMs) => {
       const frame = advanceLaunchGame(state, deltaMs);
       state = frame.state;
@@ -181,7 +211,6 @@ async function startGame(): Promise<void> {
       }
       return frame;
     },
-    boost: useBoost,
     state: () => state,
   });
 }

@@ -1,31 +1,35 @@
 # Implementation Roadmap
 
-## Current slice — Teemo: Nexus Launch
+## Current milestone — drag, throw, and progression gate
 
-Prove the complete short loop: launch, bounce, smash minions for gold, buy upgrades between runs, and progress toward the Nexus. Keep the simulation deterministic and retain the Vite/Phaser/DOM architecture.
+- Replace the launch button with mouse/touch drag and release on Teemo.
+- Add the in-flight Rocket Slam action, minion impacts, bounce, and gold rewards.
+- Make seven upgrade tracks data-driven, finite, and visibly effective.
+- Keep runs short enough to require repeat attempts.
+- Hold Teemo at the Nexus shield until every upgrade track is mastered.
+- Persist gold and upgrades, migrate the previous save schema, and cover the loop with unit and browser tests.
 
 ## Next milestones
 
-### A. Launch loop
-- Complete deterministic run state, fixed-step movement, minion rewards, run end, and Nexus victory.
-- Add Teemo, red/blue melee/caster/siege minions, lane art, and Nexus.
-- Save gold and best distance; verify the browser loop.
+### B. Run results and missions
 
-### B. Upgrade balance
-- Tune first-run distance and minion timing.
-- Add an ROI simulator for upgrade choices.
-- Ensure every upgrade visibly changes play.
-- Test keyboard, pointer, touch-sized layouts, and save recovery.
+- Add a clear run summary with distance, gold gained, and optional mission rewards.
+- Add deterministic missions such as smashing minions, using Rocket Slam, and reaching the Nexus shield.
 
-### C. More launch choices
-- Add launch charge/angle only if playtesting improves agency.
-- Add Teemo boost variants, wave patterns, missions, and satisfying Nexus impact.
+### C. Special minions and defense layers
 
-### D. Art and sound
-- Refine vector characters, impact/bounce feedback, lane depth, Nexus presentation, accessibility, and audio.
-- Profile assets and performance.
+- Add readable special minion encounters: explosive forward boost, Blast Cone lift, and gold carrier.
+- Add staged Nexus defenses that act as distance gates and become traversable through progression.
+
+### D. Balance and polish
+
+- Add a repeatable simulator for drag force, upgrades, minion spacing, prices, and run distance.
+- Tune early runs so players earn enough gold to make visible progress without reaching the Nexus in one attempt.
+- Refine Teemo and minion silhouettes, lane depth, impact effects, mobile layout, accessibility, and audio.
 
 ### E. Release integration
-- Add portal adapter integrations after local play is stable.
+
+- Profile the browser build and keep frame work bounded.
+- Add portal adapters after local play is stable.
 - Keep optional ads non-blocking.
 - Promote tested changes from staging to main.
