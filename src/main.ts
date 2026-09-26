@@ -18,8 +18,9 @@ import { LocalPlatform } from "./platform/local-platform";
 import "./styles.css";
 
 const SAVE_KEY = "teemo-nexus-launch-save-v1";
-const app = document.querySelector<HTMLDivElement>("#app");
-if (!app) throw new Error("Application root #app was not found.");
+const appElement = document.querySelector<HTMLDivElement>("#app");
+if (!appElement) throw new Error("Application root #app was not found.");
+const app: HTMLDivElement = appElement;
 app.innerHTML = createLauncherMarkup();
 
 function need<T extends Element>(selector: string): T {
