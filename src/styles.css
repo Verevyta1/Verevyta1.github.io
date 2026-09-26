@@ -1,0 +1,534 @@
+:root {
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: #172434;
+  background: #f3f6f9;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  font-optical-sizing: auto;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.foundation-shell {
+  display: grid;
+  gap: 16px;
+  width: min(1120px, 100%);
+  min-height: 100vh;
+  align-content: center;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.game-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.game-brand {
+  display: grid;
+  gap: 7px;
+}
+
+.game-brand h1 {
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 2.55rem);
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.game-brand p,
+.resource-card p,
+.command-copy p,
+.instruction-block span {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.eyebrow {
+  color: #607185;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.game-subtitle {
+  color: #66788a;
+  font-size: 0.93rem;
+}
+
+.resource-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(142px, 1fr));
+  gap: 10px;
+  width: min(420px, 52%);
+}
+
+.resource-card,
+.game-panel,
+.command-panel {
+  border: 1px solid #dbe3ea;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 7px 24px rgb(26 47 70 / 5%);
+}
+
+.resource-card {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  padding: 12px 15px;
+}
+
+.resource-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.resource-heading h2 {
+  margin: 0;
+  color: #576b80;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.resource-mark {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.mass-mark {
+  background: #3d819f;
+}
+
+.matter-mark {
+  background: #7786bd;
+}
+
+.resource-card output {
+  overflow: hidden;
+  color: #14283b;
+  font-size: clamp(1.25rem, 3vw, 1.8rem);
+  font-weight: 720;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+}
+
+.resource-card p {
+  color: #758394;
+  font-size: 0.72rem;
+}
+
+.game-panel {
+  display: grid;
+  gap: 10px;
+  padding: 13px;
+}
+
+.playfield-heading,
+.playfield-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.field-tag {
+  color: #496780;
+  font-size: 0.67rem;
+  font-weight: 780;
+  letter-spacing: 0.12em;
+}
+
+.field-hint,
+.save-status {
+  color: #758394;
+  font-size: 0.74rem;
+  text-align: right;
+}
+
+.foundation-playfield {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border: 1px solid #172f45;
+  border-radius: 11px;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgb(29 68 96 / 32%), transparent 44%),
+    radial-gradient(circle at 18% 24%, rgb(181 218 240 / 54%) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 81% 34%, rgb(181 218 240 / 45%) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 68% 77%, rgb(181 218 240 / 32%) 0 1px, transparent 1.7px), #07101c;
+}
+
+.foundation-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.foundation-canvas canvas {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.core-caption,
+.foundation-playfield-caption {
+  position: absolute;
+  color: rgb(218 234 247 / 68%);
+  font-size: 0.58rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  pointer-events: none;
+}
+
+.core-caption {
+  top: calc(50% + 45px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.foundation-playfield-caption {
+  right: 13px;
+  bottom: 11px;
+  font-size: 0.55rem;
+}
+
+.playfield-footer {
+  align-items: end;
+}
+
+.instruction-block {
+  display: grid;
+  gap: 3px;
+}
+
+.instruction-block strong {
+  color: #30485e;
+  font-size: 0.78rem;
+}
+
+.instruction-block span {
+  color: #748394;
+  font-size: 0.72rem;
+}
+
+.save-status {
+  margin: 0;
+}
+
+.command-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 20px;
+}
+
+.command-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.command-copy h2 {
+  margin: 0;
+  color: #1c3348;
+  font-size: 1rem;
+}
+
+.command-copy > p:last-child {
+  max-width: 570px;
+  color: #6f7e8d;
+  font-size: 0.77rem;
+}
+
+.command-action {
+  display: grid;
+  justify-items: end;
+  gap: 5px;
+}
+
+.command-action button {
+  display: flex;
+  min-width: 198px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 10px 13px;
+  border: 1px solid #315d7d;
+  border-radius: 10px;
+  color: #fff;
+  background: #315d7d;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 720;
+}
+
+.command-action button:hover:not(:disabled) {
+  background: #274e6b;
+}
+
+.command-action button:focus-visible {
+  outline: 3px solid #94c9e8;
+  outline-offset: 3px;
+}
+
+.command-action button:disabled {
+  border-color: #8b9cab;
+  color: #edf1f4;
+  background: #8393a1;
+  cursor: not-allowed;
+}
+
+.button-state {
+  font-size: 0.7rem;
+  font-weight: 550;
+  opacity: 0.88;
+}
+
+.key-hint,
+.control-note {
+  color: #7a8998;
+  font-size: 0.67rem;
+}
+
+.control-note {
+  margin: 0;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .foundation-shell {
+    align-content: start;
+    gap: 12px;
+    padding: 16px 12px;
+  }
+
+  .game-header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .resource-grid {
+    width: 100%;
+  }
+
+  .playfield-heading,
+  .playfield-footer {
+    align-items: start;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .field-hint,
+  .save-status {
+    text-align: left;
+  }
+
+  .command-panel {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+    padding: 15px;
+  }
+
+  .command-action {
+    justify-items: stretch;
+  }
+
+  .command-action button {
+    width: 100%;
+  }
+
+  .key-hint {
+    text-align: center;
+  }
+
+  .core-caption,
+  .foundation-playfield-caption {
+    font-size: 0.48rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.upgrade-panel {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #dbe3ea;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 7px 24px rgb(26 47 70 / 5%);
+}
+
+.upgrade-panel-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.upgrade-panel-heading h2 {
+  margin: 4px 0 0;
+  color: #1c3348;
+  font-size: 1.1rem;
+}
+
+.upgrade-panel-heading > p {
+  max-width: 390px;
+  margin: 0;
+  color: #6f7e8d;
+  font-size: 0.76rem;
+  text-align: right;
+}
+
+.upgrade-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+  gap: 10px;
+}
+
+.upgrade-card {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #e0e7ed;
+  border-radius: 11px;
+  background: #f9fbfc;
+}
+
+.upgrade-card-heading,
+.upgrade-cost {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.upgrade-card h3 {
+  margin: 0;
+  color: #263d51;
+  font-size: 0.86rem;
+}
+
+.upgrade-card > p {
+  min-height: 2.8em;
+  margin: 0;
+  color: #718091;
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.upgrade-level,
+.upgrade-cost {
+  color: #718091;
+  font-size: 0.68rem;
+}
+
+.upgrade-level output {
+  color: #354e64;
+  font-weight: 750;
+}
+
+.upgrade-cost output {
+  margin-left: auto;
+  color: #314e6d;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.upgrade-buy {
+  min-height: 36px;
+  border: 1px solid #9aafc0;
+  border-radius: 8px;
+  color: #24465f;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.76rem;
+  font-weight: 720;
+}
+
+.upgrade-buy:hover:not(:disabled) {
+  border-color: #315d7d;
+  background: #edf5fa;
+}
+
+.upgrade-buy:focus-visible {
+  outline: 3px solid #94c9e8;
+  outline-offset: 2px;
+}
+
+.upgrade-buy:disabled {
+  color: #8b98a3;
+  background: #edf0f2;
+  cursor: not-allowed;
+}
+
+.upgrade-status {
+  margin: 0;
+  color: #758394;
+  font-size: 0.72rem;
+}
+
+@media (max-width: 720px) {
+  .upgrade-panel {
+    padding: 14px;
+  }
+
+  .upgrade-panel-heading {
+    align-items: start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .upgrade-panel-heading > p {
+    text-align: left;
+  }
+}
