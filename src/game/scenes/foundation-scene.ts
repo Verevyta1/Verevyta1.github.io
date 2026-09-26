@@ -20,6 +20,7 @@ export interface MatterCoreSceneCallbacks {
 class MatterCoreScene extends Phaser.Scene {
   private readonly objectPool: Phaser.GameObjects.Arc[] = [];
   private readonly definitionsById: ReadonlyMap<string, MatterObjectDefinition>;
+  private readonly colorsByDefinition: ReadonlyMap<string, number>;
   private reducedMotion = false;
   private coreAura?: Phaser.GameObjects.Arc;
   private coreShell?: Phaser.GameObjects.Arc;
@@ -30,7 +31,10 @@ class MatterCoreScene extends Phaser.Scene {
     definitions: readonly MatterObjectDefinition[],
   ) {
     super('matter-core');
-    this.definitionsById = new Map(definitions.map((definition) => [definition.id, definition]));
+    this.definitionsById = new Map(definitions.map((definition) => [definition.id, definition] as const));
+    this.colorsByDefinition = new Map(
+      definitions.map((definition, index) => [definition.id, OBJECT_COLORS[index % OBJECT_COLORS.length]] as const),
+    );
   }
 
   create(): void {
@@ -77,7 +81,7 @@ class MatterCoreScene extends Phaser.Scene {
         return;
       }
 
-      const color = OBJECT_COLORS[index % OBJECT_COLORS.length];
+      const color = this.colorsByDefinition.get(instance.definitionId) ?? OBJECT_COLORS[0];
       const attracting = instance.phase === 'attracting';
       const attraction = Math.min(1, instance.attractionProgressMs / ATTRACTION_DURATION_MS);
       const drift = Math.min(0.09, instance.ageMs / 250_000);
