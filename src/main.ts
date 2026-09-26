@@ -20,16 +20,22 @@ if (!app) {
 
 app.innerHTML = createFoundationMarkup();
 
-const canvasHost = app.querySelector<HTMLDivElement>('#game-canvas');
-const massOutput = app.querySelector<HTMLOutputElement>('#resource-mass');
-const matterOutput = app.querySelector<HTMLOutputElement>('#resource-matter');
-const pulseButton = app.querySelector<HTMLButtonElement>('#gravity-pulse');
-const pulseState = app.querySelector<HTMLSpanElement>('#pulse-state');
-const saveStatus = app.querySelector<HTMLParagraphElement>('#save-status');
+function requireElement<T extends Element>(root: Element, selector: string): T {
+  const element = root.querySelector<T>(selector);
 
-if (!canvasHost || !massOutput || !matterOutput || !pulseButton || !pulseState || !saveStatus) {
-  throw new Error('The Matter Core interface is missing a required element.');
+  if (!element) {
+    throw new Error('The Matter Core interface is missing ' + selector + '.');
+  }
+
+  return element;
 }
+
+const canvasHost = requireElement<HTMLDivElement>(app, '#game-canvas');
+const massOutput = requireElement<HTMLOutputElement>(app, '#resource-mass');
+const matterOutput = requireElement<HTMLOutputElement>(app, '#resource-matter');
+const pulseButton = requireElement<HTMLButtonElement>(app, '#gravity-pulse');
+const pulseState = requireElement<HTMLSpanElement>(app, '#pulse-state');
+const saveStatus = requireElement<HTMLParagraphElement>(app, '#save-status');
 
 let simulation = createInitialGreyboxSimulationState();
 let createdAt = Date.now();
@@ -90,11 +96,12 @@ function advanceSimulation(deltaMs: number) {
   simulation = frame.state;
 
   if (frame.absorbedObjects.length > 0) {
-    const latestAbsorption = frame.absorbedObjects[frame.absorbedObjects.length - 1];
-    saveMessage =
-      'Absorbed ' +
-      latestAbsorption.definitionId.replaceAll('-', ' ') +
-      '. Progress saved locally.';
+    for (const absorption of frame.absorbedObjects) {
+      saveMessage =
+        'Absorbed ' +
+        absorption.definitionId.replaceAll('-', ' ') +
+        '. Progress saved locally.';
+    }
     scheduleSave();
   }
 
