@@ -513,7 +513,7 @@ export function parseLaunchSave(serialized: string): LaunchGameState {
         ? 'throwStrength'
         : id === 'mushroomBoost'
           ? 'rocketSlam'
-          : (id as LaunchUpgradeId);
+          : id as LaunchUpgradeId;
     upgrades[targetId] = Math.min(level, MAX_UPGRADE_LEVEL);
   }
 
