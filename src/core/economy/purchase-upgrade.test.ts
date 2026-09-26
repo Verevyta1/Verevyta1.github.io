@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
 import { createInitialGameState } from '../simulation/game-state';
-import { UPGRADE_DEFINITIONS } from '../../data/upgrades';
 import { purchaseUpgrade } from './purchase-upgrade';
 
 describe('purchaseUpgrade', () => {
