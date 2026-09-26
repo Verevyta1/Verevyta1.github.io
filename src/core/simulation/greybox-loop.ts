@@ -169,7 +169,8 @@ function advanceFixedStep(
       const gravityMultiplier = getGravityAttractionMultiplier(game.upgrades.gravity);
       const pulseMultiplier = getGravityPulseSpeedMultiplier(game.upgrades.compression);
       attractionProgressMs +=
-        normalAttractionMs * gravityMultiplier + activePulseMs * pulseMultiplier * gravityMultiplier;
+        normalAttractionMs * gravityMultiplier +
+        activePulseMs * pulseMultiplier * gravityMultiplier;
 
       if (attractionProgressMs >= ATTRACTION_DURATION_MS) {
         const nextRun = applyAbsorption(game.run, {
