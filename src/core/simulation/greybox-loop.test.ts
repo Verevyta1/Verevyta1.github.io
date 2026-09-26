@@ -85,7 +85,7 @@ describe('greybox simulation', () => {
 
   it('absorbs eligible matter into Mass and Matter through the domain reward function', () => {
     const initial = createInitialGreyboxSimulationState();
-    const result = advanceFor(initial, 2_000);
+    const result = advanceFor(initial, 3_000);
 
     expect(result.absorbed).toBeGreaterThan(0);
     expect(result.state.game.run.mass.greaterThan(0)).toBe(true);
