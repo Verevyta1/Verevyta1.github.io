@@ -33,7 +33,13 @@ class MatterCoreScene extends Phaser.Scene {
     super('matter-core');
     this.definitionsById = new Map(definitions.map((definition) => [definition.id, definition] as const));
     this.colorsByDefinition = new Map(
-      definitions.map((definition, index) => [definition.id, OBJECT_COLORS[index % OBJECT_COLORS.length]] as const),
+      definitions.map(
+        (definition, index) =>
+          [
+            definition.id,
+            OBJECT_COLORS[index % OBJECT_COLORS.length] ?? OBJECT_COLORS[0] ?? 0x8cb9d0,
+          ] as const,
+      ),
     );
   }
 
