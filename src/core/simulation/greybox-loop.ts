@@ -1,4 +1,13 @@
 import { applyAbsorption } from '../economy/run-state';
+import {
+  getAssimilationMatterMultiplier,
+  getDensitySpawnBurst,
+  getDensitySpawnIntervalMs,
+  getGravityAttractionMultiplier,
+  getGravityPulseDurationMs,
+  getGravityPulseSpeedMultiplier,
+  getInfluenceMassMultiplier,
+} from '../economy/upgrades';
 import { GameNumber } from '../numbers/game-number';
 import type { MatterObjectDefinition } from '../content/content-definitions';
 import { createInitialGameState, type GameState } from './game-state';
@@ -76,7 +85,7 @@ export function activateGravityPulse(state: GreyboxSimulationState): GreyboxSimu
 
   return freezeState({
     ...state,
-    gravityPulseRemainingMs: GRAVITY_PULSE_DURATION_MS,
+    gravityPulseRemainingMs: getGravityPulseDurationMs(state.game.upgrades.compression),
     gravityPulseCooldownMs: GRAVITY_PULSE_COOLDOWN_MS,
   });
 }
@@ -143,7 +152,7 @@ function advanceFixedStep(
     let attractionProgressMs = object.attractionProgressMs;
 
     if (phase === 'drifting') {
-      const eligible = isMatterObjectEligible(game.run.mass, definition);
+      const eligible = isMatterObjectEligible(game.run.mass, definition, game.upgrades.influence);
 
       if (eligible) {
         phase = 'attracting';
@@ -153,16 +162,23 @@ function advanceFixedStep(
     }
 
     if (phase === 'attracting') {
-      attractionProgressMs += normalAttractionMs + activePulseMs * GRAVITY_PULSE_SPEED_MULTIPLIER;
+      const gravityMultiplier = getGravityAttractionMultiplier(game.upgrades.gravity);
+      const pulseMultiplier = getGravityPulseSpeedMultiplier(game.upgrades.compression);
+      attractionProgressMs +=
+        normalAttractionMs * gravityMultiplier +
+        activePulseMs * pulseMultiplier * gravityMultiplier;
 
       if (attractionProgressMs >= ATTRACTION_DURATION_MS) {
         const nextRun = applyAbsorption(game.run, {
           mass: definition.massReward,
-          matter: definition.matterReward,
+          matter: GameNumber.from(definition.matterReward).multiply(
+            getAssimilationMatterMultiplier(game.upgrades.assimilation),
+          ),
         });
 
         game = createInitialGameState({
           run: { mass: nextRun.mass, matter: nextRun.matter },
+          upgrades: game.upgrades,
         });
         totalAbsorptions += 1;
         absorbedObjects.push(
@@ -190,11 +206,22 @@ function advanceFixedStep(
   let spawnAccumulatorMs = state.spawnAccumulatorMs + SIMULATION_STEP_MS;
   let nextInstanceId = state.nextInstanceId;
   let spawnIndex = state.spawnIndex;
+  const spawnIntervalMs = getDensitySpawnIntervalMs(game.upgrades.density);
 
-  if (spawnAccumulatorMs >= OBJECT_SPAWN_INTERVAL_MS) {
-    spawnAccumulatorMs -= OBJECT_SPAWN_INTERVAL_MS;
+  while (spawnAccumulatorMs >= spawnIntervalMs) {
+    spawnAccumulatorMs -= spawnIntervalMs;
 
-    if (objects.length < MAX_ACTIVE_OBJECTS && definitions.size > 0) {
+    if (objects.length >= MAX_ACTIVE_OBJECTS || definitions.size === 0) {
+      continue;
+    }
+
+    const spawnBurst = getDensitySpawnBurst(game.upgrades.density);
+
+    for (let burstIndex = 0; burstIndex < spawnBurst; burstIndex += 1) {
+      if (objects.length >= MAX_ACTIVE_OBJECTS) {
+        break;
+      }
+
       const definition = selectDefinition([...definitions.values()], spawnIndex);
       const seed = seededUnit(spawnIndex + 1);
 
@@ -277,6 +304,10 @@ function freezeState(state: GreyboxSimulationState): GreyboxSimulationState {
 export function isMatterObjectEligible(
   mass: GameNumber,
   definition: MatterObjectDefinition,
+  influenceLevel = 0,
 ): boolean {
-  return mass.greaterThanOrEqual(definition.requiredMass);
+  const effectiveRequirement = GameNumber.from(definition.requiredMass).divide(
+    getInfluenceMassMultiplier(influenceLevel),
+  );
+  return mass.greaterThanOrEqual(effectiveRequirement);
 }

@@ -395,3 +395,140 @@ textarea {
     transition-duration: 0.01ms !important;
   }
 }
+
+.upgrade-panel {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #dbe3ea;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 7px 24px rgb(26 47 70 / 5%);
+}
+
+.upgrade-panel-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.upgrade-panel-heading h2 {
+  margin: 4px 0 0;
+  color: #1c3348;
+  font-size: 1.1rem;
+}
+
+.upgrade-panel-heading > p {
+  max-width: 390px;
+  margin: 0;
+  color: #6f7e8d;
+  font-size: 0.76rem;
+  text-align: right;
+}
+
+.upgrade-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+  gap: 10px;
+}
+
+.upgrade-card {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #e0e7ed;
+  border-radius: 11px;
+  background: #f9fbfc;
+}
+
+.upgrade-card-heading,
+.upgrade-cost {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.upgrade-card h3 {
+  margin: 0;
+  color: #263d51;
+  font-size: 0.86rem;
+}
+
+.upgrade-card > p {
+  min-height: 2.8em;
+  margin: 0;
+  color: #718091;
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.upgrade-level,
+.upgrade-cost {
+  color: #718091;
+  font-size: 0.68rem;
+}
+
+.upgrade-level output {
+  color: #354e64;
+  font-weight: 750;
+}
+
+.upgrade-cost output {
+  margin-left: auto;
+  color: #314e6d;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.upgrade-buy {
+  min-height: 36px;
+  border: 1px solid #9aafc0;
+  border-radius: 8px;
+  color: #24465f;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.76rem;
+  font-weight: 720;
+}
+
+.upgrade-buy:hover:not(:disabled) {
+  border-color: #315d7d;
+  background: #edf5fa;
+}
+
+.upgrade-buy:focus-visible {
+  outline: 3px solid #94c9e8;
+  outline-offset: 2px;
+}
+
+.upgrade-buy:disabled {
+  color: #8b98a3;
+  background: #edf0f2;
+  cursor: not-allowed;
+}
+
+.upgrade-status {
+  margin: 0;
+  color: #758394;
+  font-size: 0.72rem;
+}
+
+@media (max-width: 720px) {
+  .upgrade-panel {
+    padding: 14px;
+  }
+
+  .upgrade-panel-heading {
+    align-items: start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .upgrade-panel-heading > p {
+    text-align: left;
+  }
+}

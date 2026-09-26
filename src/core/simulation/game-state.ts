@@ -3,13 +3,20 @@ import {
   type InitialRunStateInput,
   type RunState,
 } from '../economy/run-state';
+import {
+  createInitialUpgradeLevels,
+  type UpgradeId,
+  type UpgradeLevels,
+} from '../economy/upgrades';
 
 export interface GameState {
   readonly run: RunState;
+  readonly upgrades: UpgradeLevels;
 }
 
 export interface InitialGameStateInput {
   readonly run?: InitialRunStateInput;
+  readonly upgrades?: Partial<Record<UpgradeId, number>>;
 }
 
 /**
@@ -19,5 +26,6 @@ export interface InitialGameStateInput {
 export function createInitialGameState(input: InitialGameStateInput = {}): GameState {
   return Object.freeze({
     run: createInitialRunState(input.run ?? {}),
+    upgrades: createInitialUpgradeLevels(input.upgrades ?? {}),
   });
 }
