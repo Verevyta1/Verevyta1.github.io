@@ -1,8 +1,7 @@
 import { createFoundationMarkup } from './app/foundation';
 import { formatResourceAmount } from './app/resource-format';
 import { purchaseUpgrade } from './core/economy/purchase-upgrade';
-import { calculateUpgradeCost } from './core/economy/upgrades';
-import type { UpgradeId } from './core/economy/upgrades';
+import { calculateUpgradeCost, type UpgradeId } from './core/economy/upgrades';
 import {
   activateGravityPulse,
   advanceGreyboxSimulation,
