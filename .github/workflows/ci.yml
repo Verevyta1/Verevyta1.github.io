@@ -39,6 +39,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Print launch-state formatting diff
+        run: npx prettier src/core/launch/launch-game.ts | diff -u src/core/launch/launch-game.ts - || true
+
       - name: Check formatting
         run: npm run format:check
 
