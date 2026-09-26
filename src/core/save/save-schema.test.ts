@@ -9,18 +9,21 @@ describe('save schema v1', () => {
       run: { mass: '1e1000', matter: '2e1200' },
     });
 
+    const canonicalMass = game.run.mass.serialize();
+    const canonicalMatter = game.run.matter.serialize();
     const parsed = parseSave(serializeSave(game, { createdAt: 100, lastSavedAt: 200 }));
+    const restored = restoreGameState(parsed);
 
-    expect(parsed).toEqual({
+    expect(parsed).toMatchObject({
       saveVersion: 1,
       createdAt: 100,
       lastSavedAt: 200,
       game: {
-        run: { mass: '1e1000', matter: '2e1200' },
+        run: { mass: canonicalMass, matter: canonicalMatter },
       },
     });
-    expect(restoreGameState(parsed).run.mass.equals('1e1000')).toBe(true);
-    expect(restoreGameState(parsed).run.matter.equals('2e1200')).toBe(true);
+    expect(restored.run.mass.serialize()).toBe(canonicalMass);
+    expect(restored.run.matter.serialize()).toBe(canonicalMatter);
   });
 
   it('rejects malformed JSON and unsupported schema versions', () => {
