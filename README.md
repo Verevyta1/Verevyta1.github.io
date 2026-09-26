@@ -8,7 +8,7 @@ When a run slows against an economic wall, the player can trigger **Matter Colla
 
 ## Current status
 
-The approved design and technical foundation now support a playable Milestone B greybox: matter objects drift around a stationary Matter Core, eligible objects are absorbed automatically, Mass and Matter update from the deterministic simulation, and Gravity Pulse speeds up eligible attraction. Progress saves locally in this browser.
+The staging preview now includes the Matter Core greybox and the first Matter upgrade loop. Matter objects drift toward the stationary Core; Density, Gravity, Influence, Assimilation, and Compression change deterministic simulation behaviour. Matter purchases are atomic, and upgrade levels save locally. Existing v1 Mass/Matter saves migrate automatically.
 
 The object thresholds and rewards in this first playable build are provisional tuning values. It uses code-drawn placeholder geometry; there is no commissioned art or final balance yet.
 
