@@ -156,10 +156,7 @@ export function releaseTeemo(
   const dragX = clamp(pullX, 0, MAX_DRAG_X);
   const dragY = clamp(pullY, -MAX_DRAG_Y, MAX_DRAG_Y);
   const throwLevel = state.upgrades.throwStrength;
-  const speed = Math.min(
-    speedCap(state.upgrades),
-    4.2 + dragX * 0.105 + throwLevel * 0.65,
-  );
+  const speed = Math.min(speedCap(state.upgrades), 4.2 + dragX * 0.105 + throwLevel * 0.65);
 
   return freezeState({
     ...state,
@@ -356,15 +353,7 @@ function advanceFixedStep(state: LaunchGameState): LaunchFrame {
         horizontalSpeed * (0.76 + state.upgrades.drag * 0.036),
       );
     } else {
-      return finishRun(
-        state,
-        distance,
-        gold,
-        goldEarned,
-        smashedMinions,
-        nextMinionIndex,
-        smashed,
-      );
+      return finishRun(state, distance, gold, goldEarned, smashedMinions, nextMinionIndex, smashed);
     }
   }
 
@@ -513,7 +502,7 @@ export function parseLaunchSave(serialized: string): LaunchGameState {
         ? 'throwStrength'
         : id === 'mushroomBoost'
           ? 'rocketSlam'
-          : id as LaunchUpgradeId;
+          : (id as LaunchUpgradeId);
     upgrades[targetId] = Math.min(level, MAX_UPGRADE_LEVEL);
   }
 
