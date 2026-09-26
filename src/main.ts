@@ -67,7 +67,8 @@ try {
 
 function renderHud(): void {
   goldOutput.textContent = formatResourceAmount(GameNumber.from(state.gold));
-  bestOutput.textContent = Math.floor(state.bestDistance).toLocaleString() + " m";
+  bestOutput.textContent =
+    Math.floor(state.bestDistance).toLocaleString() + " m";
   minionOutput.textContent = String(state.run.smashedMinions);
   distanceOutput.textContent = Math.floor(state.run.distance).toLocaleString();
   progressFill.style.width = Math.min(100, state.run.distance / 50) + "%";
@@ -117,7 +118,8 @@ function saveProgress(): void {
   try {
     window.localStorage.setItem(SAVE_KEY, serializeLaunchSave(state));
   } catch {
-    statusMessage = "Browser storage is unavailable; gold may reset when the page closes.";
+    statusMessage =
+      "Browser storage is unavailable; gold may reset when the page closes.";
   }
   renderHud();
 }
@@ -151,7 +153,10 @@ controls.forEach(({ definition, button }) => {
 
     state = purchase.state;
     statusMessage =
-      definition.name + " upgraded to level " + state.upgrades[definition.id] + ".";
+      definition.name +
+      " upgraded to level " +
+      state.upgrades[definition.id] +
+      ".";
     renderHud();
     scheduleSave();
   });
@@ -198,5 +203,6 @@ window.addEventListener("pagehide", () => {
 
 void startGame().catch((error: unknown) => {
   console.error(error);
-  statusOutput.textContent = "The game could not start. Check the browser console for details.";
+  statusOutput.textContent =
+    "The game could not start. Check the browser console for details.";
 });

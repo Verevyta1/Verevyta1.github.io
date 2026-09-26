@@ -65,13 +65,7 @@ class NexusLaunchScene extends Phaser.Scene {
     );
 
     for (let x = 120; x < NEXUS_DISTANCE; x += 360) {
-      this.add.ellipse(
-        x,
-        342,
-        145,
-        44,
-        x % 720 === 120 ? 0x6caa70 : 0x75b07a,
-      );
+      this.add.ellipse(x, 342, 145, 44, x % 720 === 120 ? 0x6caa70 : 0x75b07a);
       this.add.circle(x + 95, 318, 17, 0x467e52);
       this.add.rectangle(x + 95, 353, 8, 43, 0x72543a);
       this.add.rectangle(x + 210, GROUND_Y - 15, 22, 16, 0xe9dcae);
@@ -202,7 +196,9 @@ class NexusLaunchScene extends Phaser.Scene {
   }
 
   private showImpact(x: number, gold: number): void {
-    const burst = this.add.circle(x, GROUND_Y - 30, 16, 0xffdf81, 0.85).setDepth(8);
+    const burst = this.add
+      .circle(x, GROUND_Y - 30, 16, 0xffdf81, 0.85)
+      .setDepth(8);
     const label = this.add
       .text(x, GROUND_Y - 52, "+" + gold + " gold", {
         fontFamily: "system-ui, sans-serif",

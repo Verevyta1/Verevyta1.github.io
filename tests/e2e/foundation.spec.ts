@@ -11,12 +11,17 @@ test("launches Teemo and earns gold by smashing minions", async ({ page }) => {
   ).toBeVisible();
 
   await page.getByRole("button", { name: "Launch Teemo" }).click();
-  await expect(page.getByRole("button", { name: "Teemo is flying…" })).toBeDisabled();
+  await expect(
+    page.getByRole("button", { name: "Teemo is flying…" }),
+  ).toBeDisabled();
   await expect
     .poll(
       async () =>
         Number(
-          (await page.locator("#gold-total").textContent())?.replaceAll(",", "") ?? "0",
+          (await page.locator("#gold-total").textContent())?.replaceAll(
+            ",",
+            "",
+          ) ?? "0",
         ),
       { timeout: 10_000 },
     )

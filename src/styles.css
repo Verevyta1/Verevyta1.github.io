@@ -1,5 +1,12 @@
 :root {
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   color: #263529;
   background: #e8f1df;
   font-synthesis: none;
@@ -8,7 +15,9 @@
 * {
   box-sizing: border-box;
 }
-html, body, #app {
+html,
+body,
+#app {
   min-width: 320px;
   min-height: 100%;
   margin: 0;
@@ -36,7 +45,7 @@ button {
   margin: 2px 0 6px;
   color: #274d32;
   font-size: clamp(1.65rem, 4vw, 2.5rem);
-  letter-spacing: -.04em;
+  letter-spacing: -0.04em;
   line-height: 1.05;
 }
 .brand p {
@@ -45,9 +54,9 @@ button {
 }
 .eyebrow {
   color: #7c8557 !important;
-  font-size: .68rem;
+  font-size: 0.68rem;
   font-weight: 800;
-  letter-spacing: .14em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 .stats {
@@ -55,7 +64,9 @@ button {
   grid-template-columns: repeat(3, minmax(95px, 1fr));
   gap: 8px;
 }
-.stat, .game-frame, .upgrade-panel {
+.stat,
+.game-frame,
+.upgrade-panel {
   border: 1px solid #d3dfca;
   border-radius: 16px;
   background: #fffdf5;
@@ -69,7 +80,7 @@ button {
 }
 .stat span {
   color: #788264;
-  font-size: .69rem;
+  font-size: 0.69rem;
   font-weight: 700;
 }
 .stat output {
@@ -84,7 +95,9 @@ button {
   overflow: hidden;
   padding: 12px;
 }
-.game-stage-heading, .game-actions, .section-title {
+.game-stage-heading,
+.game-actions,
+.section-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -92,9 +105,9 @@ button {
 }
 .game-stage-heading {
   color: #74805f;
-  font-size: .68rem;
+  font-size: 0.68rem;
   font-weight: 800;
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
 }
 .game-stage-heading > span:last-child {
   letter-spacing: 0;
@@ -135,7 +148,7 @@ button {
   height: 100%;
   border-radius: inherit;
   background: #f5cd58;
-  transition: width .15s linear;
+  transition: width 0.15s linear;
 }
 .game-actions {
   min-height: 48px;
@@ -143,13 +156,14 @@ button {
 .game-actions p {
   margin: 0;
   color: #596f55;
-  font-size: .82rem;
+  font-size: 0.82rem;
 }
 .action-buttons {
   display: flex;
   gap: 9px;
 }
-.action-buttons button, .upgrade-buy {
+.action-buttons button,
+.upgrade-buy {
   min-height: 40px;
   border: 1px solid #396b45;
   border-radius: 10px;
@@ -165,7 +179,8 @@ button {
   border-color: #9c673d;
   background: #bd8350;
 }
-.action-buttons button:hover:not(:disabled), .upgrade-buy:hover:not(:disabled) {
+.action-buttons button:hover:not(:disabled),
+.upgrade-buy:hover:not(:disabled) {
   filter: brightness(1.07);
   transform: translateY(-1px);
 }
@@ -193,7 +208,7 @@ button:disabled {
   max-width: 360px;
   margin: 0;
   color: #75806e;
-  font-size: .8rem;
+  font-size: 0.8rem;
   text-align: right;
 }
 .upgrade-grid {
@@ -210,7 +225,8 @@ button:disabled {
   border-radius: 12px;
   background: #f7f8ef;
 }
-.upgrade-heading, .upgrade-cost {
+.upgrade-heading,
+.upgrade-cost {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -219,17 +235,18 @@ button:disabled {
 .upgrade-heading h3 {
   margin: 0;
   color: #425f3c;
-  font-size: .84rem;
+  font-size: 0.84rem;
 }
-.upgrade-heading span, .upgrade-cost {
+.upgrade-heading span,
+.upgrade-cost {
   color: #778169;
-  font-size: .67rem;
+  font-size: 0.67rem;
 }
 .upgrade-card p {
   min-height: 3.8em;
   margin: 0;
   color: #727d68;
-  font-size: .72rem;
+  font-size: 0.72rem;
   line-height: 1.4;
 }
 .upgrade-cost output {
@@ -241,12 +258,12 @@ button:disabled {
   width: 100%;
   min-height: 34px;
   border-radius: 8px;
-  font-size: .72rem;
+  font-size: 0.72rem;
 }
 .control-note {
   margin: 0;
   color: #78836f;
-  font-size: .7rem;
+  font-size: 0.7rem;
   text-align: center;
 }
 @media (max-width: 780px) {
@@ -298,10 +315,12 @@ button:disabled {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     scroll-behavior: auto !important;
-    animation-duration: .01ms !important;
+    animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }

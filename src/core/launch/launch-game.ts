@@ -50,7 +50,10 @@ export interface LaunchGameState {
 
 export interface LaunchFrame {
   readonly state: LaunchGameState;
-  readonly smashed: readonly { readonly index: number; readonly gold: number }[];
+  readonly smashed: readonly {
+    readonly index: number;
+    readonly gold: number;
+  }[];
   readonly runEnded: boolean;
 }
 
@@ -85,11 +88,13 @@ function freezeState(state: LaunchGameState): LaunchGameState {
   });
 }
 
-export function createInitialLaunchGameState(input: {
-  readonly gold?: string;
-  readonly bestDistance?: number;
-  readonly upgrades?: Partial<Record<LaunchUpgradeId, number>>;
-} = {}): LaunchGameState {
+export function createInitialLaunchGameState(
+  input: {
+    readonly gold?: string;
+    readonly bestDistance?: number;
+    readonly upgrades?: Partial<Record<LaunchUpgradeId, number>>;
+  } = {},
+): LaunchGameState {
   const gold = GameNumber.from(input.gold ?? "0");
   const bestDistance = input.bestDistance ?? 0;
 
@@ -165,7 +170,11 @@ export function buyLaunchUpgrade(
   state: LaunchGameState,
   id: LaunchUpgradeId,
   definitions: readonly LaunchUpgradeDefinition[],
-): { readonly state: LaunchGameState; readonly purchased: boolean; readonly cost: string } {
+): {
+  readonly state: LaunchGameState;
+  readonly purchased: boolean;
+  readonly cost: string;
+} {
   if (state.run.phase === "flying") {
     return { state, purchased: false, cost: "0" };
   }
@@ -192,16 +201,24 @@ export function buyLaunchUpgrade(
   };
 }
 
-export function advanceLaunchGame(state: LaunchGameState, deltaMs: number): LaunchFrame {
+export function advanceLaunchGame(
+  state: LaunchGameState,
+  deltaMs: number,
+): LaunchFrame {
   if (!Number.isFinite(deltaMs) || deltaMs < 0) {
     throw new RangeError("Delta must be finite and non-negative.");
   }
 
   if (state.run.phase !== "flying" || deltaMs === 0) {
-    return Object.freeze({ state, smashed: Object.freeze([]), runEnded: false });
+    return Object.freeze({
+      state,
+      smashed: Object.freeze([]),
+      runEnded: false,
+    });
   }
 
-  let accumulated = state.run.frameAccumulatorMs + Math.min(deltaMs, MAX_FRAME_MS);
+  let accumulated =
+    state.run.frameAccumulatorMs + Math.min(deltaMs, MAX_FRAME_MS);
   let next = state;
   const smashed: { index: number; gold: number }[] = [];
   let runEnded = false;
@@ -224,7 +241,11 @@ export function advanceLaunchGame(state: LaunchGameState, deltaMs: number): Laun
     run: { ...next.run, frameAccumulatorMs: accumulated },
   });
 
-  return Object.freeze({ state: next, smashed: Object.freeze(smashed), runEnded });
+  return Object.freeze({
+    state: next,
+    smashed: Object.freeze(smashed),
+    runEnded,
+  });
 }
 
 function advanceFixedStep(state: LaunchGameState): LaunchFrame {
@@ -232,7 +253,8 @@ function advanceFixedStep(state: LaunchGameState): LaunchFrame {
   const frames = STEP_MS / (1000 / 60);
   const previousDistance = run.distance;
   const distance = previousDistance + run.horizontalSpeed * frames;
-  let height = run.height + run.verticalSpeed * frames - 0.5 * GRAVITY * frames * frames;
+  let height =
+    run.height + run.verticalSpeed * frames - 0.5 * GRAVITY * frames * frames;
   let verticalSpeed = run.verticalSpeed - GRAVITY * frames;
   let horizontalSpeed = run.horizontalSpeed * Math.pow(0.998, frames);
   let nextMinionIndex = run.nextMinionIndex;
@@ -242,8 +264,12 @@ function advanceFixedStep(state: LaunchGameState): LaunchFrame {
   const cooldown = Math.max(0, run.boostCooldownMs - STEP_MS);
   const smashed: { index: number; gold: number }[] = [];
 
-  while (distance >= FIRST_MINION_DISTANCE + nextMinionIndex * MINION_WAVE_SPACING) {
-    const minionDistance = FIRST_MINION_DISTANCE + nextMinionIndex * MINION_WAVE_SPACING;
+  while (
+    distance >=
+    FIRST_MINION_DISTANCE + nextMinionIndex * MINION_WAVE_SPACING
+  ) {
+    const minionDistance =
+      FIRST_MINION_DISTANCE + nextMinionIndex * MINION_WAVE_SPACING;
     if (minionDistance <= previousDistance) {
       break;
     }
@@ -251,7 +277,9 @@ function advanceFixedStep(state: LaunchGameState): LaunchFrame {
     if (height <= 100) {
       const index = nextMinionIndex;
       const baseReward = index % 5 === 4 ? 15 : index % 3 === 2 ? 7 : 5;
-      const reward = Math.floor(baseReward * (1 + state.upgrades.goldBounty * 0.25));
+      const reward = Math.floor(
+        baseReward * (1 + state.upgrades.goldBounty * 0.25),
+      );
       gold = gold.add(reward);
       goldEarned = goldEarned.add(reward);
       smashedMinions += 1;
@@ -339,7 +367,10 @@ function finishRun(
   };
 }
 
-export function serializeLaunchSave(state: LaunchGameState, savedAt = Date.now()): string {
+export function serializeLaunchSave(
+  state: LaunchGameState,
+  savedAt = Date.now(),
+): string {
   if (!Number.isFinite(savedAt) || savedAt < 0) {
     throw new RangeError("Save timestamp is invalid.");
   }
@@ -370,7 +401,11 @@ export function parseLaunchSave(serialized: string): LaunchGameState {
   if (save.saveVersion !== SAVE_VERSION || typeof save.gold !== "string") {
     throw new RangeError("Save version is unsupported.");
   }
-  if (typeof save.savedAt !== "number" || !Number.isFinite(save.savedAt) || save.savedAt < 0) {
+  if (
+    typeof save.savedAt !== "number" ||
+    !Number.isFinite(save.savedAt) ||
+    save.savedAt < 0
+  ) {
     throw new RangeError("Save timestamp is invalid.");
   }
   if (
@@ -380,7 +415,11 @@ export function parseLaunchSave(serialized: string): LaunchGameState {
   ) {
     throw new RangeError("Best distance is invalid.");
   }
-  if (typeof save.upgrades !== "object" || save.upgrades === null || Array.isArray(save.upgrades)) {
+  if (
+    typeof save.upgrades !== "object" ||
+    save.upgrades === null ||
+    Array.isArray(save.upgrades)
+  ) {
     throw new RangeError("Saved upgrades are invalid.");
   }
 
@@ -409,6 +448,8 @@ export function parseLaunchSave(serialized: string): LaunchGameState {
 
 function requireLevel(level: number): void {
   if (!Number.isSafeInteger(level) || level < 0 || level > MAX_LEVEL) {
-    throw new RangeError("Upgrade level must be a supported non-negative integer.");
+    throw new RangeError(
+      "Upgrade level must be a supported non-negative integer.",
+    );
   }
 }

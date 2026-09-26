@@ -35,13 +35,17 @@ describe("Nexus launch simulation", () => {
     const launched = startLaunchRun(createInitialLaunchGameState());
     const boosted = activateMushroomBoost(launched);
 
-    expect(boosted.run.horizontalSpeed).toBeGreaterThan(launched.run.horizontalSpeed);
+    expect(boosted.run.horizontalSpeed).toBeGreaterThan(
+      launched.run.horizontalSpeed,
+    );
     expect(activateMushroomBoost(boosted)).toBe(boosted);
   });
 
   it("buys upgrades atomically and rejects unaffordable purchases", () => {
     const poor = createInitialLaunchGameState();
-    expect(buyLaunchUpgrade(poor, "launchPower", LAUNCH_UPGRADES).state).toBe(poor);
+    expect(buyLaunchUpgrade(poor, "launchPower", LAUNCH_UPGRADES).state).toBe(
+      poor,
+    );
 
     const bought = buyLaunchUpgrade(
       createInitialLaunchGameState({ gold: "100" }),

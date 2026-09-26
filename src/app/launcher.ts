@@ -12,7 +12,7 @@ export function createLauncherMarkup(): string {
         upgrade.id +
         '">' +
         upgrade.name +
-        "</h3><span>Level <output id=\"upgrade-level-" +
+        '</h3><span>Level <output id="upgrade-level-' +
         upgrade.id +
         '\">0</output></span></div>',
       "<p>" + upgrade.description + "</p>",
