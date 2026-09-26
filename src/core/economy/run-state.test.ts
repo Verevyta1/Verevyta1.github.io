@@ -1,12 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { createInitialGameState } from '../simulation/game-state';
-import {
-  applyAbsorption,
-  canAffordMatter,
-  createInitialRunState,
-  spendMatter,
-} from './run-state';
+import { applyAbsorption, canAffordMatter, createInitialRunState, spendMatter } from './run-state';
 
 describe('run economy state', () => {
   it('starts with frozen zero-valued Mass and Matter', () => {
