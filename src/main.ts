@@ -11,17 +11,17 @@ if (!app) {
 
 app.innerHTML = createFoundationMarkup();
 
-async function startFoundation(): Promise<void> {
+const canvasHost = app.querySelector<HTMLDivElement>('#game-canvas');
+
+if (!canvasHost) {
+  throw new Error('Phaser mount #game-canvas was not found.');
+}
+
+async function startFoundation(mount: HTMLDivElement): Promise<void> {
   const platform = new LocalPlatform();
   await platform.initialize();
 
-  const canvasHost = app.querySelector<HTMLDivElement>('#game-canvas');
-
-  if (!canvasHost) {
-    throw new Error('Phaser mount #game-canvas was not found.');
-  }
-
-  createFoundationGame(canvasHost);
+  createFoundationGame(mount);
 }
 
-void startFoundation();
+void startFoundation(canvasHost);
