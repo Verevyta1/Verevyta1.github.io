@@ -39,6 +39,11 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Format diagnostics
+        run: |
+          npx prettier --write src/app/foundation.test.ts src/app/foundation.ts src/core/simulation/greybox-loop.test.ts src/core/simulation/greybox-loop.ts src/styles.css
+          git --no-pager diff -- src/app/foundation.test.ts src/app/foundation.ts src/core/simulation/greybox-loop.test.ts src/core/simulation/greybox-loop.ts src/styles.css
+
       - name: Check formatting
         run: npm run format:check
 
