@@ -130,7 +130,7 @@ export class GameNumber {
   }
 
   private static wrap(value: Decimal): GameNumber {
-    if (value.isNaN() || !value.isFinite()) {
+    if (Decimal.isNaN(value) || !value.isFinite()) {
       throw new RangeError('GameNumber operation produced a non-finite value.');
     }
 
