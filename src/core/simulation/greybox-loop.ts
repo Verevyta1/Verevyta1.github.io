@@ -98,7 +98,7 @@ export function advanceGreyboxSimulation(
     return Object.freeze({ state, absorbedObjects: Object.freeze([]) });
   }
 
-  const byId = new Map(definitions.map((definition) => [definition.id, definition]));
+  const byId = new Map(definitions.map((definition) => [definition.id, definition] as const));
   let accumulated = state.frameAccumulatorMs + Math.min(deltaMs, MAX_FRAME_CATCH_UP_MS);
   let nextState = state;
   const absorbedObjects: AbsorbedObjectEvent[] = [];
