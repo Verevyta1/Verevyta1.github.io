@@ -1,12 +1,12 @@
 # Implementation Roadmap
 
-## Current milestone — drag, throw, and progression gate
+## Current milestone — smooth drag, throw, and progression
 
 - Replace the launch button with mouse/touch drag and release on Teemo.
 - Add the in-flight Rocket Slam action, minion impacts, bounce, and gold rewards.
 - Make seven upgrade tracks data-driven, finite, and visibly effective.
 - Keep runs short enough to require repeat attempts.
-- Hold Teemo at the Nexus shield until every upgrade track is mastered.
+- Use a continuous pull vector, 60 Hz deterministic movement, and momentum-based Nexus progress without a barrier.
 - Persist gold and upgrades, migrate the previous save schema, and cover the loop with unit and browser tests.
 
 ## Next milestones
@@ -14,12 +14,12 @@
 ### B. Run results and missions
 
 - Add a clear run summary with distance, gold gained, and optional mission rewards.
-- Add deterministic missions such as smashing minions, using Rocket Slam, and reaching the Nexus shield.
+- Add deterministic missions such as smashing minions, using Rocket Slam, and approaching the Nexus.
 
-### C. Special minions and defense layers
+### C. Special minions and lane events
 
 - Add readable special minion encounters: explosive forward boost, Blast Cone lift, and gold carrier.
-- Add staged Nexus defenses that act as distance gates and become traversable through progression.
+- Add lane events that change momentum without imposing a mandatory upgrade gate.
 
 ### D. Balance and polish
 

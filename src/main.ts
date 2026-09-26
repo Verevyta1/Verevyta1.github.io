@@ -7,9 +7,8 @@ import {
   buyLaunchUpgrade,
   calculateLaunchUpgradeCost,
   createInitialLaunchGameState,
-  isNexusUnlocked,
-  masteredUpgradeCount,
   MAX_UPGRADE_LEVEL,
+  NEXUS_DISTANCE,
   parseLaunchSave,
   releaseTeemo,
   serializeLaunchSave,
@@ -44,7 +43,7 @@ const minionOutput = need<HTMLOutputElement>('#minion-total');
 const distanceOutput = need<HTMLOutputElement>('#run-distance');
 const progressFill = need<HTMLSpanElement>('#goal-progress-fill');
 const statusOutput = need<HTMLParagraphElement>('#run-status');
-const masteryOutput = need<HTMLOutputElement>('#mastery-count');
+const remainingOutput = need<HTMLOutputElement>('#distance-remaining');
 const slamButton = need<HTMLButtonElement>('#slam-button');
 const slamState = need<HTMLSpanElement>('#slam-state');
 const controls = LAUNCH_UPGRADES.map((definition) => ({
@@ -55,7 +54,7 @@ const controls = LAUNCH_UPGRADES.map((definition) => ({
 }));
 
 let state: LaunchGameState = createInitialLaunchGameState();
-let statusMessage = 'Drag Teemo backward and release to start your first run.';
+let statusMessage = 'Pull Teemo back at any angle, then release to throw.';
 let saveTimer: number | undefined;
 let lastHudUpdate = -100;
 
@@ -75,33 +74,27 @@ function renderHud(): void {
   minionOutput.textContent = String(state.run.smashedMinions);
   distanceOutput.textContent = Math.floor(state.run.distance).toLocaleString();
   progressFill.style.width = Math.min(100, (state.run.distance / 5_000) * 100) + '%';
+  remainingOutput.textContent =
+    Math.max(0, NEXUS_DISTANCE - Math.floor(state.bestDistance)).toLocaleString() + ' m';
 
   const flying = state.run.phase === 'flying';
-  const mastered = masteredUpgradeCount(state.upgrades);
-  masteryOutput.textContent = mastered + ' / ' + controls.length;
   slamButton.disabled = !flying || state.run.slamCharges <= 0 || state.run.height <= 0;
   slamState.textContent = state.run.slamCharges + ' left';
 
   statusOutput.textContent =
     state.run.phase === 'won'
-      ? 'Victory! Teemo broke through and reached the Nexus.'
-      : state.run.phase === 'finished' && state.run.blockedAtNexus
-        ? 'The Nexus shield stopped Teemo. Master every upgrade track (' +
-          mastered +
-          ' / ' +
-          controls.length +
-          ') before trying the final run.'
-        : state.run.phase === 'finished'
-          ? 'Run complete: ' +
-            Math.floor(state.run.distance).toLocaleString() +
-            ' m. Gold earned: ' +
-            state.run.goldEarned +
-            '. Drag Teemo back to the sling for another attempt.'
-          : state.run.phase === 'aiming'
-            ? 'Pull Teemo back from the sling, then release to throw.'
-            : flying
-              ? 'In flight! Smash minions for gold. Click or tap the lane to Rocket Slam.'
-              : statusMessage;
+      ? 'Victory! Teemo reached the Nexus. Drag him back to launch again.'
+      : state.run.phase === 'finished'
+        ? 'Run complete: ' +
+          Math.floor(state.run.distance).toLocaleString() +
+          ' m. Gold earned: ' +
+          state.run.goldEarned +
+          '. Drag Teemo back to the sling for another attempt.'
+        : state.run.phase === 'aiming'
+          ? 'Pull farther for power; drag up or down to change the launch angle.'
+          : flying
+            ? 'In flight! Smash minions for gold. Click or tap the lane to Rocket Slam.'
+            : statusMessage;
 
   for (const control of controls) {
     const level = state.upgrades[control.definition.id];
@@ -113,15 +106,8 @@ function renderHud(): void {
     control.button.disabled =
       flying ||
       state.run.phase === 'aiming' ||
-      state.run.phase === 'won' ||
       masteredTrack ||
       GameNumber.from(state.gold).lessThan(cost);
-  }
-
-  if (isNexusUnlocked(state.upgrades)) {
-    statusOutput.dataset.nexus = 'unlocked';
-  } else {
-    delete statusOutput.dataset.nexus;
   }
 }
 
@@ -185,7 +171,10 @@ async function startGame(): Promise<void> {
     },
     throw: (pullX, pullY) => {
       state = releaseTeemo(state, pullX, pullY);
-      statusMessage = 'Teemo is off! Smash the lane minions for gold.';
+      statusMessage =
+        state.run.phase === 'flying'
+          ? 'Teemo is off! Smash the lane minions for gold.'
+          : 'Pull Teemo a little farther before releasing.';
       renderHud();
     },
     slam: useRocketSlam,

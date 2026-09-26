@@ -6,13 +6,11 @@ import {
   beginLaunchAim,
   FIRST_MINION_DISTANCE,
   buyLaunchUpgrade,
+  calculateLaunchVelocity,
   calculateLaunchUpgradeCost,
   createInitialLaunchGameState,
-  isNexusUnlocked,
-  masteredUpgradeCount,
   MAX_UPGRADE_LEVEL,
   NEXUS_DISTANCE,
-  NEXUS_GATE_DISTANCE,
   parseLaunchSave,
   releaseTeemo,
   serializeLaunchSave,
@@ -59,6 +57,23 @@ describe('Teemo launch simulation', () => {
 
     expect(upgraded.run.horizontalSpeed).toBeGreaterThan(basic.run.horizontalSpeed);
     expect(upgraded.run.verticalSpeed).toBeGreaterThan(basic.run.verticalSpeed);
+  });
+
+  it('turns drag angle and distance into continuous force', () => {
+    const upgrades = createInitialLaunchGameState().upgrades;
+    const short = calculateLaunchVelocity(upgrades, 70, 20);
+    const long = calculateLaunchVelocity(upgrades, 140, 20);
+    const steep = calculateLaunchVelocity(upgrades, 90, 75);
+    const shallow = calculateLaunchVelocity(upgrades, 90, 5);
+    const capped = calculateLaunchVelocity(upgrades, 400, 400);
+
+    expect(long.horizontalSpeed).toBeGreaterThan(short.horizontalSpeed);
+    expect(steep.verticalSpeed).toBeGreaterThan(shallow.verticalSpeed);
+    expect(capped.stretch).toBeCloseTo(capped.maximumStretch);
+    expect(capped.pullX).toBeCloseTo(capped.pullY);
+    expect(releaseTeemo(beginLaunchAim(createInitialLaunchGameState()), 3, 2).run.phase).toBe(
+      'ready',
+    );
   });
 
   it('raises the speed cap for stronger throws', () => {
@@ -161,62 +176,10 @@ describe('Teemo launch simulation', () => {
 
     expect(state.run.phase).toBe('finished');
     expect(state.run.distance).toBeLessThan(NEXUS_DISTANCE);
-    expect(isNexusUnlocked(state.upgrades)).toBe(false);
   });
 
-  it('stops an unmastered run at the Nexus shield', () => {
+  it('allows a Nexus crossing without any upgrade gate', () => {
     const launched = throwTeemo();
-    const nearGate: LaunchGameState = {
-      ...launched,
-      run: {
-        ...launched.run,
-        phase: 'flying',
-        distance: NEXUS_GATE_DISTANCE - 1,
-        height: 25,
-        horizontalSpeed: 8,
-        verticalSpeed: 2,
-      },
-    };
-
-    const frame = advanceLaunchGame(nearGate, 50);
-
-    expect(frame.runEnded).toBe(true);
-    expect(frame.state.run.phase).toBe('finished');
-    expect(frame.state.run.blockedAtNexus).toBe(true);
-    expect(frame.state.run.distance).toBe(NEXUS_GATE_DISTANCE);
-  });
-
-  it('only opens the Nexus shield after every upgrade track is mastered', () => {
-    const upgrades = {
-      throwStrength: MAX_UPGRADE_LEVEL,
-      rocketSlam: MAX_UPGRADE_LEVEL,
-      bouncePower: MAX_UPGRADE_LEVEL,
-      speed: MAX_UPGRADE_LEVEL,
-      drag: MAX_UPGRADE_LEVEL,
-      minionMomentum: MAX_UPGRADE_LEVEL,
-      goldBounty: MAX_UPGRADE_LEVEL,
-    };
-    const mastered = createInitialLaunchGameState({ upgrades });
-    const missingTrack = createInitialLaunchGameState({
-      upgrades: { ...upgrades, drag: MAX_UPGRADE_LEVEL - 1 },
-    });
-
-    expect(masteredUpgradeCount(mastered.upgrades)).toBe(7);
-    expect(isNexusUnlocked(mastered.upgrades)).toBe(true);
-    expect(isNexusUnlocked(missingTrack.upgrades)).toBe(false);
-  });
-
-  it('allows the Nexus win only after every upgrade track is mastered', () => {
-    const upgrades = {
-      throwStrength: MAX_UPGRADE_LEVEL,
-      rocketSlam: MAX_UPGRADE_LEVEL,
-      bouncePower: MAX_UPGRADE_LEVEL,
-      speed: MAX_UPGRADE_LEVEL,
-      drag: MAX_UPGRADE_LEVEL,
-      minionMomentum: MAX_UPGRADE_LEVEL,
-      goldBounty: MAX_UPGRADE_LEVEL,
-    };
-    const launched = throwTeemo(createInitialLaunchGameState({ upgrades }));
     const nearNexus: LaunchGameState = {
       ...launched,
       run: {
@@ -233,8 +196,8 @@ describe('Teemo launch simulation', () => {
 
     expect(frame.runEnded).toBe(true);
     expect(frame.state.run.phase).toBe('won');
-    expect(frame.state.run.blockedAtNexus).toBe(false);
     expect(frame.state.run.distance).toBe(NEXUS_DISTANCE);
+    expect(beginLaunchAim(frame.state).run.phase).toBe('aiming');
   });
 
   it('caps upgrade levels and rejects unaffordable purchases', () => {

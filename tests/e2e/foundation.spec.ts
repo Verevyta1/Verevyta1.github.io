@@ -14,14 +14,14 @@ test('drags and throws Teemo, then earns gold from minions', async ({ page }) =>
     return;
   }
 
-  const teemoX = bounds.x + (95 / 960) * bounds.width;
+  const teemoX = bounds.x + (220 / 960) * bounds.width;
   const teemoY = bounds.y + (410 / 540) * bounds.height;
   await page.mouse.move(teemoX, teemoY);
   await page.mouse.down();
   await page.mouse.move(teemoX - 115, teemoY + 28, { steps: 8 });
   await page.mouse.up();
 
-  await expect(page.locator('#run-status')).toContainText(/In flight|Run complete|Nexus shield/);
+  await expect(page.locator('#run-status')).toContainText(/In flight|Run complete/);
   await expect
     .poll(
       async () =>
@@ -60,7 +60,7 @@ test('purchases and restores a scout upgrade', async ({ page }) => {
   });
   await page.goto('/');
 
-  await expect(page.locator('#mastery-count')).toHaveText('0 / 7');
+  await expect(page.locator('#distance-remaining')).toHaveText('4,300 m');
   const buy = page.getByRole('button', { name: 'Buy one Bandle Sling Tension' });
   await expect(buy).toBeEnabled();
   await buy.click();
@@ -74,5 +74,5 @@ test('purchases and restores a scout upgrade', async ({ page }) => {
   await page.reload();
   await expect(page.locator('#upgrade-level-throwStrength')).toHaveText('1');
   await expect(page.locator('#gold-total')).toHaveText('88');
-  await expect(page.locator('#mastery-count')).toHaveText('0 / 7');
+  await expect(page.locator('#distance-remaining')).toHaveText('4,300 m');
 });
