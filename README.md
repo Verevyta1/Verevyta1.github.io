@@ -8,17 +8,17 @@ When a run slows against an economic wall, the player can trigger **Matter Colla
 
 ## Current status
 
-The staging preview now includes the Matter Core greybox and the first Matter upgrade loop. Matter objects drift toward the stationary Core; Density, Gravity, Influence, Assimilation, and Compression change deterministic simulation behaviour. Matter purchases are atomic, and upgrade levels save locally. Existing v1 Mass/Matter saves migrate automatically.
+The playable greybox includes the Matter Core and the first Matter upgrade loop. Matter objects drift toward the stationary Core; Density, Gravity, Influence, Assimilation, and Compression change deterministic simulation behaviour. Matter purchases are atomic, and upgrade levels save locally. Existing v1 Mass/Matter saves migrate automatically.
 
 The object thresholds and rewards in this first playable build are provisional tuning values. It uses code-drawn placeholder geometry; there is no commissioned art or final balance yet.
 
 ## Playable greybox build
 
-Successful GitHub Actions runs attach a downloadable artifact named project-scale-greybox. Download and unzip it, open a terminal in the extracted artifact folder, then serve it locally:
+The live preview is hosted at [https://verevyta1.github.io/](https://verevyta1.github.io/). Successful GitHub Actions runs also attach a downloadable artifact named project-scale-greybox. Download and unzip it, open a terminal in the extracted artifact folder, then serve it locally:
 
     py -m http.server 4173
 
-Open http://localhost:4173 in your browser. This build is a pre-production preview and is not deployed to main.
+Open http://localhost:4173 in your browser. The hosted site deploys from `main` after the full CI suite passes. Greybox values remain provisional, and the art is placeholder geometry.
 
 ## Source of truth
 
