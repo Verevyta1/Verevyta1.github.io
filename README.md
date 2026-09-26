@@ -8,9 +8,17 @@ When a run slows against an economic wall, the player can trigger **Matter Colla
 
 ## Current status
 
-The core design and high-level technical architecture are now approved. The first technical foundation slice establishes the browser toolchain, deterministic Mass/Matter state and GameNumber boundary, a placeholder Phaser view, save schema v1, and a local platform adapter. No gameplay loop or content is present yet.
+The approved design and technical foundation now support a playable Milestone B greybox: matter objects drift around a stationary Matter Core, eligible objects are absorbed automatically, Mass and Matter update from the deterministic simulation, and Gravity Pulse speeds up eligible attraction. Progress saves locally in this browser.
 
-The next stage is the greybox Matter Core vertical slice, built as a small reviewable step after the foundation checks pass.
+The object thresholds and rewards in this first playable build are provisional tuning values. It uses code-drawn placeholder geometry; there is no commissioned art or final balance yet.
+
+## Playable greybox build
+
+Successful GitHub Actions runs attach a downloadable artifact named project-scale-greybox. Download and unzip it, open a terminal in the extracted artifact folder, then serve it locally:
+
+    py -m http.server 4173
+
+Open http://localhost:4173 in your browser. This build is a pre-production preview and is not deployed to main.
 
 ## Source of truth
 

@@ -3,21 +3,24 @@ import { describe, expect, it } from 'vitest';
 import { createFoundationMarkup, FOUNDATION_TITLE } from './foundation';
 
 describe('foundation app', () => {
-  it('exposes the project title in the initial markup', () => {
+  it('renders the product title and Matter Core playfield', () => {
     const markup = createFoundationMarkup();
 
     expect(FOUNDATION_TITLE).toBe('Project Scale');
-    expect(markup).toContain(`<h1 id="foundation-title">${FOUNDATION_TITLE}</h1>`);
+    expect(markup).toContain('<h1 id="foundation-title">Project Scale</h1>');
+    expect(markup).toContain('id="game-canvas"');
+    expect(markup).toContain(
+      'aria-label="Matter objects drift around a stationary central Matter Core and are absorbed when eligible"',
+    );
   });
 
-  it('keeps the initial screen explicitly non-gameplay', () => {
-    expect(createFoundationMarkup()).toContain('Gameplay will be added in small, tested slices.');
-  });
-
-  it('provides an accessible mount for the Phaser foundation view', () => {
+  it('provides Mass, Matter, and the accessible Gravity Pulse command', () => {
     const markup = createFoundationMarkup();
 
-    expect(markup).toContain('id="game-canvas"');
-    expect(markup).toContain('aria-label="Matter Core placeholder preview rendered with Phaser"');
+    expect(markup).toContain('id="resource-mass"');
+    expect(markup).toContain('id="resource-matter"');
+    expect(markup).toContain('id="gravity-pulse"');
+    expect(markup).toContain('id="pulse-state"');
+    expect(markup).toContain('No movement controls.');
   });
 });

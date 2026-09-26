@@ -53,3 +53,12 @@ jobs:
 
       - name: Browser smoke tests
         run: npm run test:e2e
+
+      - name: Upload playable greybox build
+        uses: actions/upload-artifact@v7
+        with:
+          name: project-scale-greybox
+          path: dist/
+          retention-days: 14
+          if-no-files-found: error
+          overwrite: true
