@@ -27,8 +27,8 @@ export function createFoundationMarkup(): string {
         upgrade.name +
         ' upgrade">Buy 1</button>',
       '      </article>',
-    ].join('\\n'),
-  ).join('\\n');
+    ].join('\n'),
+  ).join('\n');
 
   return [
     '<main class="foundation-shell" aria-labelledby="foundation-title">',
