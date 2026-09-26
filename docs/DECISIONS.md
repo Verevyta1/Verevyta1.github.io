@@ -20,4 +20,7 @@ Accepted 2026-09-26. Initial Teemo, lane minions, and Nexus are drawn from proje
 
 
 ## ADR-007 — Drag launch and full-upgrade Nexus gate
-Accepted 2026-09-26. Teemo is launched by pulling back and releasing on the character, with Rocket Slam available during flight. The Nexus remains shielded until all seven finite upgrade tracks are at maximum level. This preserves a multi-run progression goal.
+Superseded by ADR-008. The first version required all seven upgrade tracks at maximum level before the Nexus could be reached.
+
+## ADR-008 — Momentum-based Nexus progression
+Accepted 2026-09-26. Teemo launches from a continuous elastic pull vector. Distance comes from throw force, flight momentum, minion impacts, ground bounces, and timed Rocket Slams. Every upgrade helps travel or earn gold, but there is no shield or upgrade prerequisite at the Nexus. Early runs end short of the goal; a well-upgraded run can win before all tracks are maxed.

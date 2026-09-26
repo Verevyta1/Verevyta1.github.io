@@ -13,15 +13,15 @@ export type LaunchUpgradeId = (typeof LAUNCH_UPGRADE_IDS)[number];
 export type LaunchPhase = 'ready' | 'aiming' | 'flying' | 'finished' | 'won';
 export const MAX_UPGRADE_LEVEL = 5;
 export const NEXUS_DISTANCE = 5_000;
-export const NEXUS_GATE_DISTANCE = 4_250;
+export const BASE_SLING_PULL = 160;
+export const SLING_PULL_PER_LEVEL = 10;
+export const LAUNCH_GRAVITY = 0.38;
 export const FIRST_MINION_DISTANCE = 420;
-export const MINION_WAVE_SPACING = 250;
-const STEP_MS = 50;
+export const MINION_WAVE_SPACING = 330;
+const STEP_MS = 1000 / 60;
 const MAX_FRAME_MS = 250;
-const MAX_RUN_MS = 45_000;
-const GRAVITY = 0.38;
-const MAX_DRAG_X = 140;
-const MAX_DRAG_Y = 70;
+const MAX_RUN_MS = 90_000;
+const MIN_SLING_PULL = 8;
 const SAVE_VERSION = 2;
 
 export type LaunchUpgradeLevels = Readonly<Record<LaunchUpgradeId, number>>;
@@ -46,7 +46,15 @@ export interface LaunchRunState {
   readonly goldEarned: string;
   readonly slamCharges: number;
   readonly frameAccumulatorMs: number;
-  readonly blockedAtNexus: boolean;
+}
+
+export interface LaunchVelocity {
+  readonly pullX: number;
+  readonly pullY: number;
+  readonly stretch: number;
+  readonly maximumStretch: number;
+  readonly horizontalSpeed: number;
+  readonly verticalSpeed: number;
 }
 
 export interface LaunchGameState {
@@ -89,7 +97,6 @@ function emptyRun(): LaunchRunState {
     goldEarned: '0',
     slamCharges: 0,
     frameAccumulatorMs: 0,
-    blockedAtNexus: false,
   });
 }
 
@@ -131,7 +138,7 @@ export function createInitialLaunchGameState(
 }
 
 export function beginLaunchAim(state: LaunchGameState): LaunchGameState {
-  if (state.run.phase === 'flying' || state.run.phase === 'won') {
+  if (state.run.phase === 'flying') {
     return state;
   }
 
@@ -146,30 +153,66 @@ export function releaseTeemo(
   pullX: number,
   pullY: number,
 ): LaunchGameState {
-  if (!Number.isFinite(pullX) || !Number.isFinite(pullY)) {
-    throw new RangeError('Launch drag must be finite.');
-  }
   if (state.run.phase !== 'aiming') {
     return state;
   }
 
-  const dragX = clamp(pullX, 0, MAX_DRAG_X);
-  const dragY = clamp(pullY, -MAX_DRAG_Y, MAX_DRAG_Y);
-  const throwLevel = state.upgrades.throwStrength;
-  const speed = Math.min(speedCap(state.upgrades), 4.2 + dragX * 0.105 + throwLevel * 0.65);
+  const velocity = calculateLaunchVelocity(state.upgrades, pullX, pullY);
+  if (velocity.stretch < MIN_SLING_PULL) {
+    return freezeState({ ...state, run: emptyRun() });
+  }
 
   return freezeState({
     ...state,
     run: {
       ...emptyRun(),
       phase: 'flying',
-      horizontalSpeed: speed,
-      verticalSpeed: Math.max(
-        3.2,
-        5.2 + dragY * 0.065 + throwLevel * 0.7 + state.upgrades.bouncePower * 0.22,
-      ),
+      horizontalSpeed: velocity.horizontalSpeed,
+      verticalSpeed: velocity.verticalSpeed,
       slamCharges: 1 + state.upgrades.rocketSlam,
     },
+  });
+}
+
+export function maximumSlingPull(upgrades: LaunchUpgradeLevels): number {
+  return BASE_SLING_PULL + upgrades.throwStrength * SLING_PULL_PER_LEVEL;
+}
+
+/** Pull X is backward from the sling; positive pull Y is downward. */
+export function calculateLaunchVelocity(
+  upgrades: LaunchUpgradeLevels,
+  pullX: number,
+  pullY: number,
+): LaunchVelocity {
+  if (!Number.isFinite(pullX) || !Number.isFinite(pullY)) {
+    throw new RangeError('Launch drag must be finite.');
+  }
+
+  const backward = Math.max(0, pullX);
+  const rawStretch = Math.hypot(backward, pullY);
+  const maximumStretch = maximumSlingPull(upgrades);
+  const scale = rawStretch > maximumStretch ? maximumStretch / rawStretch : 1;
+  const x = backward * scale;
+  const y = pullY * scale;
+  const stretch = rawStretch * scale;
+  const tension = stretch / maximumStretch;
+  const throwPower = 1 + upgrades.throwStrength * 0.12;
+  const speedBoost = 1 + upgrades.speed * 0.045;
+
+  return Object.freeze({
+    pullX: x,
+    pullY: y,
+    stretch,
+    maximumStretch,
+    horizontalSpeed: Math.min(
+      speedCap(upgrades),
+      (x * 0.09 + tension * 1.2) * throwPower * speedBoost,
+    ),
+    verticalSpeed: clamp(
+      (3.5 * tension + y * 0.09 + x * 0.024) * (1 + upgrades.throwStrength * 0.07),
+      -8,
+      15,
+    ),
   });
 }
 
@@ -186,18 +229,10 @@ export function activateRocketSlam(state: LaunchGameState): LaunchGameState {
         speedCap(state.upgrades),
         state.run.horizontalSpeed + 1.4 + state.upgrades.rocketSlam * 0.45,
       ),
-      verticalSpeed: Math.max(-12, state.run.verticalSpeed - 13),
+      verticalSpeed: -Math.min(14, 8 + state.upgrades.rocketSlam * 0.9),
       slamCharges: state.run.slamCharges - 1,
     },
   });
-}
-
-export function masteredUpgradeCount(upgrades: LaunchUpgradeLevels): number {
-  return LAUNCH_UPGRADE_IDS.filter((id) => upgrades[id] >= MAX_UPGRADE_LEVEL).length;
-}
-
-export function isNexusUnlocked(upgrades: LaunchUpgradeLevels): boolean {
-  return masteredUpgradeCount(upgrades) === LAUNCH_UPGRADE_IDS.length;
 }
 
 export function calculateLaunchUpgradeCost(
@@ -273,12 +308,12 @@ export function advanceLaunchGame(state: LaunchGameState, deltaMs: number): Laun
   const smashed: { index: number; gold: number; special: boolean }[] = [];
   let runEnded = false;
 
-  while (accumulated >= STEP_MS) {
+  while (accumulated + 0.000001 >= STEP_MS) {
     const frame = advanceFixedStep(next);
     next = frame.state;
     smashed.push(...frame.smashed);
     runEnded ||= frame.runEnded;
-    accumulated -= STEP_MS;
+    accumulated = Math.max(0, accumulated - STEP_MS);
 
     if (next.run.phase !== 'flying') {
       accumulated = 0;
@@ -302,25 +337,20 @@ function advanceFixedStep(state: LaunchGameState): LaunchFrame {
   const run = state.run;
   const frames = STEP_MS / (1000 / 60);
   const previousDistance = run.distance;
-  const nexusUnlocked = isNexusUnlocked(state.upgrades);
-  const limit = nexusUnlocked ? NEXUS_DISTANCE : NEXUS_GATE_DISTANCE;
-  const distance = Math.min(limit, previousDistance + run.horizontalSpeed * frames);
-  let height = run.height + run.verticalSpeed * frames - 0.5 * GRAVITY * frames * frames;
-  let verticalSpeed = run.verticalSpeed - GRAVITY * frames;
-  let horizontalSpeed = run.horizontalSpeed * Math.pow(0.998, frames);
+  const distance = Math.min(NEXUS_DISTANCE, previousDistance + run.horizontalSpeed * frames);
+  let height = run.height + run.verticalSpeed * frames - 0.5 * LAUNCH_GRAVITY * frames * frames;
+  let verticalSpeed = run.verticalSpeed - LAUNCH_GRAVITY * frames;
+  let horizontalSpeed =
+    run.horizontalSpeed * Math.pow(0.9975 + state.upgrades.speed * 0.0003, frames);
   let nextMinionIndex = run.nextMinionIndex;
   let gold = GameNumber.from(state.gold);
   let goldEarned = GameNumber.from(run.goldEarned);
   let smashedMinions = run.smashedMinions;
   const smashed: { index: number; gold: number; special: boolean }[] = [];
 
-  while (distance >= FIRST_MINION_DISTANCE + nextMinionIndex * MINION_WAVE_SPACING) {
+  while (distance >= FIRST_MINION_DISTANCE + nextMinionIndex * MINION_WAVE_SPACING - 38) {
     const minionDistance = FIRST_MINION_DISTANCE + nextMinionIndex * MINION_WAVE_SPACING;
-    if (minionDistance <= previousDistance) {
-      break;
-    }
-
-    if (height <= 115) {
+    if (Math.abs(distance - minionDistance) <= 38 && height <= 115) {
       const index = nextMinionIndex;
       const special = index % 5 === 4;
       const baseReward = special ? 18 : 8;
@@ -331,26 +361,35 @@ function advanceFixedStep(state: LaunchGameState): LaunchFrame {
       smashedMinions += 1;
       horizontalSpeed = Math.min(
         speedCap(state.upgrades),
-        horizontalSpeed * (0.88 + state.upgrades.minionMomentum * 0.02) +
-          0.35 +
-          state.upgrades.bouncePower * 0.32,
+        horizontalSpeed * (0.7 + state.upgrades.minionMomentum * 0.055) +
+          0.4 +
+          state.upgrades.bouncePower * 0.3,
       );
-      verticalSpeed = 8.2 + state.upgrades.bouncePower * 0.72;
-      height = Math.max(4, height);
+      verticalSpeed = 6.5 + state.upgrades.bouncePower * 0.65;
+      height = Math.max(20, height);
       smashed.push({ index, gold: reward, special });
+      nextMinionIndex += 1;
+      continue;
     }
 
-    nextMinionIndex += 1;
+    if (distance > minionDistance + 38) {
+      nextMinionIndex += 1;
+      continue;
+    }
+    break;
   }
 
   if (height <= 0 && verticalSpeed < 0) {
     height = 0;
 
-    if (horizontalSpeed > 3.2) {
-      verticalSpeed = 4.4 + state.upgrades.bouncePower * 0.72;
+    if (horizontalSpeed > 2.8) {
+      verticalSpeed = Math.min(
+        12,
+        2.8 + Math.abs(verticalSpeed) * 0.25 + state.upgrades.bouncePower * 0.7,
+      );
       horizontalSpeed = Math.min(
         speedCap(state.upgrades),
-        horizontalSpeed * (0.76 + state.upgrades.drag * 0.036),
+        horizontalSpeed * (0.58 + state.upgrades.drag * 0.065),
       );
     } else {
       return finishRun(state, distance, gold, goldEarned, smashedMinions, nextMinionIndex, smashed);
@@ -358,7 +397,7 @@ function advanceFixedStep(state: LaunchGameState): LaunchFrame {
   }
 
   const elapsedMs = run.elapsedMs + STEP_MS;
-  if (distance >= limit) {
+  if (distance >= NEXUS_DISTANCE) {
     return finishRun(
       state,
       distance,
@@ -367,8 +406,7 @@ function advanceFixedStep(state: LaunchGameState): LaunchFrame {
       smashedMinions,
       nextMinionIndex,
       smashed,
-      !nexusUnlocked,
-      nexusUnlocked,
+      true,
     );
   }
   if (elapsedMs >= MAX_RUN_MS) {
@@ -404,7 +442,6 @@ function finishRun(
   smashedMinions: number,
   nextMinionIndex: number,
   smashed: readonly { index: number; gold: number; special: boolean }[],
-  blockedAtNexus = false,
   won = false,
 ): LaunchFrame {
   return {
@@ -423,7 +460,6 @@ function finishRun(
         nextMinionIndex,
         smashedMinions,
         goldEarned: goldEarned.serialize(),
-        blockedAtNexus,
       },
     }),
     smashed,
@@ -514,7 +550,7 @@ export function parseLaunchSave(serialized: string): LaunchGameState {
 }
 
 function speedCap(upgrades: LaunchUpgradeLevels): number {
-  return 20 + upgrades.speed * 4;
+  return 16 + upgrades.speed * 3;
 }
 
 function requireLevel(level: number): void {

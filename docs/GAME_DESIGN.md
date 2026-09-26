@@ -12,26 +12,26 @@ The playable prototype uses original code-drawn cartoon shapes and independently
 2. Teemo travels automatically down the lane under deterministic gravity and momentum loss.
 3. Click or tap during flight to use a Rocket Slam charge and dive toward the minion wave.
 4. Minion impacts and ground bounces add lift and forward momentum. Every smashed minion pays gold; siege minions pay a larger bounty.
-5. The run ends when Teemo loses momentum or reaches the Nexus shield.
+5. The run ends when Teemo loses momentum or reaches the Nexus.
 6. Spend gold between runs on seven upgrade tracks, each with five levels.
-7. Master every track to open the Nexus shield. The Nexus is only reachable during a later run after all seven tracks are fully upgraded.
+7. Each purchase increases distance or gold potential. Players reach the Nexus by building and using enough momentum through repeated runs; there is no upgrade gate.
 
 ## Upgrades and progression
 
 - **Bandle Sling Tension** — more launch force and lift;
 - **Noxious Dive Charges** — more Rocket Slam uses per run;
 - **Blast Cone Bounce** — higher minion and ground rebounds;
-- **Swift Scout Speedometer** — raises Teemo’s top speed cap;
+- **Swift Scout Speedometer** — raises Teemo’s top speed and preserves air momentum;
 - **Soft Landing** — reduces speed lost when landing on the ground;
 - **Minion Momentum** — preserves forward speed through minion impacts;
 - **Lane Plunder** — increases gold from smashed minions.
 
-Gold and best distance persist in the browser. Save version 1 progress is migrated when the upgrade names and levels change. The upgrade cap gives the Nexus requirement a visible, finite goal: seven of seven tracks at level five.
+Gold and best distance persist in the browser. Save version 1 progress is migrated when the upgrade names and levels change. The five-level upgrade cap bounds the economy, but no upgrade is a prerequisite for reaching the Nexus.
 
 ## Controls and presentation
 
-Drag Teemo backward and down from the sling, then release to throw him forward and upward. In flight, click or tap the lane or press the Rocket Slam button to dive. The HUD shows gold, best distance, smashed minions, run distance, slam charges, upgrade mastery, and Nexus shield status. The camera follows Teemo through a colorful Summoner’s Rift lane.
+Drag Teemo backward at the desired angle and distance, then release. The sling stretches continuously and launches Teemo with force based on the pull vector. In flight, click or tap the lane or press the Rocket Slam button to dive. The HUD shows gold, best distance, smashed minions, run distance, remaining distance to Nexus, and slam charges. The camera follows Teemo through a colorful Summoner’s Rift lane.
 
 ## Next development slices
 
-Missions, run-result reward cards, unlockable special minions, additional Nexus defenses, balance simulation, art and sound polish, and portal integrations can follow the complete drag-launch progression slice. They remain separate from the current seven-track gate so the core loop stays readable and testable.
+Missions, run-result reward cards, unlockable special minions, balance simulation, art and sound polish, and portal integrations can follow the complete drag-launch progression slice.

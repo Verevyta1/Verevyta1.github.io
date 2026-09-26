@@ -212,7 +212,7 @@ button:disabled {
   gap: 13px;
   padding: 16px;
 }
-.mastery-strip {
+.approach-strip {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -224,7 +224,7 @@ button:disabled {
   background: #fbf4d9;
   font-size: 0.73rem;
 }
-.mastery-strip strong {
+.approach-strip strong {
   color: #5c4d20;
   font-variant-numeric: tabular-nums;
 }
@@ -324,7 +324,7 @@ button:disabled {
     width: 100%;
     padding: 0 8px;
   }
-  .mastery-strip {
+  .approach-strip {
     align-items: flex-start;
     flex-direction: column;
     gap: 4px;
