@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  ContentValidationError,
-  validateContentDefinitions,
-} from './content-definitions';
+import { ContentValidationError, validateContentDefinitions } from './content-definitions';
 
 const starterDefinitions = {
   scaleBands: [
@@ -52,42 +49,22 @@ describe('content definition validation', () => {
       objects: [],
     };
 
-    expect(() => validateContentDefinitions(invalid)).toThrow(ContentValidationError);
-
-    try {
-      validateContentDefinitions(invalid);
-    } catch (error) {
-      expect(error).toBeInstanceOf(ContentValidationError);
-      expect((error as ContentValidationError).issues.map((issue) => issue.code)).toEqual(
-        expect.arrayContaining([
-          'duplicate_scale_band_id',
-          'duplicate_scale_band_order',
-          'invalid_order',
-          'non_increasing_scale_band_order',
-        ]),
-      );
-    }
+    expectValidationFailure(invalid, [
+      'duplicate_scale_band_id',
+      'duplicate_scale_band_order',
+      'invalid_order',
+      'non_increasing_scale_band_order',
+    ]);
   });
 
   it('rejects duplicate object IDs and unknown scale-band references', () => {
     const object = starterDefinitions.objects[0];
     const invalid = {
       ...starterDefinitions,
-      objects: [
-        object,
-        { ...object, scaleBand: 'unknown-band' },
-      ],
+      objects: [object, { ...object, scaleBand: 'unknown-band' }],
     };
 
-    expect(() => validateContentDefinitions(invalid)).toThrow(ContentValidationError);
-
-    try {
-      validateContentDefinitions(invalid);
-    } catch (error) {
-      expect((error as ContentValidationError).issues.map((issue) => issue.code)).toEqual(
-        expect.arrayContaining(['duplicate_object_id', 'unknown_scale_band']),
-      );
-    }
+    expectValidationFailure(invalid, ['duplicate_object_id', 'unknown_scale_band']);
   });
 
   it('rejects negative or malformed GameNumber strings', () => {
@@ -100,15 +77,7 @@ describe('content definition validation', () => {
       ],
     };
 
-    try {
-      validateContentDefinitions(invalid);
-      throw new Error('Expected content validation to fail.');
-    } catch (error) {
-      expect(error).toBeInstanceOf(ContentValidationError);
-      expect((error as ContentValidationError).issues.map((issue) => issue.code)).toEqual(
-        expect.arrayContaining(['negative_game_number', 'invalid_game_number']),
-      );
-    }
+    expectValidationFailure(invalid, ['negative_game_number', 'invalid_game_number']);
   });
 
   it('rejects invalid spawn weights, visual scales, and unresolved asset keys', () => {
@@ -125,26 +94,41 @@ describe('content definition validation', () => {
       ],
     };
 
-    try {
-      validateContentDefinitions(invalid, { availableAssetKeys: new Set(['mote-01']) });
-      throw new Error('Expected content validation to fail.');
-    } catch (error) {
-      expect(error).toBeInstanceOf(ContentValidationError);
-      expect((error as ContentValidationError).issues.map((issue) => issue.code)).toEqual(
-        expect.arrayContaining(['invalid_positive_number', 'missing_asset_reference']),
-      );
-    }
+    expectValidationFailure(
+      invalid,
+      ['invalid_positive_number', 'missing_asset_reference'],
+      { availableAssetKeys: new Set(['mote-01']) },
+    );
   });
 
   it('rejects a missing scale-band list and non-object entries', () => {
-    expect(() => validateContentDefinitions({ scaleBands: [], objects: [] })).toThrow(
-      ContentValidationError,
-    );
-    expect(() =>
-      validateContentDefinitions({
+    expectValidationFailure({ scaleBands: [], objects: [] }, ['empty_scale_bands']);
+    expectValidationFailure(
+      {
         scaleBands: [{ id: 'primordial', name: 'Primordial', order: 1 }],
         objects: [null],
-      }),
-    ).toThrow(ContentValidationError);
+      },
+      ['expected_object'],
+    );
   });
 });
+
+function expectValidationFailure(
+  input: unknown,
+  expectedCodes: readonly string[],
+  options?: Parameters<typeof validateContentDefinitions>[1],
+): void {
+  try {
+    validateContentDefinitions(input, options);
+  } catch (error) {
+    if (!(error instanceof ContentValidationError)) {
+      throw error;
+    }
+
+    const codes = error.issues.map((issue) => issue.code);
+    expectedCodes.forEach((code) => expect(codes).toContain(code));
+    return;
+  }
+
+  throw new Error('Expected content validation to fail.');
+}
