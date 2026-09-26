@@ -28,6 +28,7 @@ describe('foundation app', () => {
 
     expect(markup).toContain('id="upgrade-heading">Shape the Core</h2>');
     expect(markup).toContain('data-upgrade-buy="density"');
+    expect(markup).toContain('aria-labelledby="upgrade-title-density"');
     expect(markup).toContain('data-upgrade-buy="compression"');
     expect(markup.match(/class="upgrade-card"/g)).toHaveLength(5);
   });
