@@ -1,4 +1,4 @@
-import Phaser from "phaser";
+import Phaser from 'phaser';
 
 import {
   FIRST_MINION_DISTANCE,
@@ -6,7 +6,7 @@ import {
   NEXUS_DISTANCE,
   type LaunchFrame,
   type LaunchGameState,
-} from "../../core/launch/launch-game";
+} from '../../core/launch/launch-game';
 
 export const LAUNCH_VIEW_WIDTH = 960;
 export const LAUNCH_VIEW_HEIGHT = 540;
@@ -23,46 +23,16 @@ class NexusLaunchScene extends Phaser.Scene {
   private readonly minions = new Map<number, Phaser.GameObjects.Container>();
 
   constructor(private readonly callbacks: LaunchSceneCallbacks) {
-    super("nexus-launch");
+    super('nexus-launch');
   }
 
   create(): void {
     this.cameras.main.setBounds(0, 0, NEXUS_DISTANCE + 320, LAUNCH_VIEW_HEIGHT);
-    this.add.rectangle(
-      NEXUS_DISTANCE / 2,
-      215,
-      NEXUS_DISTANCE + 640,
-      430,
-      0xaee8da,
-    );
-    this.add.rectangle(
-      NEXUS_DISTANCE / 2,
-      365,
-      NEXUS_DISTANCE + 640,
-      150,
-      0x80bd73,
-    );
-    this.add.rectangle(
-      NEXUS_DISTANCE / 2,
-      GROUND_Y + 45,
-      NEXUS_DISTANCE + 640,
-      105,
-      0xb7a677,
-    );
-    this.add.rectangle(
-      NEXUS_DISTANCE / 2,
-      GROUND_Y - 6,
-      NEXUS_DISTANCE + 640,
-      18,
-      0x78a94b,
-    );
-    this.add.rectangle(
-      NEXUS_DISTANCE / 2,
-      GROUND_Y + 20,
-      NEXUS_DISTANCE + 640,
-      5,
-      0xe2d5aa,
-    );
+    this.add.rectangle(NEXUS_DISTANCE / 2, 215, NEXUS_DISTANCE + 640, 430, 0xaee8da);
+    this.add.rectangle(NEXUS_DISTANCE / 2, 365, NEXUS_DISTANCE + 640, 150, 0x80bd73);
+    this.add.rectangle(NEXUS_DISTANCE / 2, GROUND_Y + 45, NEXUS_DISTANCE + 640, 105, 0xb7a677);
+    this.add.rectangle(NEXUS_DISTANCE / 2, GROUND_Y - 6, NEXUS_DISTANCE + 640, 18, 0x78a94b);
+    this.add.rectangle(NEXUS_DISTANCE / 2, GROUND_Y + 20, NEXUS_DISTANCE + 640, 5, 0xe2d5aa);
 
     for (let x = 120; x < NEXUS_DISTANCE; x += 360) {
       this.add.ellipse(x, 342, 145, 44, x % 720 === 120 ? 0x6caa70 : 0x75b07a);
@@ -74,8 +44,8 @@ class NexusLaunchScene extends Phaser.Scene {
 
     this.drawNexus();
     this.teemo = this.drawTeemo();
-    this.input.on("pointerdown", () => this.callbacks.boost());
-    this.input.keyboard?.on("keydown-SPACE", () => this.callbacks.boost());
+    this.input.on('pointerdown', () => this.callbacks.boost());
+    this.input.keyboard?.on('keydown-SPACE', () => this.callbacks.boost());
   }
 
   update(_time: number, deltaMs: number): void {
@@ -86,26 +56,17 @@ class NexusLaunchScene extends Phaser.Scene {
 
     this.cameras.main.scrollX = Math.max(0, worldX - 330);
     this.teemo?.setPosition(worldX, GROUND_Y - 28 - run.height);
-    this.teemo?.setRotation(
-      run.phase === "flying" ? Math.sin(run.elapsedMs / 85) * 0.09 : 0,
-    );
+    this.teemo?.setRotation(run.phase === 'flying' ? Math.sin(run.elapsedMs / 85) * 0.09 : 0);
     this.renderMinions(state);
     frame.smashed.forEach((impact) =>
-      this.showImpact(
-        95 + FIRST_MINION_DISTANCE + impact.index * MINION_WAVE_SPACING,
-        impact.gold,
-      ),
+      this.showImpact(95 + FIRST_MINION_DISTANCE + impact.index * MINION_WAVE_SPACING, impact.gold),
     );
   }
 
   private renderMinions(state: LaunchGameState): void {
     const visible = new Set<number>();
 
-    for (
-      let index = state.run.nextMinionIndex;
-      index < state.run.nextMinionIndex + 8;
-      index += 1
-    ) {
+    for (let index = state.run.nextMinionIndex; index < state.run.nextMinionIndex + 8; index += 1) {
       const worldX = FIRST_MINION_DISTANCE + index * MINION_WAVE_SPACING;
       if (worldX > NEXUS_DISTANCE) {
         break;
@@ -179,34 +140,30 @@ class NexusLaunchScene extends Phaser.Scene {
   private drawNexus(): void {
     const x = NEXUS_DISTANCE + 70;
     this.add.circle(x, GROUND_Y - 73, 78, 0xe3545a, 0.2);
-    this.add
-      .triangle(x, GROUND_Y - 98, 72, 122, 0xd73853)
-      .setStrokeStyle(3, 0xffd7bd);
+    this.add.triangle(x, GROUND_Y - 98, 72, 122, 0xd73853).setStrokeStyle(3, 0xffd7bd);
     this.add.triangle(x, GROUND_Y - 100, 40, 72, 0xff7880);
     this.add.rectangle(x, GROUND_Y - 1, 116, 32, 0x8d4549);
     this.add
-      .text(x, GROUND_Y + 19, "NEXUS", {
-        fontFamily: "system-ui, sans-serif",
-        fontSize: "15px",
-        color: "#fff0d3",
-        fontStyle: "bold",
+      .text(x, GROUND_Y + 19, 'NEXUS', {
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '15px',
+        color: '#fff0d3',
+        fontStyle: 'bold',
       })
       .setOrigin(0.5)
       .setDepth(6);
   }
 
   private showImpact(x: number, gold: number): void {
-    const burst = this.add
-      .circle(x, GROUND_Y - 30, 16, 0xffdf81, 0.85)
-      .setDepth(8);
+    const burst = this.add.circle(x, GROUND_Y - 30, 16, 0xffdf81, 0.85).setDepth(8);
     const label = this.add
-      .text(x, GROUND_Y - 52, "+" + gold + " gold", {
-        fontFamily: "system-ui, sans-serif",
-        fontSize: "14px",
-        color: "#fff2bd",
-        stroke: "#4c452f",
+      .text(x, GROUND_Y - 52, '+' + gold + ' gold', {
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '14px',
+        color: '#fff2bd',
+        stroke: '#4c452f',
         strokeThickness: 3,
-        fontStyle: "bold",
+        fontStyle: 'bold',
       })
       .setOrigin(0.5)
       .setDepth(9);
@@ -214,7 +171,7 @@ class NexusLaunchScene extends Phaser.Scene {
     this.tweens.add({
       targets: [burst, label],
       alpha: 0,
-      y: "-=24",
+      y: '-=24',
       scale: 1.6,
       duration: 550,
       onComplete: () => {
@@ -234,7 +191,7 @@ export function createLaunchGame(
     parent,
     width: LAUNCH_VIEW_WIDTH,
     height: LAUNCH_VIEW_HEIGHT,
-    backgroundColor: "#aee8da",
+    backgroundColor: '#aee8da',
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
     scene: [new NexusLaunchScene(callbacks)],
   });

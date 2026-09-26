@@ -1,13 +1,13 @@
-import { GameNumber } from "../numbers/game-number";
+import { GameNumber } from '../numbers/game-number';
 
 export const LAUNCH_UPGRADE_IDS = [
-  "launchPower",
-  "bouncePower",
-  "goldBounty",
-  "mushroomBoost",
+  'launchPower',
+  'bouncePower',
+  'goldBounty',
+  'mushroomBoost',
 ] as const;
 export type LaunchUpgradeId = (typeof LAUNCH_UPGRADE_IDS)[number];
-export type LaunchPhase = "ready" | "flying" | "finished" | "won";
+export type LaunchPhase = 'ready' | 'flying' | 'finished' | 'won';
 export const NEXUS_DISTANCE = 5_000;
 export const FIRST_MINION_DISTANCE = 560;
 export const MINION_WAVE_SPACING = 270;
@@ -66,7 +66,7 @@ const EMPTY_UPGRADES: LaunchUpgradeLevels = Object.freeze({
 
 function emptyRun(): LaunchRunState {
   return Object.freeze({
-    phase: "ready",
+    phase: 'ready',
     distance: 0,
     height: 0,
     horizontalSpeed: 0,
@@ -74,7 +74,7 @@ function emptyRun(): LaunchRunState {
     elapsedMs: 0,
     nextMinionIndex: 0,
     smashedMinions: 0,
-    goldEarned: "0",
+    goldEarned: '0',
     boostCooldownMs: 0,
     frameAccumulatorMs: 0,
   });
@@ -95,11 +95,11 @@ export function createInitialLaunchGameState(
     readonly upgrades?: Partial<Record<LaunchUpgradeId, number>>;
   } = {},
 ): LaunchGameState {
-  const gold = GameNumber.from(input.gold ?? "0");
+  const gold = GameNumber.from(input.gold ?? '0');
   const bestDistance = input.bestDistance ?? 0;
 
   if (gold.lessThan(0) || !Number.isFinite(bestDistance) || bestDistance < 0) {
-    throw new RangeError("Launch progress must be finite and non-negative.");
+    throw new RangeError('Launch progress must be finite and non-negative.');
   }
 
   const upgrades = { ...EMPTY_UPGRADES };
@@ -118,7 +118,7 @@ export function createInitialLaunchGameState(
 }
 
 export function startLaunchRun(state: LaunchGameState): LaunchGameState {
-  if (state.run.phase === "flying" || state.run.phase === "won") {
+  if (state.run.phase === 'flying' || state.run.phase === 'won') {
     return state;
   }
 
@@ -127,7 +127,7 @@ export function startLaunchRun(state: LaunchGameState): LaunchGameState {
     ...state,
     run: {
       ...emptyRun(),
-      phase: "flying",
+      phase: 'flying',
       horizontalSpeed: 8 + level * 1.25,
       verticalSpeed: 12 + level * 0.6,
     },
@@ -135,7 +135,7 @@ export function startLaunchRun(state: LaunchGameState): LaunchGameState {
 }
 
 export function activateMushroomBoost(state: LaunchGameState): LaunchGameState {
-  if (state.run.phase !== "flying" || state.run.boostCooldownMs > 0) {
+  if (state.run.phase !== 'flying' || state.run.boostCooldownMs > 0) {
     return state;
   }
 
@@ -160,7 +160,7 @@ export function calculateLaunchUpgradeCost(
   const multiplier = GameNumber.from(definition.costMultiplier);
 
   if (base.lessThanOrEqual(0) || multiplier.lessThanOrEqual(1)) {
-    throw new RangeError("Upgrade cost data must have positive growth.");
+    throw new RangeError('Upgrade cost data must have positive growth.');
   }
 
   return base.multiply(multiplier.pow(level)).floor();
@@ -175,13 +175,13 @@ export function buyLaunchUpgrade(
   readonly purchased: boolean;
   readonly cost: string;
 } {
-  if (state.run.phase === "flying") {
-    return { state, purchased: false, cost: "0" };
+  if (state.run.phase === 'flying') {
+    return { state, purchased: false, cost: '0' };
   }
 
   const definition = definitions.find((entry) => entry.id === id);
   if (!definition) {
-    throw new RangeError("Unknown upgrade.");
+    throw new RangeError('Unknown upgrade.');
   }
 
   const cost = calculateLaunchUpgradeCost(definition, state.upgrades[id]);
@@ -201,15 +201,12 @@ export function buyLaunchUpgrade(
   };
 }
 
-export function advanceLaunchGame(
-  state: LaunchGameState,
-  deltaMs: number,
-): LaunchFrame {
+export function advanceLaunchGame(state: LaunchGameState, deltaMs: number): LaunchFrame {
   if (!Number.isFinite(deltaMs) || deltaMs < 0) {
-    throw new RangeError("Delta must be finite and non-negative.");
+    throw new RangeError('Delta must be finite and non-negative.');
   }
 
-  if (state.run.phase !== "flying" || deltaMs === 0) {
+  if (state.run.phase !== 'flying' || deltaMs === 0) {
     return Object.freeze({
       state,
       smashed: Object.freeze([]),
@@ -217,8 +214,7 @@ export function advanceLaunchGame(
     });
   }
 
-  let accumulated =
-    state.run.frameAccumulatorMs + Math.min(deltaMs, MAX_FRAME_MS);
+  let accumulated = state.run.frameAccumulatorMs + Math.min(deltaMs, MAX_FRAME_MS);
   let next = state;
   const smashed: { index: number; gold: number }[] = [];
   let runEnded = false;
@@ -230,7 +226,7 @@ export function advanceLaunchGame(
     runEnded ||= frame.runEnded;
     accumulated -= STEP_MS;
 
-    if (next.run.phase !== "flying") {
+    if (next.run.phase !== 'flying') {
       accumulated = 0;
       break;
     }
@@ -253,8 +249,7 @@ function advanceFixedStep(state: LaunchGameState): LaunchFrame {
   const frames = STEP_MS / (1000 / 60);
   const previousDistance = run.distance;
   const distance = previousDistance + run.horizontalSpeed * frames;
-  let height =
-    run.height + run.verticalSpeed * frames - 0.5 * GRAVITY * frames * frames;
+  let height = run.height + run.verticalSpeed * frames - 0.5 * GRAVITY * frames * frames;
   let verticalSpeed = run.verticalSpeed - GRAVITY * frames;
   let horizontalSpeed = run.horizontalSpeed * Math.pow(0.998, frames);
   let nextMinionIndex = run.nextMinionIndex;
@@ -264,12 +259,8 @@ function advanceFixedStep(state: LaunchGameState): LaunchFrame {
   const cooldown = Math.max(0, run.boostCooldownMs - STEP_MS);
   const smashed: { index: number; gold: number }[] = [];
 
-  while (
-    distance >=
-    FIRST_MINION_DISTANCE + nextMinionIndex * MINION_WAVE_SPACING
-  ) {
-    const minionDistance =
-      FIRST_MINION_DISTANCE + nextMinionIndex * MINION_WAVE_SPACING;
+  while (distance >= FIRST_MINION_DISTANCE + nextMinionIndex * MINION_WAVE_SPACING) {
+    const minionDistance = FIRST_MINION_DISTANCE + nextMinionIndex * MINION_WAVE_SPACING;
     if (minionDistance <= previousDistance) {
       break;
     }
@@ -277,9 +268,7 @@ function advanceFixedStep(state: LaunchGameState): LaunchFrame {
     if (height <= 100) {
       const index = nextMinionIndex;
       const baseReward = index % 5 === 4 ? 15 : index % 3 === 2 ? 7 : 5;
-      const reward = Math.floor(
-        baseReward * (1 + state.upgrades.goldBounty * 0.25),
-      );
+      const reward = Math.floor(baseReward * (1 + state.upgrades.goldBounty * 0.25));
       gold = gold.add(reward);
       goldEarned = goldEarned.add(reward);
       smashedMinions += 1;
@@ -299,19 +288,11 @@ function advanceFixedStep(state: LaunchGameState): LaunchFrame {
       verticalSpeed = 4.6 + state.upgrades.bouncePower * 0.4;
       horizontalSpeed *= 0.86;
     } else {
-      return finishRun(
-        state,
-        distance,
-        gold,
-        goldEarned,
-        smashedMinions,
-        nextMinionIndex,
-        smashed,
-      );
+      return finishRun(state, distance, gold, goldEarned, smashedMinions, nextMinionIndex, smashed);
     }
   }
 
-  const phase = distance >= NEXUS_DISTANCE ? "won" : "flying";
+  const phase = distance >= NEXUS_DISTANCE ? 'won' : 'flying';
   const nextState = freezeState({
     ...state,
     gold: gold.serialize(),
@@ -331,7 +312,7 @@ function advanceFixedStep(state: LaunchGameState): LaunchFrame {
     },
   });
 
-  return { state: nextState, smashed, runEnded: phase === "won" };
+  return { state: nextState, smashed, runEnded: phase === 'won' };
 }
 
 function finishRun(
@@ -350,7 +331,7 @@ function finishRun(
       bestDistance: Math.max(state.bestDistance, distance),
       run: {
         ...state.run,
-        phase: "finished",
+        phase: 'finished',
         distance,
         height: 0,
         horizontalSpeed: 0,
@@ -367,12 +348,9 @@ function finishRun(
   };
 }
 
-export function serializeLaunchSave(
-  state: LaunchGameState,
-  savedAt = Date.now(),
-): string {
+export function serializeLaunchSave(state: LaunchGameState, savedAt = Date.now()): string {
   if (!Number.isFinite(savedAt) || savedAt < 0) {
-    throw new RangeError("Save timestamp is invalid.");
+    throw new RangeError('Save timestamp is invalid.');
   }
 
   return JSON.stringify({
@@ -390,51 +368,43 @@ export function parseLaunchSave(serialized: string): LaunchGameState {
   try {
     value = JSON.parse(serialized) as unknown;
   } catch {
-    throw new RangeError("Saved progress is not valid JSON.");
+    throw new RangeError('Saved progress is not valid JSON.');
   }
 
-  if (typeof value !== "object" || value === null || Array.isArray(value)) {
-    throw new RangeError("Saved progress must be an object.");
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    throw new RangeError('Saved progress must be an object.');
   }
 
   const save = value as Record<string, unknown>;
-  if (save.saveVersion !== SAVE_VERSION || typeof save.gold !== "string") {
-    throw new RangeError("Save version is unsupported.");
+  if (save.saveVersion !== SAVE_VERSION || typeof save.gold !== 'string') {
+    throw new RangeError('Save version is unsupported.');
+  }
+  if (typeof save.savedAt !== 'number' || !Number.isFinite(save.savedAt) || save.savedAt < 0) {
+    throw new RangeError('Save timestamp is invalid.');
   }
   if (
-    typeof save.savedAt !== "number" ||
-    !Number.isFinite(save.savedAt) ||
-    save.savedAt < 0
-  ) {
-    throw new RangeError("Save timestamp is invalid.");
-  }
-  if (
-    typeof save.bestDistance !== "number" ||
+    typeof save.bestDistance !== 'number' ||
     !Number.isFinite(save.bestDistance) ||
     save.bestDistance < 0
   ) {
-    throw new RangeError("Best distance is invalid.");
+    throw new RangeError('Best distance is invalid.');
   }
-  if (
-    typeof save.upgrades !== "object" ||
-    save.upgrades === null ||
-    Array.isArray(save.upgrades)
-  ) {
-    throw new RangeError("Saved upgrades are invalid.");
+  if (typeof save.upgrades !== 'object' || save.upgrades === null || Array.isArray(save.upgrades)) {
+    throw new RangeError('Saved upgrades are invalid.');
   }
 
   const raw = save.upgrades as Record<string, unknown>;
   for (const key of Object.keys(raw)) {
     if (!(LAUNCH_UPGRADE_IDS as readonly string[]).includes(key)) {
-      throw new RangeError("Unknown saved upgrade.");
+      throw new RangeError('Unknown saved upgrade.');
     }
   }
 
   const upgrades: Partial<Record<LaunchUpgradeId, number>> = {};
   for (const id of LAUNCH_UPGRADE_IDS) {
     const level = raw[id] ?? 0;
-    if (typeof level !== "number") {
-      throw new RangeError("Saved upgrade level is invalid.");
+    if (typeof level !== 'number') {
+      throw new RangeError('Saved upgrade level is invalid.');
     }
     upgrades[id] = level;
   }
@@ -448,8 +418,6 @@ export function parseLaunchSave(serialized: string): LaunchGameState {
 
 function requireLevel(level: number): void {
   if (!Number.isSafeInteger(level) || level < 0 || level > MAX_LEVEL) {
-    throw new RangeError(
-      "Upgrade level must be a supported non-negative integer.",
-    );
+    throw new RangeError('Upgrade level must be a supported non-negative integer.');
   }
 }
