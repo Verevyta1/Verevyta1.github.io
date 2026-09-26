@@ -8,9 +8,9 @@ When a run slows against an economic wall, the player can trigger **Matter Colla
 
 ## Current status
 
-The core design and high-level technical architecture are now approved. The project is still in pre-production: no full game implementation has been started yet.
+The core design and high-level technical architecture are now approved. The first technical foundation slice establishes the browser toolchain, deterministic Mass/Matter state and GameNumber boundary, a placeholder Phaser view, save schema v1, and a local platform adapter. No gameplay loop or content is present yet.
 
-The next implementation stage should begin with a small tested technical foundation and greybox vertical slice rather than attempting to generate the entire game in one step.
+The next stage is the greybox Matter Core vertical slice, built as a small reviewable step after the foundation checks pass.
 
 ## Source of truth
 
