@@ -86,7 +86,10 @@ class NexusLaunchScene extends Phaser.Scene {
     this.nexusBarrier?.setVisible(!isNexusUnlocked(state.upgrades));
     this.renderMinions(state);
     frame.smashed.forEach((impact) =>
-      this.showImpact(START_X + FIRST_MINION_DISTANCE + impact.index * MINION_WAVE_SPACING, impact.gold),
+      this.showImpact(
+        START_X + FIRST_MINION_DISTANCE + impact.index * MINION_WAVE_SPACING,
+        impact.gold,
+      ),
     );
   }
 

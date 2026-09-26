@@ -310,8 +310,7 @@ function advanceFixedStep(state: LaunchGameState): LaunchFrame {
   const distance = Math.min(limit, previousDistance + run.horizontalSpeed * frames);
   let height = run.height + run.verticalSpeed * frames - 0.5 * GRAVITY * frames * frames;
   let verticalSpeed = run.verticalSpeed - GRAVITY * frames;
-  let horizontalSpeed =
-    run.horizontalSpeed * Math.pow(0.998, frames);
+  let horizontalSpeed = run.horizontalSpeed * Math.pow(0.998, frames);
   let nextMinionIndex = run.nextMinionIndex;
   let gold = GameNumber.from(state.gold);
   let goldEarned = GameNumber.from(run.goldEarned);
@@ -466,11 +465,7 @@ export function parseLaunchSave(serialized: string): LaunchGameState {
     throw new RangeError('Saved progress is not valid JSON.');
   }
 
-  if (
-    typeof value !== 'object' ||
-    value === null ||
-    Array.isArray(value)
-  ) {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     throw new RangeError('Saved progress must be an object.');
   }
 

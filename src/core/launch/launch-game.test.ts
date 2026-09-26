@@ -283,6 +283,8 @@ describe('Teemo launch simulation', () => {
 
   it('rejects invalid time and drag input', () => {
     expect(() => advanceLaunchGame(throwTeemo(), -1)).toThrow();
-    expect(() => releaseTeemo(beginLaunchAim(createInitialLaunchGameState()), Infinity, 0)).toThrow();
+    expect(() =>
+      releaseTeemo(beginLaunchAim(createInitialLaunchGameState()), Infinity, 0),
+    ).toThrow();
   });
 });
