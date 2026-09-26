@@ -43,5 +43,5 @@ export function createFoundationMarkup(): string {
     '  </section>',
     '  <p class="control-note">No movement controls. Watch the world orbit and contract around the stationary Core.</p>',
     '</main>',
-  ].join(\'\\n\');
+  ].join('\n');
 }
