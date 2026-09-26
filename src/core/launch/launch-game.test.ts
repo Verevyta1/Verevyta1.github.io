@@ -232,7 +232,8 @@ describe('Teemo launch simulation', () => {
     expect(definition).toBeDefined();
     if (!definition) {
       throw new Error('Expected the throw-strength upgrade definition.');
-    }\n    const cost = calculateLaunchUpgradeCost(definition, MAX_UPGRADE_LEVEL - 1);
+    }
+    const cost = calculateLaunchUpgradeCost(definition, MAX_UPGRADE_LEVEL - 1);
     const mastered = createInitialLaunchGameState({
       gold: cost.serialize(),
       upgrades: { throwStrength: MAX_UPGRADE_LEVEL },

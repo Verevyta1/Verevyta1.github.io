@@ -124,11 +124,18 @@ button {
   width: 100%;
   aspect-ratio: 16 / 9;
   min-height: 270px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+#game-canvas:active {
+  cursor: grabbing;
 }
 #game-canvas canvas {
   display: block;
   width: 100% !important;
   height: 100% !important;
+  touch-action: none;
 }
 .goal-progress {
   position: absolute;
@@ -175,9 +182,15 @@ button {
 .action-buttons button {
   padding: 0 16px;
 }
-#boost-button {
+#slam-button {
+  min-width: 190px;
   border-color: #9c673d;
-  background: #bd8350;
+  background: #bd7546;
+}
+.action-buttons button span {
+  margin-left: 6px;
+  font-size: 0.72rem;
+  opacity: 0.86;
 }
 .action-buttons button:hover:not(:disabled),
 .upgrade-buy:hover:not(:disabled) {
@@ -199,7 +212,23 @@ button:disabled {
   gap: 13px;
   padding: 16px;
 }
-.mastery-strip {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n  padding: 10px 13px;\n  border: 1px solid #ded5a7;\n  border-radius: 10px;\n  color: #716133;\n  background: #fbf4d9;\n  font-size: 0.73rem;\n}\n.mastery-strip strong {\n  color: #5c4d20;\n  font-variant-numeric: tabular-nums;\n}\n.section-title h2 {
+.mastery-strip {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n  padding: 10px 13px;\n  border: 1px solid #ded5a7;\n  border-radius: 10px;\n  color: #716133;\n  background: #fbf4d9;\n  font-size: 0.73rem;\n}\n.mastery-strip strong {\n  color: #5c4d20;\n  font-variant-numeric: tabular-nums;\n}\n.mastery-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 13px;
+  border: 1px solid #ded5a7;
+  border-radius: 10px;
+  color: #716133;
+  background: #fbf4d9;
+  font-size: 0.73rem;
+}
+.mastery-strip strong {
+  color: #5c4d20;
+  font-variant-numeric: tabular-nums;
+}
+.section-title h2 {
   margin: 2px 0 0;
   color: #35593a;
   font-size: 1.15rem;
@@ -289,6 +318,16 @@ button:disabled {
   .game-actions {
     align-items: stretch;
     flex-direction: column;
+  }
+  .action-buttons button {
+    flex: 1;
+    width: 100%;
+    padding: 0 8px;
+  }
+  .mastery-strip {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
   }
   .action-buttons button {
     flex: 1;

@@ -52,7 +52,7 @@ feature/drag-launch-progression
 feature/microscopic-zone
 fix/offline-time-clamp
 hotfix/save-load-crash
-docs/rewarded-ad-rules
+docs/rocket-slam-input
 ```
 
 Branch names use lower-case kebab-case and describe one coherent change.
@@ -121,7 +121,7 @@ A PR is not ready because it compiles. It is ready when its documented behaviour
 Use concise conventional prefixes where practical:
 
 ```text
-feat: add rebirth reward calculation
+feat: add drag-launch force calculation
 fix: clamp negative offline duration
 test: add save migration regression coverage
 refactor: isolate platform ad adapter
@@ -140,17 +140,17 @@ Cover:
 - number operations/formatting;
 - progression formulas;
 - upgrade costs/effects;
-- rebirth calculations;
-- offline progress;
-- save validation/migrations;
-- platform reward state machines.
+- drag-launch vectors and fixed-step movement;
+- bounce, slam, minion rewards, and upgrade effects;
+- Nexus mastery gate and save migrations;
+- platform adapter state machines.
 
 ### Integration tests
 
 Cover interactions between deterministic modules:
 - consumption -> rewards -> unlocks;
 - upgrade purchase -> production effects;
-- rebirth -> resets/preserved state;
+- minion impact -> gold reward -> upgrade purchase;
 - save/load round trip;
 - platform adapter -> gameplay reward result.
 
@@ -158,11 +158,11 @@ Cover interactions between deterministic modules:
 
 Keep a smaller set for critical journeys:
 - application boots;
-- start/play loop;
-- purchase upgrade;
-- reload persisted save;
-- rebirth;
-- rewarded-ad success/cancel via mock adapter.
+- drag and release starts a run;
+- minion impacts award gold;
+- purchase an upgrade and reload persisted progress;
+- Nexus gate stays closed before full upgrade mastery;
+- touch controls work at a narrow viewport.
 
 ### Manual QA
 
@@ -249,7 +249,7 @@ Balance is code/data with player-facing consequences.
 
 For any meaningful balance change:
 
-1. document the goal (e.g. first rebirth from 60 min -> 35 min);
+1. document the goal (e.g. first run reaches two minion waves instead of one);
 2. change data/formulas in one focused PR;
 3. run simulator profiles;
 4. compare before/after milestone timing;
@@ -292,31 +292,30 @@ Non-goals:
 
 ```text
 Goal:
-Implement the pure rebirth reward calculation.
+Implement a deterministic drag-to-launch calculation.
 
 Relevant design sections:
-docs/GAME_DESIGN.md -> Rebirth / prestige system.
+docs/GAME_DESIGN.md -> Core run loop.
 
 Allowed files:
-src/core/prestige/**
-tests/core/prestige/**
+src/core/launch/**
+tests/core/launch/**
 
 Acceptance criteria:
-- returns zero below threshold;
-- reward increases monotonically above threshold;
-- uses project NumberValue wrapper;
-- no Phaser imports;
-- no mutation of run state.
+- backward pull increases forward speed;
+- vertical pull changes launch lift;
+- values clamp to a documented range;
+- no Phaser or DOM imports;
+- no mutation of persistent state.
 
 Tests required:
-- threshold boundary;
-- representative values;
-- extremely large values;
-- monotonicity checks.
+- minimum and maximum pull;
+- angle and strength effects;
+- invalid non-finite input.
 
 Non-goals:
-- rebirth UI;
-- save mutation;
+- Phaser input handling;
+- launch UI;
 - animations.
 ```
 
