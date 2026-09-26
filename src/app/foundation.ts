@@ -1,6 +1,35 @@
+import { UPGRADE_DEFINITIONS } from '../data/upgrades';
+
 export const FOUNDATION_TITLE = 'Project Scale';
 
 export function createFoundationMarkup(): string {
+  const upgradeCards = UPGRADE_DEFINITIONS.map((upgrade) =>
+    [
+      '      <article class="upgrade-card" aria-labelledby="upgrade-title-' +
+        upgrade.id +
+        '">',
+      '        <div class="upgrade-card-heading"><h3 id="upgrade-title-' +
+        upgrade.id +
+        '">' +
+        upgrade.name +
+        '</h3><span class="upgrade-level">Level <output id="upgrade-level-' +
+        upgrade.id +
+        '">0</output></span></div>',
+      '        <p>' + upgrade.description + '</p>',
+      '        <div class="upgrade-cost"><span>Next cost</span><output id="upgrade-cost-' +
+        upgrade.id +
+        '">0</output><span>Matter</span></div>',
+      '        <button class="upgrade-buy" id="upgrade-buy-' +
+        upgrade.id +
+        '" data-upgrade-buy="' +
+        upgrade.id +
+        '" type="button" aria-label="Buy one ' +
+        upgrade.name +
+        ' upgrade">Buy 1</button>',
+      '      </article>',
+    ].join('\\n'),
+  ).join('\\n');
+
   return [
     '<main class="foundation-shell" aria-labelledby="foundation-title">',
     '  <header class="game-header">',
@@ -36,6 +65,13 @@ export function createFoundationMarkup(): string {
     '      <div class="instruction-block"><strong>Automatic absorption</strong><span>Objects that meet the Core’s Mass requirement are drawn in without clicking.</span></div>',
     '      <p id="save-status" class="save-status" role="status" aria-live="polite">Progress saves in this browser.</p>',
     '    </div>',
+    '  </section>',
+    '  <section class="upgrade-panel" aria-labelledby="upgrade-heading">',
+    '    <div class="upgrade-panel-heading"><div><p class="eyebrow">Temporary upgrades</p><h2 id="upgrade-heading">Shape the Core</h2></div><p>Spend Matter to change how the Core gathers and compresses matter.</p></div>',
+    '    <div class="upgrade-grid">',
+    upgradeCards,
+    '    </div>',
+    '    <p class="upgrade-status" id="upgrade-status" role="status" aria-live="polite">Matter upgrades improve the current run.</p>',
     '  </section>',
     '  <section class="command-panel" aria-label="Active ability">',
     '    <div class="command-copy"><p class="eyebrow">Active ability</p><h2>Gravity Pulse</h2><p id="pulse-description">Accelerates eligible matter attraction for a short burst. It does not unlock ineligible objects.</p></div>',
