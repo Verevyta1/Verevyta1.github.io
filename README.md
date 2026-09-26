@@ -1,12 +1,14 @@
 # Teemo: Nexus Launch
 
-A browser launch-run game prototype set on a colorful League of Legends lane. Launch Teemo toward the enemy Nexus, bounce through minion waves, collect gold, and buy upgrades between attempts.
+A side-view League-themed launch game. Pull Teemo back in a Bandle sling and release him toward the Nexus, Rocket Slam into minion waves, collect gold, and upgrade between attempts.
 
 ## Play
 
-The current playable build is hosted at [https://verevyta1.github.io/](https://verevyta1.github.io/). Click **Launch Teemo**, then tap/click the playfield or use **Noxious Boost** to send Teemo forward. Minions smashed on impact award persistent gold. Spend it between runs on launch power, bounce power, bounty, and mushroom thrust.
+The live build is hosted at [https://verevyta1.github.io/](https://verevyta1.github.io/). **Drag Teemo backward and release to throw him.** Click or tap the lane, or press the Rocket Slam button, while he is airborne to dive into minions. Minion impacts and bounces carry the run forward and award persistent gold.
 
-The first slice uses original code-drawn cartoon shapes for Teemo, lane minions, and the Nexus. It is an early playable prototype; balance, animation, audio, mobile polish, and the full upgrade journey remain in progress.
+Seven upgrade tracks improve throw strength, slams, bounce height, speed cap, ground grip, minion momentum, and gold bounty. Each track has five levels. The Nexus shield opens only after all seven tracks are fully upgraded, so the final goal takes progression across multiple runs.
+
+The prototype uses original code-drawn cartoon shapes for Teemo, lane minions, the sling, and Nexus defenses. Browser saves migrate existing gold, best distance, and upgrade progress.
 
 ## Development
 
@@ -29,4 +31,4 @@ The project uses TypeScript, Vite, Phaser 4, Vitest, and Playwright. Node.js 20.
 - Tested staging changes are promoted to main through a release pull request.
 - GitHub Pages deploys from main only after CI passes.
 
-The simulation is deterministic and renderer-independent. Phaser displays the lane and cartoon characters; DOM UI handles resources, upgrades, and controls. Local saves keep gold, best distance, and upgrade levels.
+The simulation is deterministic and renderer-independent. Phaser displays the sling, minion waves, Teemo, and Nexus defenses; DOM UI handles resources, upgrades, and controls. Local saves keep gold, best distance, and upgrade levels.

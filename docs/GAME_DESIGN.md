@@ -2,37 +2,36 @@
 
 ## Product direction
 
-A colorful side-view launch-run game inspired by the reference video, Burrito Bison: Launcha Libre. Launch Teemo from the left side of a Summoner's Rift lane and try to reach the enemy Nexus at the far right.
+A side-view launch-run game inspired by the launch, flight, slam, bounce, reward, and upgrade loop in Burrito Bison: Launcha Libre. The player drags Teemo backward in a Bandle sling, releases him down Summoner’s Rift, smashes minions for gold, and builds enough upgrades to break through to the enemy Nexus.
 
-This fan-made prototype uses original code-drawn cartoon shapes. The UI, scene composition, progression values, effects, and implementation are independently created for this project.
+The playable prototype uses original code-drawn cartoon shapes and independently created game code, UI, progression, and effects.
 
 ## Core run loop
 
-1. Launch Teemo with a forward-and-upward burst.
-2. Teemo follows a deterministic arc across the lane.
-3. Ground bounces and smashing into League minions add lift and forward momentum.
-4. Each minion impact grants gold; siege minions give a larger bounty.
-5. During flight, the player can trigger Noxious Boost with its button, Space, or a tap/click on the playfield.
-6. A run ends when Teemo loses momentum, or is won when he reaches the Nexus.
-7. Spend gold between attempts, then launch again.
+1. Drag Teemo backward from the sling, then release. Pull distance controls throw force; pull angle affects lift.
+2. Teemo travels automatically down the lane under deterministic gravity and momentum loss.
+3. Click or tap during flight to use a Rocket Slam charge and dive toward the minion wave.
+4. Minion impacts and ground bounces add lift and forward momentum. Every smashed minion pays gold; siege minions pay a larger bounty.
+5. The run ends when Teemo loses momentum or reaches the Nexus shield.
+6. Spend gold between runs on seven upgrade tracks, each with five levels.
+7. Master every track to open the Nexus shield. The Nexus is only reachable during a later run after all seven tracks are fully upgraded.
 
-## Goal and progression
+## Upgrades and progression
 
-The Nexus is 5,000 metres from the launch point. Gold and best distance persist in the browser. Four repeatable upgrade lines improve future attempts:
+- **Bandle Sling Tension** — more launch force and lift;
+- **Noxious Dive Charges** — more Rocket Slam uses per run;
+- **Blast Cone Bounce** — higher minion and ground rebounds;
+- **Swift Scout Speedometer** — raises Teemo’s top speed cap;
+- **Soft Landing** — reduces speed lost when landing on the ground;
+- **Minion Momentum** — preserves forward speed through minion impacts;
+- **Lane Plunder** — increases gold from smashed minions.
 
-- Bandlewood Launcher — initial launch speed and lift;
-- Bounce Training — momentum from minion impacts and ground bounces;
-- Scout's Spoils — gold earned from minions;
-- Noxious Boost — active boost strength and cooldown.
+Gold and best distance persist in the browser. Save version 1 progress is migrated when the upgrade names and levels change. The upgrade cap gives the Nexus requirement a visible, finite goal: seven of seven tracks at level five.
 
-Distances, rewards, and prices are provisional. Balance should be tuned with repeatable simulation and playtesting.
+## Controls and presentation
 
-## Inputs and art direction
+Drag Teemo backward and down from the sling, then release to throw him forward and upward. In flight, click or tap the lane or press the Rocket Slam button to dive. The HUD shows gold, best distance, smashed minions, run distance, slam charges, upgrade mastery, and Nexus shield status. The camera follows Teemo through a colorful Summoner’s Rift lane.
 
-A launch button starts each run. During flight, mouse/tap or Space activates Noxious Boost. There is no map navigation. The HUD shows gold, best distance, minion count, Nexus distance, and upgrades.
+## Next development slices
 
-Use friendly cartoon silhouettes: a small scout with a green cap, goggles, feather, and blowgun; red/blue melee, caster, and siege minions; a bright lane, rolling hills, and glowing Nexus crystal. Build the first slice from original Phaser vector shapes; add project art later where it improves readability or impact.
-
-## Out of scope for the first slice
-
-Full League combat, steering, online features, ad integration, the full champion roster, and final balance are not part of this prototype.
+Missions, run-result reward cards, unlockable special minions, additional Nexus defenses, balance simulation, art and sound polish, and portal integrations can follow the complete drag-launch progression slice. They remain separate from the current seven-track gate so the core loop stays readable and testable.

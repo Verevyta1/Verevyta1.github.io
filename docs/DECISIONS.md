@@ -17,3 +17,7 @@ Accepted 2026-09-26. The approved direction is a fan-made cartoon launch-run gam
 
 ## ADR-006 — Original code-drawn first art slice
 Accepted 2026-09-26. Initial Teemo, lane minions, and Nexus are drawn from project-owned Phaser vector shapes. External image assets are not required for the first playable slice.
+
+
+## ADR-007 — Drag launch and full-upgrade Nexus gate
+Accepted 2026-09-26. Teemo is launched by pulling back and releasing on the character, with Rocket Slam available during flight. The Nexus remains shielded until all seven finite upgrade tracks are at maximum level. This preserves a multi-run progression goal.

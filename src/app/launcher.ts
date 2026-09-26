@@ -12,7 +12,7 @@ export function createLauncherMarkup(): string {
         upgrade.name +
         '</h3><span>Level <output id="upgrade-level-' +
         upgrade.id +
-        '\">0</output></span></div>',
+        '">0</output> / 5</span></div>',
       '<p>' + upgrade.description + '</p>',
       '<div class="upgrade-cost"><output id="upgrade-cost-' +
         upgrade.id +
@@ -21,7 +21,7 @@ export function createLauncherMarkup(): string {
         upgrade.id +
         '" type="button" aria-label="Buy one ' +
         upgrade.name +
-        '">Buy Upgrade</button>',
+        '">Buy upgrade</button>',
       '</article>',
     ].join('\n'),
   ).join('\n');
@@ -31,7 +31,7 @@ export function createLauncherMarkup(): string {
     '<header class="topbar">',
     '<div class="brand"><p class="eyebrow">A Bandle Scout Launch Run</p>',
     '<h1 id="game-title">' + GAME_TITLE + '</h1>',
-    '<p>Smash through the lane. Reach the enemy Nexus.</p></div>',
+    '<p>Drag Teemo back, release, and bounce through the minion waves.</p></div>',
     '<div class="stats" aria-label="Run resources">',
     '<section class="stat"><span>Gold</span><output id="gold-total" aria-live="polite">0</output></section>',
     '<section class="stat"><span>Best distance</span><output id="best-distance" aria-live="polite">0 m</output></section>',
@@ -41,23 +41,25 @@ export function createLauncherMarkup(): string {
     '<div class="game-stage-heading"><span>SUMMONER’S RIFT · BLUE LANE</span>',
     '<span><output id="run-distance">0</output> / 5,000 m to Nexus</span></div>',
     '<div class="game-playfield">',
-    '<div id="game-canvas" role="img" aria-label="Cartoon Teemo launches down a lane and smashes minions toward the Nexus"></div>',
+    '<div id="game-canvas" role="application" aria-label="Drag Teemo backward and release to throw him. Tap during flight to use Rocket Slam."></div>',
     '<div class="goal-progress" aria-hidden="true"><span id="goal-progress-fill"></span></div>',
     '</div>',
     '<div class="game-actions">',
-    '<p id="run-status" role="status" aria-live="polite">Launch Teemo and time your Noxious Boost through the minion waves.</p>',
+    '<p id="run-status" role="status" aria-live="polite">Drag Teemo backward and release to throw him. Tap during flight to Rocket Slam.</p>',
     '<div class="action-buttons">',
-    '<button id="launch-button" type="button">Launch Teemo</button>',
-    '<button id="boost-button" type="button" disabled>Noxious Boost <span id="boost-state">Ready</span></button>',
-    '</div></div></section>',
+    '<button id="slam-button" type="button" disabled>Rocket Slam <span id="slam-state">0 left</span></button>',
+    '</div></div>',
+    '<div class="mastery-strip"><span>Nexus shield</span><strong><output id="mastery-count">0 / 7</output> tracks mastered</strong>',
+    '<span>Master all seven upgrades to unlock the final run.</span></div>',
+    '</section>',
     '<section class="upgrade-panel" aria-labelledby="upgrade-heading">',
-    '<div class="section-title"><div><p class="eyebrow">Spend gold between runs</p>',
-    '<h2 id="upgrade-heading">Prepare the next launch</h2></div>',
-    '<p>Every smashed minion drops gold for your next upgrade.</p></div>',
+    '<div class="section-title"><div><p class="eyebrow">Spend gold between runs · max level 5</p>',
+    '<h2 id="upgrade-heading">Scout upgrades</h2></div>',
+    '<p>Smash minions for gold. Master every track to open the Nexus shield.</p></div>',
     '<div class="upgrade-grid">',
     upgrades,
     '</div></section>',
-    '<p class="control-note">Launch, then tap the playfield or Noxious Boost for a mushroom-powered shove.</p>',
+    '<p class="control-note">Drag Teemo back from the sling and release. While airborne, click or tap to Rocket Slam.</p>',
     '</main>',
   ].join('\n');
 }

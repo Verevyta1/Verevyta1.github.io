@@ -199,7 +199,7 @@ button:disabled {
   gap: 13px;
   padding: 16px;
 }
-.section-title h2 {
+.mastery-strip {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n  padding: 10px 13px;\n  border: 1px solid #ded5a7;\n  border-radius: 10px;\n  color: #716133;\n  background: #fbf4d9;\n  font-size: 0.73rem;\n}\n.mastery-strip strong {\n  color: #5c4d20;\n  font-variant-numeric: tabular-nums;\n}\n.section-title h2 {
   margin: 2px 0 0;
   color: #35593a;
   font-size: 1.15rem;

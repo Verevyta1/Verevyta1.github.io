@@ -48,7 +48,7 @@ test/<short-description>
 Examples:
 
 ```text
-feature/rebirth-calculation
+feature/drag-launch-progression
 feature/microscopic-zone
 fix/offline-time-clamp
 hotfix/save-load-crash
@@ -200,7 +200,7 @@ A failing required check blocks the merge.
 2. ensure `staging` CI is green;
 3. generate a staging build artifact;
 4. run manual smoke tests;
-5. test the CrazyGames preview/integration environment once platform work exists;
+5. test the target portal preview once platform integration exists;
 6. verify save migration from the previous production version;
 7. update changelog/release notes.
 
@@ -239,7 +239,7 @@ Any PR touching economy/progression/save state must answer:
 - Is the migration idempotent?
 - What happens to malformed/partial data?
 - Do numeric-library serialized values remain compatible?
-- Does a rebirth/reset still preserve the intended fields?
+- Does a upgrade changes preserve the intended gold and best-distance fields?
 
 Add fixture saves from older versions to regression tests once production versions exist.
 
