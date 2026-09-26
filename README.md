@@ -1,106 +1,63 @@
 # Project Scale
 
-Browser-first 2D idle/incremental growth game currently in **pre-production**.
+Browser-first 2D idle/incremental growth game, now with a playable greybox Matter Core loop.
 
-The player controls a central **Matter Core** that automatically absorbs increasingly large forms of matter. As Mass rises, the surrounding world appears to shrink and new scale bands are revealed: microscopic matter can eventually give way to objects, cities, planets, stars, galaxies, universes and invented post-universal structures.
+The player guides a central Matter Core that automatically absorbs eligible matter. As Mass rises, the surrounding world will eventually scale around it. Matter Collapse will later restart a run and award Genesis Energy for permanent Fundamental Laws.
 
-When a run slows against an economic wall, the player can trigger **Matter Collapse**. The Core compresses into a singular state and restarts through a Big-Bang-like explosion, awarding permanent **Genesis Energy** that is spent on **Fundamental Laws** for future runs.
+## Current build
 
-## Current status
+The current prototype is the Milestone B greybox slice:
 
-The core design and high-level technical architecture are now approved. The first technical foundation slice establishes the browser toolchain, deterministic Mass/Matter state and GameNumber boundary, a placeholder Phaser view, save schema v1, and a local platform adapter. No gameplay loop or content is present yet.
+- objects drift around a stationary Core and eligible objects are absorbed automatically;
+- Mass is physical progression and is never spent;
+- Matter is temporary run currency;
+- Gravity Pulse briefly accelerates eligible attraction and has a cooldown;
+- Mass and Matter save locally in this browser;
+- object requirements and rewards are provisional tuning values, not final balance;
+- the playfield uses original code-drawn geometry and does not need art downloads.
 
-The next stage is the greybox Matter Core vertical slice, built as a small reviewable step after the foundation checks pass.
+A downloadable production build is attached to successful GitHub Actions runs. Open the latest CI run for this repository, then download the artifact named project-scale-greybox. Unzip it and serve the dist folder with a local static server, for example Python's built-in server:
+
+    py -m http.server 4173 --directory dist
+
+Then open http://localhost:4173 in a browser. This prototype is not deployed to main or published as a finished game.
 
 ## Source of truth
 
-- [`docs/GAME_DESIGN.md`](docs/GAME_DESIGN.md) — authoritative living game design and progression plan.
-- [`docs/TECHNICAL_ARCHITECTURE.md`](docs/TECHNICAL_ARCHITECTURE.md) — approved framework, module boundaries and implementation constraints.
-- [`docs/DEVELOPMENT_WORKFLOW.md`](docs/DEVELOPMENT_WORKFLOW.md) — branches, pull requests, testing, releases, bug fixes and Codex workflow.
-- [`docs/DECISIONS.md`](docs/DECISIONS.md) — accepted architecture/design decisions and unresolved decisions.
-- [`CONTRIBUTING.md`](CONTRIBUTING.md) — contribution standards.
+- docs/GAME_DESIGN.md — approved game design and progression.
+- docs/TECHNICAL_ARCHITECTURE.md — framework, module boundaries, and constraints.
+- docs/IMPLEMENTATION_ROADMAP.md — staged delivery plan.
+- docs/DEVELOPMENT_WORKFLOW.md — branches, pull requests, testing, and releases.
+- docs/DECISIONS.md — accepted decisions and unresolved questions.
+- CONTRIBUTING.md — contribution standards.
 
 ## Branch model
 
-- `main` — production/release branch. Only tested release candidates should reach this branch.
-- `staging` — long-lived integration and pre-production branch. Feature and bug-fix branches merge here first.
-- `feature/<short-name>` — normal feature work, created from `staging`.
-- `fix/<short-name>` — normal bug fixes, created from `staging`.
-- `hotfix/<short-name>` — urgent production fixes. Start from `main`, then merge the fix back into `staging`.
-- `docs/<short-name>` / `chore/<short-name>` — documentation or maintenance work.
+- main — production/release branch. Only tested release candidates should reach this branch.
+- staging — long-lived integration and pre-production branch.
+- feature/<short-name> — feature work, created from staging.
 
 Normal flow:
 
-```text
-feature/* or fix/*
-        ↓
-     staging
-        ↓
- release pull request
-        ↓
-       main
-```
-
-Direct feature work on `main` should be avoided.
+    feature/* → staging → release pull request → main
 
 ## Approved technical baseline
 
-- TypeScript
-- Vite
+- TypeScript and Vite
 - Phaser 4 for the animated 2D playfield
-- HTML/CSS DOM UI for most HUD/panels
-- Vitest for unit/integration tests
-- Playwright for browser/E2E tests
-- `break_eternity.js` behind a project-owned `GameNumber` abstraction
-- CrazyGames SDK behind a project-owned platform adapter
+- HTML/CSS DOM UI
+- Vitest and Playwright
+- break_eternity.js behind the GameNumber boundary
+- CrazyGames behind the platform adapter, later in the roadmap
 
-The deterministic economy remains independent from Phaser, the DOM and portal APIs.
+Deterministic economy code remains independent from Phaser, the DOM, and portal APIs.
 
 ## Core design rules
 
-- The Matter Core remains near the centre of the main playfield.
-- The player does not normally navigate a large map with WASD.
-- The world visually scales and zooms around the Core.
-- Internal scale bands create the illusion of continuous growth.
-- Mass is non-spendable physical progression.
-- Matter is the temporary spendable run currency.
+- The Matter Core stays near the playfield centre.
+- The player does not navigate a map with WASD.
+- Mass cannot be spent; Matter is the temporary run currency.
 - Genesis Energy is the working Matter Collapse currency.
 - Permanent upgrades are themed as Fundamental Laws.
-- Active Gravity Pulse accelerates progress without rewarding frantic clicking.
-- Economic throughput and visible object count are intentionally separate.
-- Major scale reveals should remain visual events even when earned offline.
-- Matter Collapse should be encouraged by soft economic walls rather than arbitrary forced-reset messages.
-
-## UI direction
-
-Use a clean, light/simple interface influenced only by the usability of the supplied references, not their distinctive artwork or branding:
-
-- solid opaque panels;
-- simple rounded buttons/cards;
-- restrained shadows and borders;
-- readable typography;
-- clear hierarchy;
-- large central playfield;
-- minimal permanent side UI;
-- no yellow/orange overall filter;
-- no excessive neon;
-- no glass/translucent HUD as the primary style.
-
-## Commercial target
-
-The first intended distribution target is CrazyGames. Platform integrations must be isolated behind adapters so the game also runs locally and can later support another web portal without rewriting gameplay systems.
-
-Rewarded ads should provide optional acceleration or convenience. The non-ad progression loop must remain complete and enjoyable when ads are unavailable.
-
-## Development rule
-
-For deterministic systems, use test-driven development where practical:
-
-1. define acceptance criteria;
-2. add or update the test;
-3. implement the smallest correct behaviour;
-4. refactor while tests remain green;
-5. run type-checking, linting, unit/integration tests and relevant browser tests;
-6. update design/decision docs if behaviour changed.
-
-The game should be developed as small reviewable vertical slices. Codex tasks should receive narrow acceptance criteria and explicit files/modules to change rather than a broad instruction to “build the game.”
+- Gravity Pulse supports active play without frantic clicking.
+- Art, upgrades, scale transitions, balance simulation, Collapse, offline progression, and portal integration remain future roadmap work.
