@@ -19,13 +19,17 @@ import "./styles.css";
 
 const SAVE_KEY = "teemo-nexus-launch-save-v1";
 const appElement = document.querySelector<HTMLDivElement>("#app");
-if (!appElement) throw new Error("Application root #app was not found.");
+if (!appElement) {
+  throw new Error("Application root #app was not found.");
+}
 const app: HTMLDivElement = appElement;
 app.innerHTML = createLauncherMarkup();
 
 function need<T extends Element>(selector: string): T {
   const element = app.querySelector<T>(selector);
-  if (!element) throw new Error("The game interface is missing " + selector + ".");
+  if (!element) {
+    throw new Error("The game interface is missing " + selector + ".");
+  }
   return element;
 }
 
@@ -50,6 +54,7 @@ let state: LaunchGameState = createInitialLaunchGameState();
 let statusMessage = "Launch Teemo to start the run.";
 let saveTimer: number | undefined;
 let lastHudUpdate = -100;
+
 try {
   const saved = window.localStorage.getItem(SAVE_KEY);
   if (saved) {
@@ -66,29 +71,45 @@ function renderHud(): void {
   minionOutput.textContent = String(state.run.smashedMinions);
   distanceOutput.textContent = Math.floor(state.run.distance).toLocaleString();
   progressFill.style.width = Math.min(100, state.run.distance / 50) + "%";
+
   const flying = state.run.phase === "flying";
   launchButton.disabled = flying || state.run.phase === "won";
-  launchButton.textContent = state.run.phase === "ready" ? "Launch Teemo" :
-    state.run.phase === "flying" ? "Teemo is flying…" :
-      state.run.phase === "won" ? "Nexus destroyed!" : "Run it back";
+  launchButton.textContent =
+    state.run.phase === "ready"
+      ? "Launch Teemo"
+      : state.run.phase === "flying"
+        ? "Teemo is flying…"
+        : state.run.phase === "won"
+          ? "Nexus destroyed!"
+          : "Run it back";
   boostButton.disabled = !flying || state.run.boostCooldownMs > 0;
-  boostState.textContent = state.run.boostCooldownMs > 0
-    ? Math.ceil(state.run.boostCooldownMs / 1000) + "s" : "Ready";
+  boostState.textContent =
+    state.run.boostCooldownMs > 0
+      ? Math.ceil(state.run.boostCooldownMs / 1000) + "s"
+      : "Ready";
 
-  statusOutput.textContent = state.run.phase === "won"
-    ? "Victory! Teemo reached the Nexus."
-    : state.run.phase === "finished"
-      ? "Run complete: " + Math.floor(state.run.distance).toLocaleString() + " m. Gold earned: " + state.run.goldEarned + ". Upgrade and launch again."
-      : flying
-        ? "In flight! Smash minions for gold. Tap the lane or Noxious Boost for a dash."
-        : statusMessage;
+  statusOutput.textContent =
+    state.run.phase === "won"
+      ? "Victory! Teemo reached the Nexus."
+      : state.run.phase === "finished"
+        ? "Run complete: " +
+          Math.floor(state.run.distance).toLocaleString() +
+          " m. Gold earned: " +
+          state.run.goldEarned +
+          ". Upgrade and launch again."
+        : flying
+          ? "In flight! Smash minions for gold. Tap the lane or Noxious Boost for a dash."
+          : statusMessage;
 
   for (const control of controls) {
     const level = state.upgrades[control.definition.id];
     const cost = calculateLaunchUpgradeCost(control.definition, level);
     control.level.textContent = String(level);
     control.cost.textContent = formatResourceAmount(cost);
-    control.button.disabled = flying || state.run.phase === "won" || GameNumber.from(state.gold).lessThan(cost);
+    control.button.disabled =
+      flying ||
+      state.run.phase === "won" ||
+      GameNumber.from(state.gold).lessThan(cost);
   }
 }
 
@@ -100,10 +121,12 @@ function saveProgress(): void {
   }
   renderHud();
 }
+
 function scheduleSave(): void {
   window.clearTimeout(saveTimer);
   saveTimer = window.setTimeout(saveProgress, 450);
 }
+
 function useBoost(): void {
   state = activateMushroomBoost(state);
   statusMessage = "Noxious Boost! Teemo surges forward.";
@@ -116,6 +139,7 @@ launchButton.addEventListener("click", () => {
   renderHud();
 });
 boostButton.addEventListener("click", useBoost);
+
 controls.forEach(({ definition, button }) => {
   button.addEventListener("click", () => {
     const purchase = buyLaunchUpgrade(state, definition.id, LAUNCH_UPGRADES);
@@ -124,8 +148,10 @@ controls.forEach(({ definition, button }) => {
       renderHud();
       return;
     }
+
     state = purchase.state;
-    statusMessage = definition.name + " upgraded to level " + state.upgrades[definition.id] + ".";
+    statusMessage =
+      definition.name + " upgraded to level " + state.upgrades[definition.id] + ".";
     renderHud();
     scheduleSave();
   });
@@ -136,17 +162,25 @@ async function startGame(): Promise<void> {
   await platform.initialize();
   platform.gameplayStart();
   renderHud();
+
   createLaunchGame(canvasHost, {
     advance: (deltaMs) => {
       const frame = advanceLaunchGame(state, deltaMs);
       state = frame.state;
+
       if (frame.smashed.length > 0) {
         const reward = frame.smashed.reduce((sum, hit) => sum + hit.gold, 0);
         statusMessage = "Minion smashed! +" + reward + " gold.";
         scheduleSave();
       }
-      if (frame.runEnded) scheduleSave();
-      if (state.run.elapsedMs - lastHudUpdate >= 100 || frame.runEnded || frame.smashed.length > 0) {
+      if (frame.runEnded) {
+        scheduleSave();
+      }
+      if (
+        state.run.elapsedMs - lastHudUpdate >= 100 ||
+        frame.runEnded ||
+        frame.smashed.length > 0
+      ) {
         renderHud();
         lastHudUpdate = state.run.elapsedMs;
       }
@@ -161,6 +195,7 @@ window.addEventListener("pagehide", () => {
   window.clearTimeout(saveTimer);
   saveProgress();
 });
+
 void startGame().catch((error: unknown) => {
   console.error(error);
   statusOutput.textContent = "The game could not start. Check the browser console for details.";

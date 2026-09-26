@@ -28,19 +28,56 @@ class NexusLaunchScene extends Phaser.Scene {
 
   create(): void {
     this.cameras.main.setBounds(0, 0, NEXUS_DISTANCE + 320, LAUNCH_VIEW_HEIGHT);
-    this.add.rectangle(NEXUS_DISTANCE / 2, 215, NEXUS_DISTANCE + 640, 430, 0xaee8da);
-    this.add.rectangle(NEXUS_DISTANCE / 2, 365, NEXUS_DISTANCE + 640, 150, 0x80bd73);
-    this.add.rectangle(NEXUS_DISTANCE / 2, GROUND_Y + 45, NEXUS_DISTANCE + 640, 105, 0xb7a677);
-    this.add.rectangle(NEXUS_DISTANCE / 2, GROUND_Y - 6, NEXUS_DISTANCE + 640, 18, 0x78a94b);
-    this.add.rectangle(NEXUS_DISTANCE / 2, GROUND_Y + 20, NEXUS_DISTANCE + 640, 5, 0xe2d5aa);
+    this.add.rectangle(
+      NEXUS_DISTANCE / 2,
+      215,
+      NEXUS_DISTANCE + 640,
+      430,
+      0xaee8da,
+    );
+    this.add.rectangle(
+      NEXUS_DISTANCE / 2,
+      365,
+      NEXUS_DISTANCE + 640,
+      150,
+      0x80bd73,
+    );
+    this.add.rectangle(
+      NEXUS_DISTANCE / 2,
+      GROUND_Y + 45,
+      NEXUS_DISTANCE + 640,
+      105,
+      0xb7a677,
+    );
+    this.add.rectangle(
+      NEXUS_DISTANCE / 2,
+      GROUND_Y - 6,
+      NEXUS_DISTANCE + 640,
+      18,
+      0x78a94b,
+    );
+    this.add.rectangle(
+      NEXUS_DISTANCE / 2,
+      GROUND_Y + 20,
+      NEXUS_DISTANCE + 640,
+      5,
+      0xe2d5aa,
+    );
 
     for (let x = 120; x < NEXUS_DISTANCE; x += 360) {
-      this.add.ellipse(x, 342, 145, 44, x % 720 === 120 ? 0x6caa70 : 0x75b07a);
+      this.add.ellipse(
+        x,
+        342,
+        145,
+        44,
+        x % 720 === 120 ? 0x6caa70 : 0x75b07a,
+      );
       this.add.circle(x + 95, 318, 17, 0x467e52);
       this.add.rectangle(x + 95, 353, 8, 43, 0x72543a);
       this.add.rectangle(x + 210, GROUND_Y - 15, 22, 16, 0xe9dcae);
       this.add.circle(x + 208, GROUND_Y - 25, 7, 0x75b8d9);
     }
+
     this.drawNexus();
     this.teemo = this.drawTeemo();
     this.input.on("pointerdown", () => this.callbacks.boost());
@@ -52,26 +89,40 @@ class NexusLaunchScene extends Phaser.Scene {
     const state = frame.state;
     const run = state.run;
     const worldX = 95 + run.distance;
+
     this.cameras.main.scrollX = Math.max(0, worldX - 330);
     this.teemo?.setPosition(worldX, GROUND_Y - 28 - run.height);
-    this.teemo?.setRotation(run.phase === "flying" ? Math.sin(run.elapsedMs / 85) * 0.09 : 0);
+    this.teemo?.setRotation(
+      run.phase === "flying" ? Math.sin(run.elapsedMs / 85) * 0.09 : 0,
+    );
     this.renderMinions(state);
-    frame.smashed.forEach((impact) => this.showImpact(
-      95 + FIRST_MINION_DISTANCE + impact.index * MINION_WAVE_SPACING,
-      impact.gold,
-    ));
+    frame.smashed.forEach((impact) =>
+      this.showImpact(
+        95 + FIRST_MINION_DISTANCE + impact.index * MINION_WAVE_SPACING,
+        impact.gold,
+      ),
+    );
   }
 
   private renderMinions(state: LaunchGameState): void {
     const visible = new Set<number>();
-    for (let index = state.run.nextMinionIndex; index < state.run.nextMinionIndex + 8; index += 1) {
+
+    for (
+      let index = state.run.nextMinionIndex;
+      index < state.run.nextMinionIndex + 8;
+      index += 1
+    ) {
       const worldX = FIRST_MINION_DISTANCE + index * MINION_WAVE_SPACING;
-      if (worldX > NEXUS_DISTANCE) break;
+      if (worldX > NEXUS_DISTANCE) {
+        break;
+      }
+
       visible.add(index);
       if (!this.minions.has(index)) {
         this.minions.set(index, this.drawMinion(index, 95 + worldX));
       }
     }
+
     for (const [index, minion] of this.minions) {
       if (!visible.has(index)) {
         minion.destroy(true);
@@ -99,6 +150,7 @@ class NexusLaunchScene extends Phaser.Scene {
       this.add.ellipse(-7, 35, 14, 7, 0x613f38),
       this.add.ellipse(9, 35, 14, 7, 0x613f38),
     ];
+
     return this.add.container(95, GROUND_Y - 28, parts).setDepth(5);
   }
 
@@ -116,6 +168,7 @@ class NexusLaunchScene extends Phaser.Scene {
       this.add.rectangle(-8, 23, 5, 13, 0x5c4639),
       this.add.rectangle(8, 23, 5, 13, 0x5c4639),
     ];
+
     if (index % 3 === 1) {
       parts.push(this.add.rectangle(23, -5, 4, 31, 0x8f6e40));
       parts.push(this.add.triangle(23, -23, 10, 14, 0xffd773));
@@ -125,35 +178,61 @@ class NexusLaunchScene extends Phaser.Scene {
       parts.push(this.add.circle(-15, 29, 6, 0x493c32));
       parts.push(this.add.circle(15, 29, 6, 0x493c32));
     }
+
     return this.add.container(x, GROUND_Y - 22, parts).setDepth(3);
   }
 
   private drawNexus(): void {
     const x = NEXUS_DISTANCE + 70;
     this.add.circle(x, GROUND_Y - 73, 78, 0xe3545a, 0.2);
-    this.add.triangle(x, GROUND_Y - 98, 72, 122, 0xd73853).setStrokeStyle(3, 0xffd7bd);
+    this.add
+      .triangle(x, GROUND_Y - 98, 72, 122, 0xd73853)
+      .setStrokeStyle(3, 0xffd7bd);
     this.add.triangle(x, GROUND_Y - 100, 40, 72, 0xff7880);
     this.add.rectangle(x, GROUND_Y - 1, 116, 32, 0x8d4549);
-    this.add.text(x, GROUND_Y + 19, "NEXUS", {
-      fontFamily: "system-ui, sans-serif", fontSize: "15px",
-      color: "#fff0d3", fontStyle: "bold",
-    }).setOrigin(0.5).setDepth(6);
+    this.add
+      .text(x, GROUND_Y + 19, "NEXUS", {
+        fontFamily: "system-ui, sans-serif",
+        fontSize: "15px",
+        color: "#fff0d3",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setDepth(6);
   }
 
   private showImpact(x: number, gold: number): void {
     const burst = this.add.circle(x, GROUND_Y - 30, 16, 0xffdf81, 0.85).setDepth(8);
-    const label = this.add.text(x, GROUND_Y - 52, "+" + gold + " gold", {
-      fontFamily: "system-ui, sans-serif", fontSize: "14px",
-      color: "#fff2bd", stroke: "#4c452f", strokeThickness: 3, fontStyle: "bold",
-    }).setOrigin(0.5).setDepth(9);
+    const label = this.add
+      .text(x, GROUND_Y - 52, "+" + gold + " gold", {
+        fontFamily: "system-ui, sans-serif",
+        fontSize: "14px",
+        color: "#fff2bd",
+        stroke: "#4c452f",
+        strokeThickness: 3,
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setDepth(9);
+
     this.tweens.add({
-      targets: [burst, label], alpha: 0, y: "-=24", scale: 1.6, duration: 550,
-      onComplete: () => { burst.destroy(); label.destroy(); },
+      targets: [burst, label],
+      alpha: 0,
+      y: "-=24",
+      scale: 1.6,
+      duration: 550,
+      onComplete: () => {
+        burst.destroy();
+        label.destroy();
+      },
     });
   }
 }
 
-export function createLaunchGame(parent: HTMLElement, callbacks: LaunchSceneCallbacks): Phaser.Game {
+export function createLaunchGame(
+  parent: HTMLElement,
+  callbacks: LaunchSceneCallbacks,
+): Phaser.Game {
   return new Phaser.Game({
     type: Phaser.AUTO,
     parent,

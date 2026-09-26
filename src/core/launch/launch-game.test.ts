@@ -16,6 +16,7 @@ describe("Nexus launch simulation", () => {
     let first = startLaunchRun(createInitialLaunchGameState());
     let second = startLaunchRun(createInitialLaunchGameState());
     let earned = false;
+
     for (let tick = 0; tick < 60; tick += 1) {
       const a = advanceLaunchGame(first, 50);
       const b = advanceLaunchGame(second, 50);
@@ -23,6 +24,7 @@ describe("Nexus launch simulation", () => {
       second = b.state;
       earned ||= a.smashed.length > 0;
     }
+
     expect(earned).toBe(true);
     expect(Number(first.gold)).toBeGreaterThan(0);
     expect(first.run.distance).toBe(second.run.distance);
@@ -32,6 +34,7 @@ describe("Nexus launch simulation", () => {
   it("boosts a live run and blocks repeated use during cooldown", () => {
     const launched = startLaunchRun(createInitialLaunchGameState());
     const boosted = activateMushroomBoost(launched);
+
     expect(boosted.run.horizontalSpeed).toBeGreaterThan(launched.run.horizontalSpeed);
     expect(activateMushroomBoost(boosted)).toBe(boosted);
   });
@@ -39,11 +42,13 @@ describe("Nexus launch simulation", () => {
   it("buys upgrades atomically and rejects unaffordable purchases", () => {
     const poor = createInitialLaunchGameState();
     expect(buyLaunchUpgrade(poor, "launchPower", LAUNCH_UPGRADES).state).toBe(poor);
+
     const bought = buyLaunchUpgrade(
       createInitialLaunchGameState({ gold: "100" }),
       "launchPower",
       LAUNCH_UPGRADES,
     );
+
     expect(bought.purchased).toBe(true);
     expect(bought.state.gold).toBe("80");
     expect(bought.state.upgrades.launchPower).toBe(1);
@@ -55,6 +60,7 @@ describe("Nexus launch simulation", () => {
       bestDistance: 987,
       upgrades: { goldBounty: 2 },
     });
+
     expect(parseLaunchSave(serializeLaunchSave(state, 10))).toMatchObject({
       gold: "1234",
       bestDistance: 987,
@@ -64,6 +70,8 @@ describe("Nexus launch simulation", () => {
   });
 
   it("rejects invalid time", () => {
-    expect(() => advanceLaunchGame(startLaunchRun(createInitialLaunchGameState()), -1)).toThrow();
+    expect(() =>
+      advanceLaunchGame(startLaunchRun(createInitialLaunchGameState()), -1),
+    ).toThrow();
   });
 });
