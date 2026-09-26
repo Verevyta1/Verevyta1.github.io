@@ -5,7 +5,7 @@ export const FOUNDATION_TITLE = 'Project Scale';
 export function createFoundationMarkup(): string {
   const upgradeCards = UPGRADE_DEFINITIONS.map((upgrade) =>
     [
-      '      <article class="upgrade-card" aria-labelledby="upgrade-title-' + upgrade.id + '>',
+      '      <article class="upgrade-card" aria-labelledby="upgrade-title-' + upgrade.id + '">',
       '        <div class="upgrade-card-heading"><h3 id="upgrade-title-' +
         upgrade.id +
         '">' +
