@@ -31,5 +31,4 @@ describe('foundation app', () => {
     expect(markup).toContain('data-upgrade-buy="compression"');
     expect(markup.match(/class="upgrade-card"/g)).toHaveLength(5);
   });
-
 });
