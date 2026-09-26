@@ -13,4 +13,11 @@ describe('foundation app', () => {
   it('keeps the initial screen explicitly non-gameplay', () => {
     expect(createFoundationMarkup()).toContain('Gameplay will be added in small, tested slices.');
   });
+
+  it('provides an accessible mount for the Phaser foundation view', () => {
+    const markup = createFoundationMarkup();
+
+    expect(markup).toContain('id="game-canvas"');
+    expect(markup).toContain('aria-label="Matter Core placeholder preview rendered with Phaser"');
+  });
 });

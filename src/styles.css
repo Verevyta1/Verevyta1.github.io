@@ -44,7 +44,9 @@ textarea {
 }
 
 .foundation-card {
-  width: min(560px, 100%);
+  display: grid;
+  gap: 16px;
+  width: min(760px, 100%);
   padding: 32px;
   border: 1px solid #dfe5eb;
   border-radius: 16px;
@@ -53,7 +55,7 @@ textarea {
 }
 
 .foundation-card h1 {
-  margin: 4px 0 12px;
+  margin: 4px 0 0;
   font-size: clamp(2rem, 6vw, 3.5rem);
   line-height: 1;
 }
@@ -69,4 +71,36 @@ textarea {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+.foundation-playfield {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border: 1px solid #dfe5eb;
+  border-radius: 12px;
+  background: #f4f6f8;
+}
+
+.foundation-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.foundation-canvas canvas {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.foundation-playfield-caption {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  color: #596878;
+  font-size: 0.75rem;
+  pointer-events: none;
 }
