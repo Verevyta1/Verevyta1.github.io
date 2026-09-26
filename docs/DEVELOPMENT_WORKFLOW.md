@@ -142,7 +142,7 @@ Cover:
 - upgrade costs/effects;
 - drag-launch vectors and fixed-step movement;
 - bounce, slam, minion rewards, and upgrade effects;
-- Nexus mastery gate and save migrations;
+- Nexus distance progression and save migrations;
 - platform adapter state machines.
 
 ### Integration tests
@@ -161,7 +161,7 @@ Keep a smaller set for critical journeys:
 - drag and release starts a run;
 - minion impacts award gold;
 - purchase an upgrade and reload persisted progress;
-- Nexus gate stays closed before full upgrade mastery;
+- first runs end short of the Nexus, while upgraded runs can reach it without full mastery;
 - touch controls work at a narrow viewport.
 
 ### Manual QA

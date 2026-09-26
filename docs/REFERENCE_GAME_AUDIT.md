@@ -11,7 +11,7 @@ This audit informs the Teemo launch loop and upgrade mapping. It distinguishes m
 - **Repeat progression:** spend run coins on upgrades, improve future launches, and progress through cake walls/doors over multiple attempts.
 - **Special rides:** the special-gummy shop included Puncheus Pilot (upward punch ride), Teddy Flare (rocket height), Robbear (cash recovery), and Jelly Roger (explosive launch).
 
-The supplied video shows a short run reaching 413 metres before the results screen. The Nexus-mastery condition in Teemo’s version is the user’s requested progression rule; it is not a mechanic copied from the reference.
+The supplied video shows a short run reaching 413 metres before the results screen. Teemo’s goal uses momentum and distance rather than an upgrade-count condition.
 
 ## Upgrade mapping
 
@@ -27,7 +27,7 @@ These first seven upgrade descriptions and next-level prices were directly read 
 | Flavour Master | Keep more speed when landing on gummies | 1,500 | Minion Momentum: preserve speed through minion hits |
 | Pickpocket | Earn more coins from gummies | 900 | Lane Plunder: increase minion gold |
 
-The first playable Teemo slice implements these seven functional tracks with five levels each. The Nexus shield requires all seven at level five.
+The first playable Teemo slice implements these seven functional tracks with five levels each. Reaching the Nexus depends on the player’s launch and accumulated movement upgrades; full mastery is not required.
 
 ## Other reported skills
 

@@ -25,7 +25,7 @@ export const LAUNCH_UPGRADES: readonly LaunchUpgradeDefinition[] = Object.freeze
   Object.freeze({
     id: 'speed',
     name: 'Swift Scout Speedometer',
-    description: 'Raise Teemo’s top speed so later upgrades can push him faster.',
+    description: 'Raise Teemo’s top speed and keep momentum longer in flight.',
     baseCost: '14',
     costMultiplier: '1.38',
   }),

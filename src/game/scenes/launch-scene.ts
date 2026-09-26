@@ -1,11 +1,12 @@
 import Phaser from 'phaser';
 
 import {
+  calculateLaunchVelocity,
   FIRST_MINION_DISTANCE,
-  isNexusUnlocked,
+  LAUNCH_GRAVITY,
+  maximumSlingPull,
   MINION_WAVE_SPACING,
   NEXUS_DISTANCE,
-  NEXUS_GATE_DISTANCE,
   type LaunchFrame,
   type LaunchGameState,
 } from '../../core/launch/launch-game';
@@ -13,10 +14,9 @@ import {
 export const LAUNCH_VIEW_WIDTH = 960;
 export const LAUNCH_VIEW_HEIGHT = 540;
 const GROUND_Y = 438;
-const START_X = 95;
+const START_X = 220;
 const START_Y = GROUND_Y - 28;
-const MAX_DRAG_X = 140;
-const MAX_DRAG_Y = 70;
+const WORLD_WIDTH = START_X + NEXUS_DISTANCE + 320;
 
 export interface LaunchSceneCallbacks {
   readonly advance: (deltaMs: number) => LaunchFrame;
@@ -29,25 +29,26 @@ export interface LaunchSceneCallbacks {
 class NexusLaunchScene extends Phaser.Scene {
   private teemo?: Phaser.GameObjects.Container;
   private aimGraphic?: Phaser.GameObjects.Graphics;
-  private nexusBarrier?: Phaser.GameObjects.Container;
   private readonly minions = new Map<number, Phaser.GameObjects.Container>();
   private dragPointerId: number | null = null;
   private dragOrigin: { readonly x: number; readonly y: number } | null = null;
   private pull = { x: 0, y: 0 };
+  private displayPull = { x: 0, y: 0 };
+  private launchOffset = { x: 0, y: 0 };
 
   constructor(private readonly callbacks: LaunchSceneCallbacks) {
     super('nexus-launch');
   }
 
   create(): void {
-    this.cameras.main.setBounds(0, 0, NEXUS_DISTANCE + 320, LAUNCH_VIEW_HEIGHT);
-    this.add.rectangle(NEXUS_DISTANCE / 2, 215, NEXUS_DISTANCE + 640, 430, 0xaee8da);
-    this.add.rectangle(NEXUS_DISTANCE / 2, 365, NEXUS_DISTANCE + 640, 150, 0x80bd73);
-    this.add.rectangle(NEXUS_DISTANCE / 2, GROUND_Y + 45, NEXUS_DISTANCE + 640, 105, 0xb7a677);
-    this.add.rectangle(NEXUS_DISTANCE / 2, GROUND_Y - 6, NEXUS_DISTANCE + 640, 18, 0x78a94b);
-    this.add.rectangle(NEXUS_DISTANCE / 2, GROUND_Y + 20, NEXUS_DISTANCE + 640, 5, 0xe2d5aa);
+    this.cameras.main.setBounds(0, 0, WORLD_WIDTH, LAUNCH_VIEW_HEIGHT);
+    this.add.rectangle(WORLD_WIDTH / 2, 215, WORLD_WIDTH, 430, 0xaee8da);
+    this.add.rectangle(WORLD_WIDTH / 2, 365, WORLD_WIDTH, 150, 0x80bd73);
+    this.add.rectangle(WORLD_WIDTH / 2, GROUND_Y + 45, WORLD_WIDTH, 105, 0xb7a677);
+    this.add.rectangle(WORLD_WIDTH / 2, GROUND_Y - 6, WORLD_WIDTH, 18, 0x78a94b);
+    this.add.rectangle(WORLD_WIDTH / 2, GROUND_Y + 20, WORLD_WIDTH, 5, 0xe2d5aa);
 
-    for (let x = 120; x < NEXUS_DISTANCE; x += 360) {
+    for (let x = 120; x < WORLD_WIDTH; x += 360) {
       this.add.ellipse(x, 342, 145, 44, x % 720 === 120 ? 0x6caa70 : 0x75b07a);
       this.add.circle(x + 95, 318, 17, 0x467e52);
       this.add.rectangle(x + 95, 353, 8, 43, 0x72543a);
@@ -56,10 +57,9 @@ class NexusLaunchScene extends Phaser.Scene {
     }
 
     this.drawNexus();
-    this.drawBarrier();
     this.drawLauncher();
     this.teemo = this.drawTeemo();
-    this.aimGraphic = this.add.graphics().setDepth(7);
+    this.aimGraphic = this.add.graphics().setDepth(4.5);
     this.input.on('pointerdown', this.handlePointerDown, this);
     this.input.on('pointermove', this.handlePointerMove, this);
     this.input.on('pointerup', this.handlePointerUp, this);
@@ -72,18 +72,30 @@ class NexusLaunchScene extends Phaser.Scene {
     const state = frame.state;
     const run = state.run;
     const inFlight = run.phase === 'flying' || run.phase === 'won';
-    const worldX = inFlight ? START_X + run.distance : START_X - this.pull.x * 0.22;
-    const height = inFlight ? run.height : run.phase === 'aiming' ? this.pull.y * 0.22 : 0;
+    const easing = 1 - Math.exp(-Math.min(deltaMs, 50) / 36);
+    const targetPull = run.phase === 'aiming' ? this.pull : { x: 0, y: 0 };
+    this.displayPull.x += (targetPull.x - this.displayPull.x) * easing;
+    this.displayPull.y += (targetPull.y - this.displayPull.y) * easing;
+    const recoil = Math.exp(-Math.min(deltaMs, 50) / 110);
+    this.launchOffset.x *= recoil;
+    this.launchOffset.y *= recoil;
 
-    this.cameras.main.scrollX = inFlight ? Math.max(0, worldX - 330) : 0;
-    this.teemo?.setPosition(worldX, START_Y - height);
+    const worldX = inFlight
+      ? START_X + run.distance + this.launchOffset.x
+      : START_X - this.displayPull.x;
+    const worldY = inFlight
+      ? START_Y - run.height + this.launchOffset.y
+      : START_Y + this.displayPull.y;
+    const cameraTarget = inFlight ? Math.max(0, START_X + run.distance - 330) : 0;
+    this.cameras.main.scrollX = inFlight
+      ? this.cameras.main.scrollX + (cameraTarget - this.cameras.main.scrollX) * easing
+      : 0;
+    this.teemo?.setPosition(worldX, worldY);
     this.teemo?.setRotation(run.phase === 'flying' ? Math.sin(run.elapsedMs / 85) * 0.09 : 0);
     this.aimGraphic?.clear();
-    if (run.phase === 'aiming') {
-      this.drawAimTension(worldX, START_Y - height);
-    }
+    this.drawElasticCords(START_X - this.displayPull.x, START_Y + this.displayPull.y);
+    if (run.phase === 'aiming') this.drawAimGuide(state);
 
-    this.nexusBarrier?.setVisible(!isNexusUnlocked(state.upgrades));
     this.renderMinions(state);
     frame.smashed.forEach((impact) =>
       this.showImpact(
@@ -99,7 +111,7 @@ class NexusLaunchScene extends Phaser.Scene {
       this.callbacks.slam();
       return;
     }
-    if (phase === 'won' || phase === 'aiming') {
+    if (phase === 'aiming') {
       return;
     }
     if (Math.hypot(pointer.x - START_X, pointer.y - START_Y) > 94) {
@@ -129,6 +141,7 @@ class NexusLaunchScene extends Phaser.Scene {
     this.updatePull(pointer.x, pointer.y);
     this.dragPointerId = null;
     this.dragOrigin = null;
+    this.launchOffset = { x: -this.pull.x, y: this.pull.y };
     this.callbacks.throw(this.pull.x, this.pull.y);
     this.pull = { x: 0, y: 0 };
   }
@@ -137,10 +150,12 @@ class NexusLaunchScene extends Phaser.Scene {
     if (!this.dragOrigin) {
       return;
     }
-    this.pull = {
-      x: Math.max(0, Math.min(MAX_DRAG_X, this.dragOrigin.x - pointerX)),
-      y: Math.max(-MAX_DRAG_Y, Math.min(MAX_DRAG_Y, pointerY - this.dragOrigin.y)),
-    };
+    const x = Math.max(0, this.dragOrigin.x - pointerX);
+    const y = pointerY - this.dragOrigin.y;
+    const length = Math.hypot(x, y);
+    const maximum = maximumSlingPull(this.callbacks.state().upgrades);
+    const scale = length > maximum ? maximum / length : 1;
+    this.pull = { x: x * scale, y: y * scale };
   }
 
   private renderMinions(state: LaunchGameState): void {
@@ -174,28 +189,67 @@ class NexusLaunchScene extends Phaser.Scene {
     sling.fillRoundedRect(START_X + 27, GROUND_Y - 16, 9, 45, 4);
     sling.fillStyle(0x9d7549, 1);
     sling.fillRoundedRect(START_X - 30, GROUND_Y + 19, 76, 12, 5);
-    sling.lineStyle(5, 0xb88a52, 1);
-    sling.beginPath();
-    sling.moveTo(START_X - 16, GROUND_Y - 12);
-    sling.lineTo(START_X, GROUND_Y - 31);
-    sling.lineTo(START_X + 28, GROUND_Y - 12);
-    sling.strokePath();
   }
 
-  private drawAimTension(teemoX: number, teemoY: number): void {
+  private drawElasticCords(teemoX: number, teemoY: number): void {
     const graphics = this.aimGraphic;
     if (!graphics) {
       return;
     }
 
-    graphics.lineStyle(5, 0x684b35, 0.9);
+    const stretch = Math.hypot(this.displayPull.x, this.displayPull.y);
+    const sag = Math.max(0, 14 - stretch * 0.1);
+    graphics.lineStyle(5, stretch > 80 ? 0x74432b : 0x886447, 0.95);
+    this.drawCable(graphics, START_X - 16, GROUND_Y - 12, teemoX - 8, teemoY, sag);
+    this.drawCable(graphics, START_X + 28, GROUND_Y - 12, teemoX + 8, teemoY, sag);
+    graphics.fillStyle(0x69422f, 1);
+    graphics.fillCircle(teemoX, teemoY + 3, 8);
+  }
+
+  private drawCable(
+    graphics: Phaser.GameObjects.Graphics,
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number,
+    sag: number,
+  ): void {
+    const controlX = (startX + endX) / 2;
+    const controlY = (startY + endY) / 2 + sag;
     graphics.beginPath();
-    graphics.moveTo(START_X - 16, GROUND_Y - 12);
-    graphics.lineTo(teemoX, teemoY - 5);
-    graphics.lineTo(START_X + 28, GROUND_Y - 12);
+    graphics.moveTo(startX, startY);
+    for (let segment = 1; segment <= 10; segment += 1) {
+      const t = segment / 10;
+      const inverse = 1 - t;
+      graphics.lineTo(
+        inverse * inverse * startX + 2 * inverse * t * controlX + t * t * endX,
+        inverse * inverse * startY + 2 * inverse * t * controlY + t * t * endY,
+      );
+    }
     graphics.strokePath();
-    graphics.lineStyle(2, 0xfff1be, 0.8);
-    graphics.strokeCircle(START_X, START_Y - 8, 42 + this.pull.x * 0.08);
+  }
+
+  private drawAimGuide(state: LaunchGameState): void {
+    const graphics = this.aimGraphic;
+    if (!graphics) {
+      return;
+    }
+    const velocity = calculateLaunchVelocity(state.upgrades, this.pull.x, this.pull.y);
+    if (velocity.stretch < 8) {
+      return;
+    }
+
+    graphics.fillStyle(0xffe2a0, 0.85);
+    for (let frame = 6; frame <= 66; frame += 6) {
+      const x = START_X + velocity.horizontalSpeed * frame * Math.pow(0.998, frame / 2);
+      const y = START_Y - velocity.verticalSpeed * frame + 0.5 * LAUNCH_GRAVITY * frame * frame;
+      if (y > GROUND_Y || x > START_X + NEXUS_DISTANCE) {
+        break;
+      }
+      if (y >= 12) {
+        graphics.fillCircle(x, y, Math.max(2, 4 - frame * 0.025));
+      }
+    }
   }
 
   private drawTeemo(): Phaser.GameObjects.Container {
@@ -251,7 +305,7 @@ class NexusLaunchScene extends Phaser.Scene {
   }
 
   private drawNexus(): void {
-    const x = NEXUS_DISTANCE + 70;
+    const x = START_X + NEXUS_DISTANCE + 70;
     this.add.circle(x, GROUND_Y - 73, 78, 0xe3545a, 0.2);
     this.add.triangle(x, GROUND_Y - 98, 72, 122, 0xd73853).setStrokeStyle(3, 0xffd7bd);
     this.add.triangle(x, GROUND_Y - 100, 40, 72, 0xff7880);
@@ -265,28 +319,6 @@ class NexusLaunchScene extends Phaser.Scene {
       })
       .setOrigin(0.5)
       .setDepth(6);
-  }
-
-  private drawBarrier(): void {
-    const x = START_X + NEXUS_GATE_DISTANCE;
-    const wall = this.add.container(x, 0).setDepth(6);
-    wall.add(this.add.rectangle(0, 335, 22, 208, 0x514d9c, 0.8));
-    wall.add(this.add.rectangle(0, 335, 7, 208, 0xb5d8ff, 0.9));
-    wall.add(this.add.circle(0, 230, 22, 0x8079c6, 0.9));
-    wall.add(
-      this.add
-        .text(0, 183, 'SCOUT UPGRADES\nREQUIRED', {
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '17px',
-          color: '#fff6cf',
-          align: 'center',
-          stroke: '#3a3868',
-          strokeThickness: 4,
-          fontStyle: 'bold',
-        })
-        .setOrigin(0.5),
-    );
-    this.nexusBarrier = wall;
   }
 
   private showImpact(x: number, gold: number): void {
