@@ -32,6 +32,10 @@ test('plays the Matter Core greybox loop in the browser', async ({ page }) => {
 
 test('buys and restores a Matter upgrade', async ({ page }) => {
   await page.addInitScript(() => {
+    if (window.localStorage.getItem('project-scale-save-v1')) {
+      return;
+    }
+
     window.localStorage.setItem(
       'project-scale-save-v1',
       JSON.stringify({
