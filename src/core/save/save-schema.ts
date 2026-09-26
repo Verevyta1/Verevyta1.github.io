@@ -27,10 +27,7 @@ export class InvalidSaveError extends Error {
 }
 
 /** Builds the renderer-independent, JSON-safe v1 save envelope. */
-export function createSaveEnvelope(
-  game: GameState,
-  timestamps: SaveTimestamps,
-): SaveEnvelopeV1 {
+export function createSaveEnvelope(game: GameState, timestamps: SaveTimestamps): SaveEnvelopeV1 {
   const createdAt = requireTimestamp(timestamps.createdAt, 'createdAt');
   const lastSavedAt = requireTimestamp(timestamps.lastSavedAt, 'lastSavedAt');
   const run = Object.freeze({
