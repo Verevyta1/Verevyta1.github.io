@@ -1,13 +1,20 @@
+import {
+  createInitialUpgradeLevels,
+  MAX_UPGRADE_LEVEL,
+  UPGRADE_IDS,
+  type UpgradeId,
+} from '../economy/upgrades';
 import { createInitialGameState, type GameState } from '../simulation/game-state';
 
-export const SAVE_VERSION = 1 as const;
+export const SAVE_VERSION = 2 as const;
+const LEGACY_SAVE_VERSION = 1;
 
 export interface SaveTimestamps {
   readonly createdAt: number;
   readonly lastSavedAt: number;
 }
 
-export interface SaveEnvelopeV1 {
+export interface SaveEnvelopeV2 {
   readonly saveVersion: typeof SAVE_VERSION;
   readonly createdAt: number;
   readonly lastSavedAt: number;
@@ -16,6 +23,7 @@ export interface SaveEnvelopeV1 {
       readonly mass: string;
       readonly matter: string;
     };
+    readonly upgrades: ReturnType<typeof createInitialUpgradeLevels>;
   };
 }
 
@@ -26,8 +34,8 @@ export class InvalidSaveError extends Error {
   }
 }
 
-/** Builds the renderer-independent, JSON-safe v1 save envelope. */
-export function createSaveEnvelope(game: GameState, timestamps: SaveTimestamps): SaveEnvelopeV1 {
+/** Builds the renderer-independent, JSON-safe v2 save envelope. */
+export function createSaveEnvelope(game: GameState, timestamps: SaveTimestamps): SaveEnvelopeV2 {
   const createdAt = requireTimestamp(timestamps.createdAt, 'createdAt');
   const lastSavedAt = requireTimestamp(timestamps.lastSavedAt, 'lastSavedAt');
   const run = Object.freeze({
@@ -39,17 +47,20 @@ export function createSaveEnvelope(game: GameState, timestamps: SaveTimestamps):
     saveVersion: SAVE_VERSION,
     createdAt,
     lastSavedAt,
-    game: Object.freeze({ run }),
+    game: Object.freeze({
+      run,
+      upgrades: Object.freeze({ ...game.upgrades }),
+    }),
   });
 }
 
-/** Serializes a minimal v1 save using canonical GameNumber strings. */
+/** Serializes a minimal v2 save using canonical GameNumber strings. */
 export function serializeSave(game: GameState, timestamps: SaveTimestamps): string {
   return JSON.stringify(createSaveEnvelope(game, timestamps));
 }
 
-/** Parses and validates saved JSON without hydrating renderer or platform state. */
-export function parseSave(serialized: string): SaveEnvelopeV1 {
+/** Parses v1 or v2 saved JSON and normalizes it to the current schema. */
+export function parseSave(serialized: string): SaveEnvelopeV2 {
   let parsed: unknown;
 
   try {
@@ -62,7 +73,7 @@ export function parseSave(serialized: string): SaveEnvelopeV1 {
     throw new InvalidSaveError('Save data must be an object.');
   }
 
-  if (parsed.saveVersion !== SAVE_VERSION) {
+  if (parsed.saveVersion !== LEGACY_SAVE_VERSION && parsed.saveVersion !== SAVE_VERSION) {
     throw new InvalidSaveError('Save version is unsupported.');
   }
 
@@ -80,12 +91,16 @@ export function parseSave(serialized: string): SaveEnvelopeV1 {
     throw new InvalidSaveError('Saved Mass and Matter must be serialized strings.');
   }
 
+  const upgrades =
+    parsed.saveVersion === LEGACY_SAVE_VERSION ? {} : readUpgradeLevels(parsed.game.upgrades);
+
   try {
     const game = createInitialGameState({
       run: {
         mass: run.mass,
         matter: run.matter,
       },
+      upgrades,
     });
 
     return createSaveEnvelope(game, {
@@ -93,18 +108,56 @@ export function parseSave(serialized: string): SaveEnvelopeV1 {
       lastSavedAt: parsed.lastSavedAt,
     });
   } catch {
-    throw new InvalidSaveError('Saved Mass or Matter is invalid.');
+    throw new InvalidSaveError('Saved Mass, Matter, or upgrade levels are invalid.');
   }
 }
 
 /** Restores only deterministic game state; presentation and platform boot separately. */
-export function restoreGameState(save: SaveEnvelopeV1): GameState {
+export function restoreGameState(save: SaveEnvelopeV2): GameState {
   return createInitialGameState({
     run: {
       mass: save.game.run.mass,
       matter: save.game.run.matter,
     },
+    upgrades: save.game.upgrades,
   });
+}
+
+function readUpgradeLevels(value: unknown): Partial<Record<UpgradeId, number>> {
+  if (!isRecord(value)) {
+    throw new InvalidSaveError('Saved upgrade levels are missing.');
+  }
+
+  const ids = new Set<string>(UPGRADE_IDS);
+
+  for (const key of Object.keys(value)) {
+    if (!ids.has(key)) {
+      throw new InvalidSaveError('Saved upgrade levels contain an unknown upgrade.');
+    }
+  }
+
+  const levels: Partial<Record<UpgradeId, number>> = {};
+
+  for (const id of UPGRADE_IDS) {
+    const level = value[id];
+
+    if (level === undefined) {
+      continue;
+    }
+
+    if (
+      typeof level !== 'number' ||
+      !Number.isSafeInteger(level) ||
+      level < 0 ||
+      level > MAX_UPGRADE_LEVEL
+    ) {
+      throw new InvalidSaveError('Saved upgrade levels must be supported non-negative integers.');
+    }
+
+    levels[id] = level;
+  }
+
+  return levels;
 }
 
 function requireTimestamp(timestamp: number, label: string): number {
