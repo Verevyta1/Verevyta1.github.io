@@ -33,31 +33,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Temporary formatter diagnostic
-        run: |
-          npx prettier --write \
-            src/app/foundation.test.ts \
-            src/core/simulation/greybox-loop.test.ts \
-            src/core/simulation/greybox-loop.ts \
-            src/game/scenes/foundation-scene.ts \
-            src/main.ts \
-            src/styles.css \
-            tests/e2e/foundation.spec.ts
-          git rev-parse 'HEAD^{tree}'
-          for file in \
-            src/app/foundation.test.ts \
-            src/core/simulation/greybox-loop.test.ts \
-            src/core/simulation/greybox-loop.ts \
-            src/game/scenes/foundation-scene.ts \
-            src/main.ts \
-            src/styles.css \
-            tests/e2e/foundation.spec.ts
-          do
-            printf 'FORMAT-BEGIN:%s\n' "$file"
-            base64 -w0 "$file"
-            printf '\nFORMAT-END:%s\n' "$file"
-          done
-
       - name: Typecheck
         run: npm run typecheck
 

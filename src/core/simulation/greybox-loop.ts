@@ -125,10 +125,7 @@ function advanceFixedStep(
   const activePulseMs = Math.min(SIMULATION_STEP_MS, state.gravityPulseRemainingMs);
   const normalAttractionMs = SIMULATION_STEP_MS - activePulseMs;
   const pulseRemainingMs = Math.max(0, state.gravityPulseRemainingMs - SIMULATION_STEP_MS);
-  const gravityPulseCooldownMs = Math.max(
-    0,
-    state.gravityPulseCooldownMs - SIMULATION_STEP_MS,
-  );
+  const gravityPulseCooldownMs = Math.max(0, state.gravityPulseCooldownMs - SIMULATION_STEP_MS);
   const objects: MatterObjectInstance[] = [];
   const absorbedObjects: AbsorbedObjectEvent[] = [];
   let game = state.game;
@@ -156,8 +153,7 @@ function advanceFixedStep(
     }
 
     if (phase === 'attracting') {
-      attractionProgressMs +=
-        normalAttractionMs + activePulseMs * GRAVITY_PULSE_SPEED_MULTIPLIER;
+      attractionProgressMs += normalAttractionMs + activePulseMs * GRAVITY_PULSE_SPEED_MULTIPLIER;
 
       if (attractionProgressMs >= ATTRACTION_DURATION_MS) {
         const nextRun = applyAbsorption(game.run, {

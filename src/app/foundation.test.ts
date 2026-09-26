@@ -9,7 +9,9 @@ describe('foundation app', () => {
     expect(FOUNDATION_TITLE).toBe('Project Scale');
     expect(markup).toContain('<h1 id="foundation-title">Project Scale</h1>');
     expect(markup).toContain('id="game-canvas"');
-    expect(markup).toContain('aria-label="Matter objects drift around a stationary central Matter Core and are absorbed when eligible"');
+    expect(markup).toContain(
+      'aria-label="Matter objects drift around a stationary central Matter Core and are absorbed when eligible"',
+    );
   });
 
   it('provides Mass, Matter, and the accessible Gravity Pulse command', () => {

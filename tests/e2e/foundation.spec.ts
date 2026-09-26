@@ -17,16 +17,14 @@ test('plays the Matter Core greybox loop in the browser', async ({ page }) => {
   await expect(page.locator('#pulse-state')).toHaveText('Active');
 
   await expect
-    .poll(
-      async () => Number((await mass.textContent())?.replaceAll(',', '') ?? '0'),
-      { timeout: 12_000 },
-    )
+    .poll(async () => Number((await mass.textContent())?.replaceAll(',', '') ?? '0'), {
+      timeout: 12_000,
+    })
     .toBeGreaterThan(0);
   await expect
-    .poll(
-      async () => Number((await matter.textContent())?.replaceAll(',', '') ?? '0'),
-      { timeout: 2_000 },
-    )
+    .poll(async () => Number((await matter.textContent())?.replaceAll(',', '') ?? '0'), {
+      timeout: 2_000,
+    })
     .toBeGreaterThan(0);
 
   await expect(page.getByText('No movement controls.')).toBeVisible();

@@ -31,7 +31,9 @@ class MatterCoreScene extends Phaser.Scene {
     definitions: readonly MatterObjectDefinition[],
   ) {
     super('matter-core');
-    this.definitionsById = new Map(definitions.map((definition) => [definition.id, definition] as const));
+    this.definitionsById = new Map(
+      definitions.map((definition) => [definition.id, definition] as const),
+    );
     this.colorsByDefinition = new Map(
       definitions.map(
         (definition, index) =>

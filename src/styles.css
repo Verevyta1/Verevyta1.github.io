@@ -190,8 +190,7 @@ textarea {
     radial-gradient(ellipse at 50% 50%, rgb(29 68 96 / 32%), transparent 44%),
     radial-gradient(circle at 18% 24%, rgb(181 218 240 / 54%) 0 1px, transparent 1.7px),
     radial-gradient(circle at 81% 34%, rgb(181 218 240 / 45%) 0 1px, transparent 1.8px),
-    radial-gradient(circle at 68% 77%, rgb(181 218 240 / 32%) 0 1px, transparent 1.7px),
-    #07101c;
+    radial-gradient(circle at 68% 77%, rgb(181 218 240 / 32%) 0 1px, transparent 1.7px), #07101c;
 }
 
 .foundation-canvas {

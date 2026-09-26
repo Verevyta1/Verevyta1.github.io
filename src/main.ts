@@ -98,9 +98,7 @@ function advanceSimulation(deltaMs: number) {
   if (frame.absorbedObjects.length > 0) {
     for (const absorption of frame.absorbedObjects) {
       saveMessage =
-        'Absorbed ' +
-        absorption.definitionId.replaceAll('-', ' ') +
-        '. Progress saved locally.';
+        'Absorbed ' + absorption.definitionId.replaceAll('-', ' ') + '. Progress saved locally.';
     }
     scheduleSave();
   }
@@ -137,11 +135,7 @@ async function startGame(): Promise<void> {
   platform.gameplayStart();
   renderHud();
 
-  createMatterCoreGame(
-    canvasHost,
-    { advance: advanceSimulation },
-    CONTENT_DEFINITIONS.objects,
-  );
+  createMatterCoreGame(canvasHost, { advance: advanceSimulation }, CONTENT_DEFINITIONS.objects);
 }
 
 void startGame().catch((error: unknown) => {

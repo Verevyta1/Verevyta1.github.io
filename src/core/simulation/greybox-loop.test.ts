@@ -78,9 +78,9 @@ describe('greybox simulation', () => {
     const initial = createInitialGreyboxSimulationState();
 
     expect(() => advanceGreyboxSimulation(initial, -1, TEST_OBJECTS)).toThrow(RangeError);
-    expect(() =>
-      advanceGreyboxSimulation(initial, Number.POSITIVE_INFINITY, TEST_OBJECTS),
-    ).toThrow(RangeError);
+    expect(() => advanceGreyboxSimulation(initial, Number.POSITIVE_INFINITY, TEST_OBJECTS)).toThrow(
+      RangeError,
+    );
   });
 
   it('absorbs eligible matter into Mass and Matter through the domain reward function', () => {
