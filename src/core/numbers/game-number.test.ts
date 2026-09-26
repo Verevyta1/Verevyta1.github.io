@@ -8,13 +8,13 @@ describe('GameNumber', () => {
   });
 
   it('performs immutable arithmetic without exposing native operators', () => {
-    const start = GameNumber.from('1e1000');
+    const start = GameNumber.from(100);
     const doubled = start.multiply(2);
-    const increased = doubled.add('5e999');
+    const increased = doubled.add(50);
 
-    expect(start.equals('1e1000')).toBe(true);
-    expect(doubled.equals('2e1000')).toBe(true);
-    expect(increased.equals('2.5e1000')).toBe(true);
+    expect(start.equals(100)).toBe(true);
+    expect(doubled.equals(200)).toBe(true);
+    expect(increased.equals(250)).toBe(true);
   });
 
   it('supports values beyond the native JavaScript finite range', () => {
