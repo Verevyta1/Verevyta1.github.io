@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { MatterObjectDefinition } from '../content/content-definitions';
+import { GameNumber } from '../numbers/game-number';
 import { createInitialGameState } from './game-state';
 import {
   activateGravityPulse,
@@ -9,6 +10,7 @@ import {
   GRAVITY_PULSE_COOLDOWN_MS,
   GRAVITY_PULSE_DURATION_MS,
   MAX_FRAME_CATCH_UP_MS,
+  isMatterObjectEligible,
 } from './greybox-loop';
 
 const TEST_OBJECTS: readonly MatterObjectDefinition[] = Object.freeze([
@@ -108,5 +110,57 @@ describe('greybox simulation', () => {
 
     expect(accelerated.absorbed).toBeGreaterThan(0);
     expect(unassisted.absorbed).toBe(0);
+  });
+
+  it('makes Density speed object arrivals and unlocks a second object at level five', () => {
+    const standard = advanceFor(createInitialGreyboxSimulationState(), 600).state;
+    const dense = advanceFor(
+      createInitialGreyboxSimulationState(createInitialGameState({ upgrades: { density: 5 } })),
+      600,
+    ).state;
+
+    expect(standard.objects).toHaveLength(0);
+    expect(dense.objects).toHaveLength(2);
+  });
+
+  it('applies Gravity and Assimilation upgrades to absorption behaviour', () => {
+    const standard = advanceFor(createInitialGreyboxSimulationState(), 1_700);
+    const gravity = advanceFor(
+      createInitialGreyboxSimulationState(createInitialGameState({ upgrades: { gravity: 5 } })),
+      1_700,
+    );
+    const matterMultiplier = advanceFor(
+      createInitialGreyboxSimulationState(createInitialGameState({ upgrades: { assimilation: 2 } })),
+      3_000,
+    );
+    const matterBaseline = advanceFor(createInitialGreyboxSimulationState(), 3_000);
+
+    expect(gravity.absorbed).toBeGreaterThan(standard.absorbed);
+    expect(matterMultiplier.state.game.run.matter.toNumber()).toBeCloseTo(
+      matterBaseline.state.game.run.matter.toNumber() * 1.2,
+    );
+  });
+
+  it('lets Influence increase the largest Mass threshold the Core can attract', () => {
+    const dust = TEST_OBJECTS.find((definition) => definition.id === 'test-dust');
+
+    if (!dust) {
+      throw new Error('Test dust definition is missing.');
+    }
+
+    const thresholdObject = Object.freeze({ ...dust, requiredMass: '10' });
+
+    expect(isMatterObjectEligible(GameNumber.from('9'), thresholdObject)).toBe(false);
+    expect(isMatterObjectEligible(GameNumber.from('9'), thresholdObject, 1)).toBe(true);
+  });
+
+  it('extends Gravity Pulse through Compression levels', () => {
+    const compressed = createInitialGreyboxSimulationState(
+      createInitialGameState({ upgrades: { compression: 2 } }),
+    );
+
+    expect(activateGravityPulse(compressed).gravityPulseRemainingMs).toBe(
+      GRAVITY_PULSE_DURATION_MS + 1_000,
+    );
   });
 });
