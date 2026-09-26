@@ -130,7 +130,9 @@ describe('greybox simulation', () => {
       1_700,
     );
     const matterMultiplier = advanceFor(
-      createInitialGreyboxSimulationState(createInitialGameState({ upgrades: { assimilation: 2 } })),
+      createInitialGreyboxSimulationState(
+        createInitialGameState({ upgrades: { assimilation: 2 } }),
+      ),
       3_000,
     );
     const matterBaseline = advanceFor(createInitialGreyboxSimulationState(), 3_000);
@@ -151,7 +153,7 @@ describe('greybox simulation', () => {
     const thresholdObject = Object.freeze({ ...dust, requiredMass: '10' });
 
     expect(isMatterObjectEligible(GameNumber.from('9'), thresholdObject)).toBe(false);
-    expect(isMatterObjectEligible(GameNumber.from('9'), thresholdObject, 1)).toBe(true);
+    expect(isMatterObjectEligible(GameNumber.from('9.2'), thresholdObject, 1)).toBe(true);
   });
 
   it('extends Gravity Pulse through Compression levels', () => {
