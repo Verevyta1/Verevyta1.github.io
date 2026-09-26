@@ -255,7 +255,13 @@ function selectDefinition(
     }
   }
 
-  return definitions[definitions.length - 1];
+  const fallback = definitions[definitions.length - 1];
+
+  if (!fallback) {
+    throw new RangeError('At least one matter object definition is required to spawn.');
+  }
+
+  return fallback;
 }
 
 /** Small integer hash gives repeatable content selection without platform RNG. */
