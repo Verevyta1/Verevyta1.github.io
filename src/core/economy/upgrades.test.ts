@@ -19,9 +19,12 @@ describe('upgrade rules', () => {
   it('grows Matter costs exponentially and applies the data-driven base price', () => {
     const density = UPGRADE_DEFINITIONS.find((definition) => definition.id === 'density');
 
-    expect(density).toBeDefined();
-    expect(calculateUpgradeCost(density!, 0).toNumber()).toBe(2);
-    expect(calculateUpgradeCost(density!, 2).toNumber()).toBeCloseTo(4.805);
+    if (!density) {
+      throw new Error('Density upgrade definition is missing.');
+    }
+
+    expect(calculateUpgradeCost(density, 0).toNumber()).toBe(2);
+    expect(calculateUpgradeCost(density, 2).toNumber()).toBeCloseTo(4.805);
   });
 
   it('keeps one Matter purchase atomic and never spends Mass', () => {
