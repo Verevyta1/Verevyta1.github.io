@@ -152,11 +152,7 @@ function advanceFixedStep(
     let attractionProgressMs = object.attractionProgressMs;
 
     if (phase === 'drifting') {
-      const eligible = isMatterObjectEligible(
-        game.run.mass,
-        definition,
-        game.upgrades.influence,
-      );
+      const eligible = isMatterObjectEligible(game.run.mass, definition, game.upgrades.influence);
 
       if (eligible) {
         phase = 'attracting';
