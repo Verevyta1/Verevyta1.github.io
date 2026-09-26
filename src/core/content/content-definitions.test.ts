@@ -94,11 +94,9 @@ describe('content definition validation', () => {
       ],
     };
 
-    expectValidationFailure(
-      invalid,
-      ['invalid_positive_number', 'missing_asset_reference'],
-      { availableAssetKeys: new Set(['mote-01']) },
-    );
+    expectValidationFailure(invalid, ['invalid_positive_number', 'missing_asset_reference'], {
+      availableAssetKeys: new Set(['mote-01']),
+    });
   });
 
   it('rejects a missing scale-band list and non-object entries', () => {

@@ -39,11 +39,6 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Print content-test formatter diff
-        run: |
-          npx prettier --write src/core/content/content-definitions.test.ts
-          git diff -- src/core/content/content-definitions.test.ts
-
       - name: Check formatting
         run: npm run format:check
 
