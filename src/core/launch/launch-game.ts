@@ -331,7 +331,7 @@ function finishRun(
       bestDistance: Math.max(state.bestDistance, distance),
       run: {
         ...state.run,
-        phase: 'finished',
+        phase: distance >= NEXUS_DISTANCE ? 'won' : 'finished',
         distance,
         height: 0,
         horizontalSpeed: 0,

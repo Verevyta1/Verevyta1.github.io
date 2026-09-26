@@ -23,8 +23,12 @@ test('launches Teemo and earns gold by smashing minions', async ({ page }) => {
 
 test('purchases and restores a launch upgrade', async ({ page }) => {
   await page.addInitScript(() => {
+    const saveKey = 'teemo-nexus-launch-save-v1';
+    if (window.localStorage.getItem(saveKey)) {
+      return;
+    }
     window.localStorage.setItem(
-      'teemo-nexus-launch-save-v1',
+      saveKey,
       JSON.stringify({
         saveVersion: 1,
         savedAt: 1,

@@ -8,6 +8,8 @@ import {
   parseLaunchSave,
   serializeLaunchSave,
   startLaunchRun,
+  NEXUS_DISTANCE,
+  type LaunchGameState,
 } from './launch-game';
 import { LAUNCH_UPGRADES } from '../../data/launch-upgrades';
 
@@ -52,6 +54,27 @@ describe('Nexus launch simulation', () => {
     expect(bought.purchased).toBe(true);
     expect(bought.state.gold).toBe('80');
     expect(bought.state.upgrades.launchPower).toBe(1);
+  });
+
+  it('wins when the final landing and Nexus crossing happen in the same simulation step', () => {
+    const initial = createInitialLaunchGameState();
+    const nearGoal: LaunchGameState = {
+      ...initial,
+      run: {
+        ...initial.run,
+        phase: 'flying',
+        distance: NEXUS_DISTANCE - 1,
+        height: 1,
+        horizontalSpeed: 8,
+        verticalSpeed: -1,
+      },
+    };
+
+    const frame = advanceLaunchGame(nearGoal, 50);
+
+    expect(frame.runEnded).toBe(true);
+    expect(frame.state.run.phase).toBe('won');
+    expect(frame.state.run.distance).toBeGreaterThanOrEqual(NEXUS_DISTANCE);
   });
 
   it('persists gold, best distance, and upgrade levels', () => {
