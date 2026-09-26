@@ -30,7 +30,6 @@ test('plays the Matter Core greybox loop in the browser', async ({ page }) => {
   await expect(page.getByText('No movement controls.')).toBeVisible();
 });
 
-
 test('buys and restores a Matter upgrade', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem(
@@ -41,7 +40,13 @@ test('buys and restores a Matter upgrade', async ({ page }) => {
         lastSavedAt: 1,
         game: {
           run: { mass: '100', matter: '20' },
-          upgrades: { density: 0, gravity: 0, influence: 0, assimilation: 0, compression: 0 },
+          upgrades: {
+            density: 0,
+            gravity: 0,
+            influence: 0,
+            assimilation: 0,
+            compression: 0,
+          },
         },
       }),
     );
