@@ -42,9 +42,7 @@ export class ContentValidationError extends Error {
   readonly issues: readonly ContentValidationIssue[];
 
   constructor(issues: readonly ContentValidationIssue[]) {
-    super(
-      issues.map((issue) => `${issue.path}: ${issue.message}`).join('\n'),
-    );
+    super(issues.map((issue) => `${issue.path}: ${issue.message}`).join('\n'));
     this.name = 'ContentValidationError';
     this.issues = Object.freeze([...issues]);
   }
@@ -62,7 +60,11 @@ export function validateContentDefinitions(
 
   if (!isRecord(input)) {
     throw new ContentValidationError([
-      { path: '$', code: 'invalid_root', message: 'Expected an object containing scaleBands and objects.' },
+      {
+        path: '$',
+        code: 'invalid_root',
+        message: 'Expected an object containing scaleBands and objects.',
+      },
     ]);
   }
 
@@ -70,13 +72,25 @@ export function validateContentDefinitions(
   const rawObjects = input.objects;
 
   if (!Array.isArray(rawScaleBands)) {
-    issues.push({ path: 'scaleBands', code: 'expected_array', message: 'Expected an array of scale bands.' });
+    issues.push({
+      path: 'scaleBands',
+      code: 'expected_array',
+      message: 'Expected an array of scale bands.',
+    });
   } else if (rawScaleBands.length === 0) {
-    issues.push({ path: 'scaleBands', code: 'empty_scale_bands', message: 'At least one scale band is required.' });
+    issues.push({
+      path: 'scaleBands',
+      code: 'empty_scale_bands',
+      message: 'At least one scale band is required.',
+    });
   }
 
   if (!Array.isArray(rawObjects)) {
-    issues.push({ path: 'objects', code: 'expected_array', message: 'Expected an array of matter objects.' });
+    issues.push({
+      path: 'objects',
+      code: 'expected_array',
+      message: 'Expected an array of matter objects.',
+    });
   }
 
   const scaleBands: ScaleBandDefinition[] = [];
@@ -89,7 +103,11 @@ export function validateContentDefinitions(
       const path = `scaleBands[${index}]`;
 
       if (!isRecord(rawBand)) {
-        issues.push({ path, code: 'expected_object', message: 'Expected a scale-band object.' });
+        issues.push({
+          path,
+          code: 'expected_object',
+          message: 'Expected a scale-band object.',
+        });
         return;
       }
 
@@ -98,17 +116,29 @@ export function validateContentDefinitions(
       const order = readPositiveInteger(rawBand.order, `${path}.order`, issues);
 
       if (id !== undefined && bandIds.has(id)) {
-        issues.push({ path: `${path}.id`, code: 'duplicate_scale_band_id', message: `Scale-band ID "${id}" is duplicated.` });
+        issues.push({
+          path: `${path}.id`,
+          code: 'duplicate_scale_band_id',
+          message: `Scale-band ID "${id}" is duplicated.`,
+        });
       }
 
       if (id !== undefined) bandIds.add(id);
 
       if (order !== undefined) {
         if (bandOrders.has(order)) {
-          issues.push({ path: `${path}.order`, code: 'duplicate_scale_band_order', message: `Scale-band order ${order} is duplicated.` });
+          issues.push({
+            path: `${path}.order`,
+            code: 'duplicate_scale_band_order',
+            message: `Scale-band order ${order} is duplicated.`,
+          });
         }
         if (order <= previousBandOrder) {
-          issues.push({ path: `${path}.order`, code: 'non_increasing_scale_band_order', message: 'Scale bands must be listed in strictly increasing order.' });
+          issues.push({
+            path: `${path}.order`,
+            code: 'non_increasing_scale_band_order',
+            message: 'Scale bands must be listed in strictly increasing order.',
+          });
         }
         bandOrders.add(order);
         previousBandOrder = order;
@@ -128,7 +158,11 @@ export function validateContentDefinitions(
       const path = `objects[${index}]`;
 
       if (!isRecord(rawObject)) {
-        issues.push({ path, code: 'expected_object', message: 'Expected a matter-object definition.' });
+        issues.push({
+          path,
+          code: 'expected_object',
+          message: 'Expected a matter-object definition.',
+        });
         return;
       }
 
@@ -139,24 +173,52 @@ export function validateContentDefinitions(
       const requiredMass = readGameNumber(rawObject.requiredMass, `${path}.requiredMass`, issues);
       const massReward = readGameNumber(rawObject.massReward, `${path}.massReward`, issues);
       const matterReward = readGameNumber(rawObject.matterReward, `${path}.matterReward`, issues);
-      const spawnWeight = readPositiveFiniteNumber(rawObject.spawnWeight, `${path}.spawnWeight`, issues);
-      const visualScale = readPositiveFiniteNumber(rawObject.visualScale, `${path}.visualScale`, issues);
+      const spawnWeight = readPositiveFiniteNumber(
+        rawObject.spawnWeight,
+        `${path}.spawnWeight`,
+        issues,
+      );
+      const visualScale = readPositiveFiniteNumber(
+        rawObject.visualScale,
+        `${path}.visualScale`,
+        issues,
+      );
       const assetKey = readIdentifier(rawObject.assetKey, `${path}.assetKey`, issues);
-      const absorptionProfile = readIdentifier(rawObject.absorptionProfile, `${path}.absorptionProfile`, issues);
+      const absorptionProfile = readIdentifier(
+        rawObject.absorptionProfile,
+        `${path}.absorptionProfile`,
+        issues,
+      );
       const rarity = readIdentifier(rawObject.rarity, `${path}.rarity`, issues);
 
       if (id !== undefined && objectIds.has(id)) {
-        issues.push({ path: `${path}.id`, code: 'duplicate_object_id', message: `Object ID "${id}" is duplicated.` });
+        issues.push({
+          path: `${path}.id`,
+          code: 'duplicate_object_id',
+          message: `Object ID "${id}" is duplicated.`,
+        });
       }
 
       if (id !== undefined) objectIds.add(id);
 
       if (scaleBand !== undefined && !bandIds.has(scaleBand)) {
-        issues.push({ path: `${path}.scaleBand`, code: 'unknown_scale_band', message: `Scale band "${scaleBand}" is not defined.` });
+        issues.push({
+          path: `${path}.scaleBand`,
+          code: 'unknown_scale_band',
+          message: `Scale band "${scaleBand}" is not defined.`,
+        });
       }
 
-      if (assetKey !== undefined && options.availableAssetKeys !== undefined && !options.availableAssetKeys.has(assetKey)) {
-        issues.push({ path: `${path}.assetKey`, code: 'missing_asset_reference', message: `Asset key "${assetKey}" is not present in the supplied asset catalog.` });
+      if (
+        assetKey !== undefined &&
+        options.availableAssetKeys !== undefined &&
+        !options.availableAssetKeys.has(assetKey)
+      ) {
+        issues.push({
+          path: `${path}.assetKey`,
+          code: 'missing_asset_reference',
+          message: `Asset key "${assetKey}" is not present in the supplied asset catalog.`,
+        });
       }
 
       if (
@@ -226,7 +288,11 @@ function readText(
   issues: ContentValidationIssue[],
 ): string | undefined {
   if (typeof value !== 'string' || value.trim().length === 0) {
-    issues.push({ path, code: 'required_text', message: 'Expected a non-empty string.' });
+    issues.push({
+      path,
+      code: 'required_text',
+      message: 'Expected a non-empty string.',
+    });
     return undefined;
   }
 
@@ -239,7 +305,11 @@ function readPositiveInteger(
   issues: ContentValidationIssue[],
 ): number | undefined {
   if (typeof value !== 'number' || !Number.isInteger(value) || value < 1) {
-    issues.push({ path, code: 'invalid_order', message: 'Expected a positive one-based integer.' });
+    issues.push({
+      path,
+      code: 'invalid_order',
+      message: 'Expected a positive one-based integer.',
+    });
     return undefined;
   }
 
@@ -252,7 +322,11 @@ function readPositiveFiniteNumber(
   issues: ContentValidationIssue[],
 ): number | undefined {
   if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
-    issues.push({ path, code: 'invalid_positive_number', message: 'Expected a finite number greater than zero.' });
+    issues.push({
+      path,
+      code: 'invalid_positive_number',
+      message: 'Expected a finite number greater than zero.',
+    });
     return undefined;
   }
 
@@ -265,18 +339,30 @@ function readGameNumber(
   issues: ContentValidationIssue[],
 ): string | undefined {
   if (typeof value !== 'string' || value.trim().length === 0) {
-    issues.push({ path, code: 'invalid_game_number', message: 'Expected a serialized GameNumber string.' });
+    issues.push({
+      path,
+      code: 'invalid_game_number',
+      message: 'Expected a serialized GameNumber string.',
+    });
     return undefined;
   }
 
   try {
     const parsed = GameNumber.from(value);
     if (parsed.lessThan(0)) {
-      issues.push({ path, code: 'negative_game_number', message: 'Economic values cannot be negative.' });
+      issues.push({
+        path,
+        code: 'negative_game_number',
+        message: 'Economic values cannot be negative.',
+      });
       return undefined;
     }
   } catch {
-    issues.push({ path, code: 'invalid_game_number', message: 'Value is not a finite GameNumber.' });
+    issues.push({
+      path,
+      code: 'invalid_game_number',
+      message: 'Value is not a finite GameNumber.',
+    });
     return undefined;
   }
 

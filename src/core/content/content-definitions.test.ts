@@ -70,11 +70,12 @@ describe('content definition validation', () => {
   });
 
   it('rejects duplicate object IDs and unknown scale-band references', () => {
+    const object = starterDefinitions.objects[0];
     const invalid = {
       ...starterDefinitions,
       objects: [
-        starterDefinitions.objects[0],
-        { ...starterDefinitions.objects[0], scaleBand: 'unknown-band' },
+        object,
+        { ...object, scaleBand: 'unknown-band' },
       ],
     };
 
@@ -90,11 +91,12 @@ describe('content definition validation', () => {
   });
 
   it('rejects negative or malformed GameNumber strings', () => {
+    const object = starterDefinitions.objects[0];
     const invalid = {
       ...starterDefinitions,
       objects: [
-        { ...starterDefinitions.objects[0], massReward: '-1' },
-        { ...starterDefinitions.objects[0], id: 'mote_02', matterReward: 'not-a-number' },
+        { ...object, massReward: '-1' },
+        { ...object, id: 'mote_02', matterReward: 'not-a-number' },
       ],
     };
 
@@ -110,11 +112,12 @@ describe('content definition validation', () => {
   });
 
   it('rejects invalid spawn weights, visual scales, and unresolved asset keys', () => {
+    const object = starterDefinitions.objects[0];
     const invalid = {
       ...starterDefinitions,
       objects: [
         {
-          ...starterDefinitions.objects[0],
+          ...object,
           spawnWeight: 0,
           visualScale: Number.POSITIVE_INFINITY,
           assetKey: 'missing-asset',
