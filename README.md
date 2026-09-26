@@ -16,9 +16,9 @@ The current prototype is the Milestone B greybox slice:
 - object requirements and rewards are provisional tuning values, not final balance;
 - the playfield uses original code-drawn geometry and does not need art downloads.
 
-A downloadable production build is attached to successful GitHub Actions runs. Open the latest CI run for this repository, then download the artifact named project-scale-greybox. Unzip it and serve the dist folder with a local static server, for example Python's built-in server:
+A downloadable production build is attached to successful GitHub Actions runs. Open the latest CI run for this repository, then download the artifact named project-scale-greybox. Unzip it, open a terminal in the extracted artifact folder, and start Python's built-in static server:
 
-    py -m http.server 4173 --directory dist
+    py -m http.server 4173
 
 Then open http://localhost:4173 in a browser. This prototype is not deployed to main or published as a finished game.
 
